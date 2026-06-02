@@ -16,7 +16,86 @@
     min-height: 100vh;
   }
 
-  /* NAV */
+  /* =====================
+     PASSWORD GATE
+     ===================== */
+  #password-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #f8f7f4;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1.5rem;
+  }
+
+  #password-gate.hidden { display: none; }
+
+  .gate-logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: #1a1a18;
+    margin-bottom: 0.5rem;
+  }
+
+  .gate-label {
+    font-size: 12px;
+    color: #b0aea8;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .gate-form {
+    display: flex; gap: 0.5rem;
+    align-items: center;
+  }
+
+  .gate-input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 8px 14px;
+    border: 1px solid #e0ddd6;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a1a18;
+    outline: none;
+    width: 200px;
+    transition: border-color 0.2s;
+  }
+
+  .gate-input:focus { border-color: #c8622a; }
+  .gate-input.error { border-color: #e05050; animation: shake 0.3s ease; }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .gate-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    background: #1a1a18;
+    color: #f8f7f4;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .gate-btn:hover { background: #2a2a28; }
+
+  .gate-error {
+    font-size: 12px;
+    color: #e05050;
+    height: 16px;
+    text-align: center;
+  }
+
+  /* =====================
+     NAV
+     ===================== */
   nav {
     background: #efefed;
     border-bottom: 1px solid #e0ddd6;
@@ -39,6 +118,7 @@
     padding: 4px 0;
     border-bottom: 1.5px solid transparent;
     transition: color 0.2s, border-color 0.2s;
+    cursor: pointer;
   }
 
   nav a:hover { color: #1a1a18; border-bottom-color: #1a1a18; }
@@ -54,7 +134,20 @@
     letter-spacing: -0.01em;
   }
 
-  /* HERO */
+  nav .logout-btn {
+    font-size: 12px;
+    color: #b0aea8;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: color 0.15s;
+  }
+  nav .logout-btn:hover { color: #e05050; }
+
+  /* =====================
+     HERO
+     ===================== */
   .hero {
     padding: 4rem 2.5rem 2rem;
     max-width: 900px;
@@ -81,7 +174,9 @@
 
   .hero h1 em { font-style: italic; color: #6b6b65; }
 
-  /* TOOLBAR */
+  /* =====================
+     TOOLBAR
+     ===================== */
   .toolbar {
     max-width: 900px;
     margin: 2.5rem auto 0;
@@ -117,7 +212,17 @@
     font-weight: 300;
   }
 
-  /* FILE GRID */
+  /* Breadcrumb path links */
+  .path-sep { color: #d0cdc8; margin: 0 4px; }
+  .path-link {
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .path-link:hover { color: #1a1a18; }
+
+  /* =====================
+     FILE GRID
+     ===================== */
   .file-grid {
     max-width: 900px;
     margin: 1.5rem auto 0;
@@ -126,6 +231,10 @@
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1rem;
   }
+
+  /* Fade in on view change */
+  .file-grid { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
   .file-item {
     display: flex;
@@ -152,7 +261,6 @@
     justify-content: center;
   }
 
-  /* Folder SVG */
   .folder-svg { width: 64px; height: 54px; }
 
   .file-name {
@@ -170,18 +278,14 @@
     text-align: center;
   }
 
-  /* Doc icon */
-  .doc-icon {
-    width: 48px;
-    height: 58px;
-  }
+  .doc-icon { width: 48px; height: 58px; }
 
-  /* Status bar */
+  /* =====================
+     STATUS BAR
+     ===================== */
   .statusbar {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     height: 24px;
     background: #efefed;
     border-top: 1px solid #e0ddd6;
@@ -198,132 +302,251 @@
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="logo">Highborn</a>
-  <a href="#" class="active">Hjem</a>
-  <a href="#">Ressurser</a>
-  <a href="#">CV</a>
-  <a href="#">Galleri</a>
-  <a href="#">Txt</a>
-</nav>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-eyebrow">Lars Høifødt</div>
-  <h1>Min digitale<br><em>arbeidsmappe</em></h1>
+<!-- =====================
+     PASSWORD GATE
+     ===================== -->
+<div id="password-gate">
+  <div class="gate-logo">Highborn</div>
+  <div class="gate-label">Skriv inn passord</div>
+  <form class="gate-form" onsubmit="checkPassword(event)">
+    <input
+      class="gate-input"
+      id="pw-input"
+      type="password"
+      placeholder="Passord"
+      autofocus
+      autocomplete="current-password"
+    >
+    <button class="gate-btn" type="submit">Logg inn</button>
+  </form>
+  <div class="gate-error" id="gate-error"></div>
 </div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
-  <button class="toolbar-btn active">⊞ Ikoner</button>
-  <button class="toolbar-btn">☰ Liste</button>
-  <div class="toolbar-sep"></div>
-  <button class="toolbar-btn">↑ Navn</button>
-  <span class="toolbar-path">highborn.no /</span>
-</div>
+<!-- =====================
+     MAIN CONTENT
+     ===================== -->
+<div id="main-content">
 
-<!-- FILES -->
-<div class="file-grid">
+  <nav>
+    <a href="#" class="logo" onclick="goHome()">Highborn</a>
+    <a href="#" class="active" onclick="goHome()">Hjem</a>
+    <a href="#">Ressurser</a>
+    <a href="#">CV</a>
+    <a href="#">Galleri</a>
+    <a href="#">Txt</a>
+    <button class="logout-btn" onclick="logout()">Logg ut</button>
+  </nav>
 
-  <!-- MAPPE: Presentasjoner -->
-  <a href="#" class="file-item">
-    <div class="file-icon">
-      <svg class="folder-svg" viewBox="0 0 64 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="8" width="64" height="46" rx="5" fill="#e8c87a"/>
-        <rect x="0" y="8" width="64" height="46" rx="5" fill="url(#fold1)"/>
-        <rect x="0" y="14" width="64" height="40" rx="5" fill="#f5d97e"/>
-        <path d="M0 18h64v2H0z" fill="#e8c87a" opacity="0.3"/>
-        <rect x="0" y="4" width="28" height="14" rx="4" fill="#f5d97e"/>
-        <defs>
-          <linearGradient id="fold1" x1="32" y1="8" x2="32" y2="54" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#000" stop-opacity="0.04"/>
-            <stop offset="1" stop-color="#000" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-    <div class="file-name">Presentasjoner</div>
-    <div class="file-meta">3 filer</div>
-  </a>
+  <div class="hero">
+    <div class="hero-eyebrow">Lars Høifødt</div>
+    <h1>Min digitale<br><em>arbeidsmappe</em></h1>
+  </div>
 
-  <!-- MAPPE: KI-verktøy -->
-  <a href="#" class="file-item">
-    <div class="file-icon">
-      <svg class="folder-svg" viewBox="0 0 64 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="8" width="64" height="46" rx="5" fill="#a8c8e8"/>
-        <rect x="0" y="14" width="64" height="40" rx="5" fill="#c2d9f0"/>
-        <rect x="0" y="4" width="28" height="14" rx="4" fill="#c2d9f0"/>
-      </svg>
-    </div>
-    <div class="file-name">KI-verktøy</div>
-    <div class="file-meta">1 fil</div>
-  </a>
+  <div class="toolbar">
+    <button class="toolbar-btn active">⊞ Ikoner</button>
+    <button class="toolbar-btn">☰ Liste</button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn">↑ Navn</button>
+    <span class="toolbar-path" id="toolbar-path">highborn.no /</span>
+  </div>
 
-  <!-- MAPPE: Ressurser -->
-  <a href="#" class="file-item">
-    <div class="file-icon">
-      <svg class="folder-svg" viewBox="0 0 64 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="8" width="64" height="46" rx="5" fill="#b8d8b0"/>
-        <rect x="0" y="14" width="64" height="40" rx="5" fill="#cce8c4"/>
-        <rect x="0" y="4" width="28" height="14" rx="4" fill="#cce8c4"/>
-      </svg>
-    </div>
-    <div class="file-name">Ressurser</div>
-    <div class="file-meta">Tom</div>
-  </a>
-
-  <!-- MAPPE: CV -->
-  <a href="#" class="file-item">
-    <div class="file-icon">
-      <svg class="folder-svg" viewBox="0 0 64 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="8" width="64" height="46" rx="5" fill="#d4b8e0"/>
-        <rect x="0" y="14" width="64" height="40" rx="5" fill="#e2ccea"/>
-        <rect x="0" y="4" width="28" height="14" rx="4" fill="#e2ccea"/>
-      </svg>
-    </div>
-    <div class="file-name">CV</div>
-    <div class="file-meta">Tom</div>
-  </a>
-
-  <!-- MAPPE: Galleri -->
-  <a href="#" class="file-item">
-    <div class="file-icon">
-      <svg class="folder-svg" viewBox="0 0 64 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="8" width="64" height="46" rx="5" fill="#f0b8a8"/>
-        <rect x="0" y="14" width="64" height="40" rx="5" fill="#f5ccc0"/>
-        <rect x="0" y="4" width="28" height="14" rx="4" fill="#f5ccc0"/>
-      </svg>
-    </div>
-    <div class="file-name">Galleri</div>
-    <div class="file-meta">Tom</div>
-  </a>
-
-  <!-- FIL: KI i innkjøp -->
-  <a href="presentasjoner/ki-innkjop.html" class="file-item">
-    <div class="file-icon">
-      <svg class="doc-icon" viewBox="0 0 48 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="58" rx="5" fill="#fff" stroke="#e0ddd6" stroke-width="1"/>
-        <path d="M30 0v12h12" fill="none" stroke="#e0ddd6" stroke-width="1"/>
-        <path d="M30 0l12 12H30V0z" fill="#f0ede8"/>
-        <rect x="8" y="20" width="32" height="2" rx="1" fill="#e0ddd6"/>
-        <rect x="8" y="26" width="24" height="2" rx="1" fill="#e0ddd6"/>
-        <rect x="8" y="32" width="28" height="2" rx="1" fill="#e0ddd6"/>
-        <rect x="8" y="38" width="20" height="2" rx="1" fill="#e0ddd6"/>
-        <rect x="6" y="44" width="36" height="8" rx="3" fill="#c8622a"/>
-        <text x="24" y="50" text-anchor="middle" font-size="6" fill="white" font-family="DM Sans, sans-serif" font-weight="500">HTML</text>
-      </svg>
-    </div>
-    <div class="file-name">KI i innkjøp 2026</div>
-    <div class="file-meta">Presentasjon</div>
-  </a>
+  <div class="file-grid" id="file-grid"></div>
 
 </div>
 
 <!-- STATUS BAR -->
 <div class="statusbar">
-    6 objekter &nbsp;·&nbsp; <span>highborn.no</span>
+  <span id="status-count">6 objekter</span> &nbsp;·&nbsp; <span>highborn.no</span>
 </div>
+
+<script>
+  /* =============================================
+     PASSWORD — bytt "highborn2025" til ditt eget
+     ============================================= */
+  const SITE_PASSWORD = 'highborn2025';
+  const SESSION_KEY   = 'hb_auth';
+
+  function checkPassword(e) {
+    e.preventDefault();
+    const val   = document.getElementById('pw-input').value;
+    const input = document.getElementById('pw-input');
+    const err   = document.getElementById('gate-error');
+
+    if (val === SITE_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      document.getElementById('password-gate').classList.add('hidden');
+      renderView('root');
+    } else {
+      input.classList.add('error');
+      err.textContent = 'Feil passord — prøv igjen';
+      input.value = '';
+      setTimeout(() => input.classList.remove('error'), 400);
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem(SESSION_KEY);
+    document.getElementById('pw-input').value = '';
+    document.getElementById('gate-error').textContent = '';
+    document.getElementById('password-gate').classList.remove('hidden');
+  }
+
+  function goHome() {
+    renderView('root');
+    return false;
+  }
+
+  // Show content directly if already authenticated this session
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    document.getElementById('password-gate').classList.add('hidden');
+  }
+
+  /* =============================================
+     FILE SYSTEM DATA
+     Legg til filer her etter hvert
+     ============================================= */
+  const FILESYSTEM = {
+    root: {
+      label: 'highborn.no /',
+      items: [
+        { type: 'folder', id: 'presentasjoner', name: 'Presentasjoner', meta: '1 fil',    color: '#e8c87a', colorLight: '#f5d97e' },
+        { type: 'folder', id: 'ki-verktoy',     name: 'KI-verktøy',    meta: '1 fil',    color: '#a8c8e8', colorLight: '#c2d9f0' },
+        { type: 'folder', id: 'ressurser',       name: 'Ressurser',     meta: 'Tom',      color: '#b8d8b0', colorLight: '#cce8c4' },
+        { type: 'folder', id: 'cv',              name: 'CV',            meta: 'Tom',      color: '#d4b8e0', colorLight: '#e2ccea' },
+        { type: 'folder', id: 'galleri',         name: 'Galleri',       meta: 'Tom',      color: '#f0b8a8', colorLight: '#f5ccc0' },
+      ]
+    },
+    presentasjoner: {
+      label: 'highborn.no / Presentasjoner /',
+      items: [
+        {
+          type: 'file',
+          name: 'KI-presentasjon',
+          meta: 'Presentasjon',
+          href: 'presentasjoner/ki-presentasjon/index.html',
+          badge: 'HTML',
+          badgeColor: '#c8622a'
+        },
+      ]
+    },
+    'ki-verktoy': {
+      label: 'highborn.no / KI-verktøy /',
+      items: []
+    },
+    ressurser: { label: 'highborn.no / Ressurser /', items: [] },
+    cv:        { label: 'highborn.no / CV /',        items: [] },
+    galleri:   { label: 'highborn.no / Galleri /',   items: [] },
+  };
+
+  /* =============================================
+     RENDER ENGINE
+     ============================================= */
+  let currentView = 'root';
+
+  function renderView(viewId) {
+    currentView = viewId;
+    const view  = FILESYSTEM[viewId];
+    if (!view) return;
+
+    // Update breadcrumb path
+    document.getElementById('toolbar-path').innerHTML = buildPath(viewId);
+
+    // Update item count
+    const count = view.items.length;
+    document.getElementById('status-count').textContent =
+      count === 0 ? 'Tom mappe' : `${count} objekt${count !== 1 ? 'er' : ''}`;
+
+    // Build grid
+    const grid = document.getElementById('file-grid');
+    grid.innerHTML = '';
+
+    // Back button if in subfolder
+    if (viewId !== 'root') {
+      const back = makeBackItem();
+      grid.appendChild(back);
+    }
+
+    view.items.forEach(item => {
+      if (item.type === 'folder') grid.appendChild(makeFolderItem(item));
+      else                        grid.appendChild(makeFileItem(item));
+    });
+  }
+
+  function buildPath(viewId) {
+    if (viewId === 'root') return 'highborn.no /';
+    const folderName = FILESYSTEM[viewId]?.label.split('/ ').pop().replace(' /', '') || viewId;
+    return `<span class="path-link" onclick="renderView('root')">highborn.no</span>
+            <span class="path-sep">/</span>
+            ${folderName} /`;
+  }
+
+  function makeBackItem() {
+    const el = document.createElement('div');
+    el.className = 'file-item';
+    el.onclick = () => renderView('root');
+    el.innerHTML = `
+      <div class="file-icon" style="font-size:36px; color:#b0aea8;">←</div>
+      <div class="file-name" style="color:#b0aea8;">Tilbake</div>
+      <div class="file-meta"></div>
+    `;
+    return el;
+  }
+
+  function makeFolderItem(item) {
+    const el = document.createElement('div');
+    el.className = 'file-item';
+    el.onclick = () => renderView(item.id);
+    el.innerHTML = `
+      <div class="file-icon">
+        <svg class="folder-svg" viewBox="0 0 64 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="8" width="64" height="46" rx="5" fill="${item.color}"/>
+          <rect x="0" y="8" width="64" height="46" rx="5" fill="url(#fold-${item.id})"/>
+          <rect x="0" y="14" width="64" height="40" rx="5" fill="${item.colorLight}"/>
+          <rect x="0" y="4" width="28" height="14" rx="4" fill="${item.colorLight}"/>
+          <defs>
+            <linearGradient id="fold-${item.id}" x1="32" y1="8" x2="32" y2="54" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#000" stop-opacity="0.04"/>
+              <stop offset="1" stop-color="#000" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="file-name">${item.name}</div>
+      <div class="file-meta">${item.meta}</div>
+    `;
+    return el;
+  }
+
+  function makeFileItem(item) {
+    const el = document.createElement('a');
+    el.className = 'file-item';
+    el.href = item.href || '#';
+    el.innerHTML = `
+      <div class="file-icon">
+        <svg class="doc-icon" viewBox="0 0 48 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="48" height="58" rx="5" fill="#fff" stroke="#e0ddd6" stroke-width="1"/>
+          <path d="M30 0v12h12" fill="none" stroke="#e0ddd6" stroke-width="1"/>
+          <path d="M30 0l12 12H30V0z" fill="#f0ede8"/>
+          <rect x="8" y="20" width="32" height="2" rx="1" fill="#e0ddd6"/>
+          <rect x="8" y="26" width="24" height="2" rx="1" fill="#e0ddd6"/>
+          <rect x="8" y="32" width="28" height="2" rx="1" fill="#e0ddd6"/>
+          <rect x="8" y="38" width="20" height="2" rx="1" fill="#e0ddd6"/>
+          <rect x="6" y="44" width="36" height="8" rx="3" fill="${item.badgeColor || '#888'}"/>
+          <text x="24" y="50" text-anchor="middle" font-size="6" fill="white"
+            font-family="DM Sans, sans-serif" font-weight="500">${item.badge || 'FIL'}</text>
+        </svg>
+      </div>
+      <div class="file-name">${item.name}</div>
+      <div class="file-meta">${item.meta}</div>
+    `;
+    return el;
+  }
+
+  /* Boot */
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    renderView('root');
+  }
+</script>
 
 </body>
 </html>
