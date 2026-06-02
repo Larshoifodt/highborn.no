@@ -790,6 +790,316 @@
         }
 
         /* =========================================
+           SLIDE 5 — ETHICS / ARTICLE SCROLL
+           ========================================= */
+        .slide-ethics {
+            background: #0e0e12;
+        }
+
+        /* Subtle dark vignette gradient */
+        .slide-ethics::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 70% 50%, rgba(255,60,60,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Reveal animation for ethics slide */
+        .reveal-ethics {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s var(--d, 0s) var(--ease-expo),
+                        transform 0.6s var(--d, 0s) var(--ease-expo);
+        }
+        .slide-ethics.visible .reveal-ethics {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* === LEFT: Browser mock === */
+        .ethics-browser {
+            position: absolute;
+            left: 96px; top: 96px; bottom: 96px;
+            width: 820px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
+            background: #fff;
+        }
+
+        .browser-chrome {
+            height: 48px;
+            background: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+            display: flex; align-items: center;
+            padding: 0 16px; gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .browser-dots { display: flex; gap: 6px; }
+        .bdot { width: 12px; height: 12px; border-radius: 50%; }
+        .bdot-red    { background: #ff5f57; }
+        .bdot-yellow { background: #febc2e; }
+        .bdot-green  { background: #28c840; }
+
+        .browser-url {
+            flex: 1;
+            background: #e4e4e4;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 13px;
+            color: #555;
+            font-family: var(--font-body);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* Article viewport — clips inner scroll */
+        .article-viewport {
+            height: calc(100% - 48px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .article-scroll-inner {
+            padding: 40px 44px 60px;
+            transform: translateY(0);
+            /* JS will animate this to scroll down */
+        }
+
+        .art-source {
+            font-family: var(--font-body);
+            font-size: 12px; font-weight: 500;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: #c8622a; margin-bottom: 16px;
+        }
+
+        .art-headline {
+            font-family: 'Georgia', serif;
+            font-size: 32px; font-weight: 700;
+            line-height: 1.15; color: #111;
+            margin-bottom: 14px;
+        }
+
+        .art-meta {
+            font-size: 13px; color: #888;
+            font-family: var(--font-body);
+            margin-bottom: 20px;
+        }
+
+        .art-divider {
+            height: 2px; background: #111;
+            width: 40px; margin-bottom: 24px;
+        }
+
+        .art-para {
+            font-family: 'Georgia', serif;
+            font-size: 17px; line-height: 1.7;
+            color: #1a1a18; margin-bottom: 20px;
+        }
+
+        /* Paragraphs before/after key quote — visually recede */
+        .art-blur { opacity: 0.35; }
+        .art-blur-light { opacity: 0.28; }
+
+        /* The key paragraph — target of highlight */
+        .art-key { opacity: 1 !important; }
+
+        .art-highlight-wrap {
+            display: inline;
+            background: transparent;
+            /* The highlight sweeps in via this background-size trick */
+            background-image: linear-gradient(rgba(255, 214, 0, 0.45), rgba(255, 214, 0, 0.45));
+            background-repeat: no-repeat;
+            background-size: 0% 100%;
+            background-position: 0 0;
+            padding: 2px 0;
+            border-radius: 3px;
+            transition: background-size 0.7s 0s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* JS adds this class to trigger the sweep */
+        .art-highlight-wrap.highlighted {
+            background-size: 100% 100%;
+        }
+
+        /* === RIGHT: Ethics framing === */
+        .ethics-right {
+            position: absolute;
+            left: 980px; top: 96px; right: 96px;
+            display: flex; flex-direction: column;
+            justify-content: center;
+            height: calc(100% - 192px);
+        }
+
+        .ethics-eyebrow {
+            font-family: var(--font-body);
+            font-size: 15px; font-weight: 300;
+            letter-spacing: 0.22em; text-transform: uppercase;
+            color: #ff6b6b; margin-bottom: 20px;
+        }
+
+        .ethics-title {
+            font-family: var(--font-display);
+            font-size: 100px; font-weight: 900;
+            line-height: 0.9; letter-spacing: -0.03em;
+            color: var(--cream); margin-bottom: 36px;
+        }
+
+        .ethics-lead {
+            font-family: var(--font-body);
+            font-size: 22px; font-weight: 300;
+            line-height: 1.55; color: var(--text-dim);
+            margin-bottom: 48px;
+        }
+
+        .ethics-questions { display: flex; flex-direction: column; gap: 24px; }
+
+        .eq {
+            display: flex; gap: 20px; align-items: flex-start;
+            padding: 20px 24px;
+            background: rgba(255,255,255,0.04);
+            border-left: 3px solid rgba(255, 107, 107, 0.5);
+            border-radius: 0 6px 6px 0;
+        }
+
+        .eq-num {
+            font-family: var(--font-display);
+            font-size: 16px; font-weight: 700;
+            color: #ff6b6b; flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .eq-text {
+            font-family: var(--font-body);
+            font-size: 19px; font-weight: 300;
+            line-height: 1.45; color: var(--cream);
+        }
+
+        /* =========================================
+           SLIDE 6 — ARTICLE SCROLL + 3 HIGHLIGHTS
+           ========================================= */
+        .slide-article {
+            background: #0e0e12;
+        }
+
+        .reveal-art6 {
+            opacity: 0; transform: translateY(18px);
+            transition: opacity 0.55s var(--d,0s) var(--ease-expo),
+                        transform 0.55s var(--d,0s) var(--ease-expo);
+        }
+        .slide-article.visible .reveal-art6 { opacity:1; transform:none; }
+
+        /* LEFT panel */
+        .art6-left {
+            position: absolute;
+            left: 96px; top: 50%; transform: translateY(-50%);
+            width: 420px; z-index: 2;
+        }
+
+        .art6-eyebrow {
+            font-family: var(--font-body);
+            font-size: 14px; font-weight: 300;
+            letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--amber); margin-bottom: 20px;
+        }
+
+        .art6-title {
+            font-family: var(--font-display);
+            font-size: 96px; font-weight: 900;
+            line-height: 0.88; letter-spacing: -0.03em;
+            color: var(--cream); margin-bottom: 36px;
+        }
+        .art6-title em { color: rgba(248,240,224,0.3); font-style: italic; }
+
+        .art6-sub {
+            font-family: 'Georgia', serif;
+            font-size: 19px; line-height: 1.55;
+            color: var(--text-dim);
+            font-style: italic;
+            border-left: 3px solid rgba(255,255,255,0.15);
+            padding-left: 20px;
+            margin-bottom: 52px;
+        }
+
+        /* Legend */
+        .art6-legend { display: flex; flex-direction: column; gap: 16px; }
+
+        .leg-item {
+            display: flex; align-items: center; gap: 14px;
+            opacity: 0.4;
+            transition: opacity 0.4s ease;
+        }
+        .leg-item.active { opacity: 1; }
+
+        .leg-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .leg-amber   { background: var(--amber); }
+        .leg-electric{ background: var(--electric); }
+        .leg-coral   { background: var(--coral); }
+
+        .leg-text {
+            font-family: var(--font-body);
+            font-size: 17px; font-weight: 300;
+            color: var(--cream);
+        }
+
+        /* RIGHT: Browser */
+        .art6-browser {
+            position: absolute;
+            left: 580px; top: 60px; bottom: 60px; right: 60px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 40px 120px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.07);
+            background: #fff;
+        }
+
+        /* Reuse .browser-chrome, .article-viewport, .article-scroll-inner from slide 5 */
+
+        /* Fortune-style article */
+        .f-logo {
+            font-family: 'Georgia', serif;
+            font-size: 28px; font-weight: 900;
+            letter-spacing: 0.12em;
+            color: #b81c2e; /* Fortune red */
+            margin-bottom: 10px;
+        }
+
+        .f-category {
+            font-size: 11px; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: #b81c2e; margin-bottom: 16px;
+            font-family: var(--font-body);
+        }
+
+        .f-headline {
+            font-family: 'Georgia', serif;
+            font-size: 26px; font-weight: 700;
+            line-height: 1.2; color: #111;
+            margin-bottom: 14px;
+        }
+
+        .f-byline {
+            font-size: 13px; color: #888;
+            font-family: var(--font-body);
+            margin-bottom: 20px;
+        }
+
+        /* Three highlight styles — sweep left→right */
+        .art-hl {
+            display: inline;
+            background-repeat: no-repeat;
+            background-size: 0% 88%;
+            background-position: 0 55%;
+            padding: 1px 0;
+            transition: background-size 0.75s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        .art-hl-amber   { background-image: linear-gradient(rgba(240,160,32,0.38), rgba(240,160,32,0.38)); }
+        .art-hl-electric{ background-image: linear-gradient(rgba(56,200,232,0.32), rgba(56,200,232,0.32)); }
+        .art-hl-coral   { background-image: linear-gradient(rgba(232,80,64,0.35), rgba(232,80,64,0.35)); }
+
+        .art-hl.highlighted { background-size: 100% 88%; }
+
+        /* =========================================
            SLIDE 4 — JUNGLE PARALLAX (kept for future)
            ========================================= */
         .slide-jungle {
@@ -923,6 +1233,8 @@
         <button class="nav-dot" data-slide="1" aria-label="Slide 2"></button>
         <button class="nav-dot" data-slide="2" aria-label="Slide 3"></button>
         <button class="nav-dot" data-slide="3" aria-label="Slide 4"></button>
+        <button class="nav-dot" data-slide="4" aria-label="Slide 5"></button>
+        <button class="nav-dot" data-slide="5" aria-label="Slide 6"></button>
     </nav>
 
     <!-- Keyboard hint -->
@@ -1146,7 +1458,159 @@
                     </div>
                 </div>
 
-                <span class="slide-num" style="color:rgba(248,240,224,0.15);">04 / 04</span>
+                <span class="slide-num" style="color:rgba(248,240,224,0.15);">04 / 05</span>
+            </section>
+
+            <!-- ======= SLIDE 5: ETHICS — ARTICLE SCROLL + HIGHLIGHT ======= -->
+            <section class="slide slide-ethics" id="slide-4">
+
+                <!-- LEFT: Simulated browser / article window -->
+                <div class="ethics-browser reveal-ethics" style="--d:0.1s">
+                    <!-- Browser chrome -->
+                    <div class="browser-chrome">
+                        <div class="browser-dots">
+                            <span class="bdot bdot-red"></span>
+                            <span class="bdot bdot-yellow"></span>
+                            <span class="bdot bdot-green"></span>
+                        </div>
+                        <div class="browser-url">cbsnews.com/news/hegseth-declares-anthropic-supply-chain-risk</div>
+                    </div>
+                    <!-- Article viewport — clips the scrolling content -->
+                    <div class="article-viewport">
+                        <div class="article-scroll-inner" id="articleInner">
+
+                            <!-- Article header -->
+                            <div class="art-source">CBS NEWS · Pentagon &amp; National Security</div>
+                            <h2 class="art-headline">Hegseth declares Anthropic<br>a supply chain risk</h2>
+                            <div class="art-meta">February 28, 2026 &nbsp;·&nbsp; 4 min read</div>
+                            <div class="art-divider"></div>
+
+                            <!-- Paragraphs before the key quote — blurred out -->
+                            <p class="art-para art-blur">Defense Secretary Pete Hegseth moved Friday to formally designate artificial intelligence company Anthropic a national security supply chain risk, cutting off the AI firm from U.S. military contracts after months of tense negotiations collapsed over the company's refusal to drop safety guardrails...</p>
+                            <p class="art-para art-blur">Anthropic, maker of the Claude AI model, was awarded a $200 million Pentagon contract in July 2025. The relationship soured when the company insisted on protective exceptions that the Defense Department said amounted to operational veto power...</p>
+
+                            <!-- THE KEY QUOTE — target of the highlight animation -->
+                            <p class="art-para art-key" id="artKeyPara">
+                                <span class="art-highlight-wrap">Defence Secretary Pete Hegseth has warned that Anthropic could be declared a <strong>"supply chain risk"</strong> — barring any U.S. military contractor, supplier or partner from conducting commercial activity with the AI company.</span>
+                            </p>
+
+                            <p class="art-para art-blur-light">The dispute centred on two exceptions Anthropic demanded: a ban on using Claude for mass domestic surveillance of Americans, and a prohibition on powering fully autonomous weapons systems. CEO Dario Amodei called these "narrow exceptions" the company would not compromise on...</p>
+                            <p class="art-para art-blur-light">Hegseth said Anthropic had tried to "strong-arm the United States military into submission." The company vowed to challenge the designation in court, calling it "legally unsound" and a "dangerous precedent."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Ethics framing -->
+                <div class="ethics-right">
+                    <p class="ethics-eyebrow reveal-ethics" style="--d:0.2s">KI-etikk 2026</p>
+                    <h2 class="ethics-title reveal-ethics" style="--d:0.3s">Hvem<br>bestemmer?</h2>
+                    <p class="ethics-lead reveal-ethics" style="--d:0.45s">
+                        Anthropic nektet å fjerne grenser mot masseovervåkning og autonome våpen.<br>
+                        Pentagon erklærte dem en sikkerhetsrisiko.
+                    </p>
+
+                    <div class="ethics-questions">
+                        <div class="eq reveal-ethics" style="--d:0.7s">
+                            <span class="eq-num">01</span>
+                            <span class="eq-text">Skal KI-selskaper ha vetorett over militær bruk av egen teknologi?</span>
+                        </div>
+                        <div class="eq reveal-ethics" style="--d:0.85s">
+                            <span class="eq-num">02</span>
+                            <span class="eq-text">Hvem bærer ansvaret når autonome systemer tar liv?</span>
+                        </div>
+                        <div class="eq reveal-ethics" style="--d:1.0s">
+                            <span class="eq-num">03</span>
+                            <span class="eq-text">Er etiske grenser en konkurranseulempe — eller selve verdien?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <span class="slide-num" style="color:rgba(248,240,224,0.15);">05 / 06</span>
+            </section>
+
+            <!-- ======= SLIDE 6: ARTICLE SCROLL — 3 HIGHLIGHTS ======= -->
+            <section class="slide slide-article" id="slide-5">
+
+                <!-- LEFT: Large title panel -->
+                <div class="art6-left">
+                    <p class="art6-eyebrow reveal-art6" style="--d:0.1s">Fortune · Mars 2026</p>
+                    <h2 class="art6-title reveal-art6" style="--d:0.2s">Anthropic<br><em>vs</em><br>Pentagon</h2>
+                    <p class="art6-sub reveal-art6" style="--d:0.35s">«Den første virkelige testen på hvem som kontrollerer kraftig AI. Dommen: vi mislyktes alle.»</p>
+
+                    <!-- Legend dots that light up as highlights fire -->
+                    <div class="art6-legend">
+                        <div class="leg-item reveal-art6" style="--d:0.5s">
+                            <span class="leg-dot leg-amber"></span>
+                            <span class="leg-text">Supply chain risk</span>
+                        </div>
+                        <div class="leg-item reveal-art6" style="--d:0.6s">
+                            <span class="leg-dot leg-electric"></span>
+                            <span class="leg-text">Autonome våpen</span>
+                        </div>
+                        <div class="leg-item reveal-art6" style="--d:0.7s">
+                            <span class="leg-dot leg-coral"></span>
+                            <span class="leg-text">OpenAI tok over</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Browser / article mockup -->
+                <div class="art6-browser reveal-art6" style="--d:0.15s">
+                    <!-- Browser chrome -->
+                    <div class="browser-chrome">
+                        <div class="browser-dots">
+                            <span class="bdot bdot-red"></span>
+                            <span class="bdot bdot-yellow"></span>
+                            <span class="bdot bdot-green"></span>
+                        </div>
+                        <div class="browser-url">fortune.com/2026/03/03/the-pentagons-fight-with-anthropic</div>
+                    </div>
+
+                    <!-- Article viewport -->
+                    <div class="article-viewport">
+                        <div class="article-scroll-inner" id="articleInner6">
+
+                            <!-- Fortune-style header -->
+                            <div class="f-logo">FORTUNE</div>
+                            <div class="f-category">AI · Technology · National Security</div>
+                            <h2 class="f-headline">The Pentagon's fight with Anthropic was the first real test for how we will control powerful AI. The bad news: we all failed.</h2>
+                            <div class="f-byline">By Jeremy Kahn &nbsp;·&nbsp; March 3, 2026 &nbsp;·&nbsp; 8 min read</div>
+                            <div class="art-divider"></div>
+
+                            <p class="art-para art-blur">In February 2026, a simmering dispute between Anthropic and the U.S. Department of Defense suddenly boiled over into one of the most consequential confrontations between a tech company and the American government in recent memory.</p>
+
+                            <p class="art-para art-blur">It began when reports emerged that Claude, Anthropic's AI model, had been used through contractor Palantir to help locate and capture Venezuelan President Nicolás Maduro — potentially without Anthropic's full knowledge or consent. The Pentagon, emboldened, demanded Anthropic remove all ethical guardrails from its military contracts.</p>
+
+                            <!-- HIGHLIGHT 1: Supply chain risk -->
+                            <p class="art-para">
+                                <span class="art-hl art-hl-amber" id="hl1">Secretary of War Pete Hegseth labeled Anthropic a <strong>"supply chain risk to national security"</strong> — a designation historically reserved for foreign adversaries like China and Russia, <strong>never before applied to an American company</strong>.</span>
+                            </p>
+
+                            <p class="art-para art-blur">The designation carried an immediate and devastating consequence: no contractor, supplier, or partner doing business with the U.S. military could conduct any commercial activity with Anthropic. The order took effect immediately, threatening the company's $200 million Pentagon contract and its relationships across the entire defense-industrial base.</p>
+
+                            <p class="art-para art-blur">Anthropic had held firm on two non-negotiable red lines throughout months of negotiations. CEO Dario Amodei called them "narrow exceptions" the company would never compromise on.</p>
+
+                            <!-- HIGHLIGHT 2: Autonomous weapons quote -->
+                            <p class="art-para">
+                                <span class="art-hl art-hl-electric" id="hl2"><strong>"We do not believe that today's frontier AI models are reliable enough to be used in fully autonomous weapons,"</strong> Anthropic stated. The company also refused to allow Claude to be used for <strong>mass domestic surveillance of Americans</strong>.</span>
+                            </p>
+
+                            <p class="art-para art-blur">The legal battle moved quickly. A federal judge initially blocked the designation as unconstitutional — a First Amendment victory for Anthropic. But an appeals court reversed course in April, upholding the Pentagon's authority and leaving Anthropic in legal limbo.</p>
+
+                            <p class="art-para art-blur">The geopolitical reverberations were swift. On the same evening Anthropic was blacklisted, a rival made its move.</p>
+
+                            <!-- HIGHLIGHT 3: OpenAI swoops in -->
+                            <p class="art-para">
+                                <span class="art-hl art-hl-coral" id="hl3"><strong>Hours after Anthropic was declared a security risk, OpenAI announced its own deal with the Department of War</strong> — with far fewer guardrails. Pentagon then signed agreements with eight major tech companies, pointedly leaving Anthropic out.</span>
+                            </p>
+
+                            <p class="art-para art-blur" style="opacity:0.2">The message to the AI industry could not have been clearer: ethical limits are a competitive liability. Sam Altman observed: "A really important point — we are not elected. I really don't want us to decide what to do if a nuke is coming towards the US."</p>
+
+                        </div>
+                    </div>
+                </div>
+
+                <span class="slide-num" style="color:rgba(248,240,224,0.15);">06 / 06</span>
             </section>
 
         </main>
@@ -1431,10 +1895,122 @@
             }
         }
 
+        /* =============================================
+           ARTICLE SCROLL + HIGHLIGHT ANIMATOR
+           Fires when slide-4 (ethics slide) becomes visible:
+           1. Scrolls article down to key paragraph
+           2. Sweeps yellow highlight across the quote
+           ============================================= */
+        class ArticleAnimator {
+            constructor() {
+                this.slide   = document.getElementById('slide-4');
+                this.inner   = document.getElementById('articleInner');
+                this.keyPara = document.getElementById('artKeyPara');
+                this.played  = false;
+
+                if (!this.slide) return;
+
+                const observer = new MutationObserver(() => {
+                    if (this.slide.classList.contains('visible') && !this.played) {
+                        this.played = true;
+                        this.run();
+                    }
+                });
+                observer.observe(this.slide, { attributes: true, attributeFilter: ['class'] });
+            }
+
+            run() {
+                // Step 1: After short pause, scroll article down to key paragraph
+                setTimeout(() => {
+                    // Calculate how far to scroll so key paragraph is ~1/3 from top
+                    const viewportH  = this.inner.parentElement.clientHeight;
+                    const paraOffset = this.keyPara.offsetTop;
+                    const scrollTo   = Math.max(0, paraOffset - viewportH * 0.28);
+
+                    this.inner.style.transition = 'transform 1.4s cubic-bezier(0.45, 0, 0.2, 1)';
+                    this.inner.style.transform  = `translateY(-${scrollTo}px)`;
+
+                    // Step 2: After scroll completes, sweep the highlight
+                    setTimeout(() => {
+                        const wrap = this.keyPara.querySelector('.art-highlight-wrap');
+                        if (wrap) wrap.classList.add('highlighted');
+                    }, 1500);
+
+                }, 900);
+            }
+        }
+
+        /* =============================================
+           ARTICLE SCROLL ANIMATOR — SLIDE 6
+           Three scroll stops, each followed by a
+           colour-coded highlight sweep
+           ============================================= */
+        class ArticleScrollAnimator {
+            constructor() {
+                this.slide  = document.getElementById('slide-5');
+                this.inner  = document.getElementById('articleInner6');
+                this.played = false;
+                if (!this.slide || !this.inner) return;
+
+                const obs = new MutationObserver(() => {
+                    if (this.slide.classList.contains('visible') && !this.played) {
+                        this.played = true;
+                        this.run();
+                    }
+                });
+                obs.observe(this.slide, { attributes: true, attributeFilter: ['class'] });
+            }
+
+            scrollTo(px, duration = 1350) {
+                this.inner.style.transition = `transform ${duration}ms cubic-bezier(0.45,0,0.15,1)`;
+                this.inner.style.transform  = `translateY(-${px}px)`;
+            }
+
+            highlight(id, legendIndex) {
+                // Sweep highlight on article text
+                const el = document.getElementById(id);
+                if (el) el.classList.add('highlighted');
+
+                // Light up the corresponding legend dot
+                const legs = this.slide.querySelectorAll('.leg-item');
+                if (legs[legendIndex]) legs[legendIndex].classList.add('active');
+            }
+
+            run() {
+                const vp = this.inner.parentElement.clientHeight;
+
+                // --- Event 1: scroll to "supply chain risk" paragraph ---
+                setTimeout(() => {
+                    const t1 = document.getElementById('hl1');
+                    const s1 = Math.max(0, t1.offsetTop - vp * 0.35);
+                    this.scrollTo(s1);
+                    setTimeout(() => this.highlight('hl1', 0), 1400);
+                }, 900);
+
+                // --- Event 2: scroll to "autonomous weapons" quote ---
+                setTimeout(() => {
+                    const t2 = document.getElementById('hl2');
+                    const s2 = Math.max(0, t2.offsetTop - vp * 0.35);
+                    this.scrollTo(s2);
+                    setTimeout(() => this.highlight('hl2', 1), 1400);
+                }, 3800);
+
+                // --- Event 3: scroll to "OpenAI took over" ---
+                setTimeout(() => {
+                    const t3 = document.getElementById('hl3');
+                    const s3 = Math.max(0, t3.offsetTop - vp * 0.35);
+                    this.scrollTo(s3);
+                    setTimeout(() => this.highlight('hl3', 2), 1400);
+                }, 6700);
+            }
+        }
+
         /* Boot the presentation when DOM is ready */
         document.addEventListener('DOMContentLoaded', () => {
             new SlidePresentation();
             new ChartAnimator();
+            new ArticleAnimator();
+            new ArticleScrollAnimator();
         });
     </script>
 </body>
