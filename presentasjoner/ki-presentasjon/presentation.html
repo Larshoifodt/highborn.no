@@ -570,8 +570,227 @@
         }
 
         /* =========================================
-           SLIDE 4 — JUNGLE PARALLAX
-           6 PNG layers, mouse-driven depth effect
+           SLIDE 4 — ANIMATED DATA VISUALIZATION
+           ========================================= */
+        .slide-data {
+            background: var(--navy);
+            display: flex !important;
+            align-items: stretch;
+        }
+
+        /* Subtle grid texture */
+        .data-grid-bg {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+        }
+
+        /* Reveal animation base — triggered by .visible on parent */
+        .reveal-data {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.6s var(--d, 0s) var(--ease-expo),
+                        transform 0.6s var(--d, 0s) var(--ease-expo);
+        }
+        .slide-data.visible .reveal-data {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* === LEFT: Hero stat === */
+        .data-hero {
+            position: absolute;
+            left: 80px; top: 50%;
+            transform: translateY(-50%);
+            width: 380px;
+            z-index: 2;
+        }
+
+        .data-eyebrow {
+            font-family: var(--font-body);
+            font-size: 16px; font-weight: 300;
+            letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 24px;
+        }
+
+        .data-big-num {
+            font-family: var(--font-display);
+            font-size: 200px; font-weight: 900;
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            color: var(--cream);
+            display: flex; align-items: flex-start;
+        }
+
+        .data-big-num .pct {
+            font-size: 72px; font-weight: 300;
+            margin-top: 28px; margin-left: 6px;
+            color: var(--amber);
+        }
+
+        .data-hero-label {
+            font-family: var(--font-body);
+            font-size: 26px; font-weight: 300;
+            line-height: 1.4;
+            color: var(--text-dim);
+            margin-top: 20px;
+        }
+        .data-hero-label em { color: var(--cream); font-style: italic; }
+
+        .data-delta {
+            font-family: var(--font-body);
+            font-size: 18px; font-weight: 500;
+            color: #4ADE80;
+            margin-top: 20px;
+            letter-spacing: 0.02em;
+        }
+
+        .data-source {
+            font-size: 13px; font-weight: 300;
+            color: rgba(248,240,224,0.25);
+            margin-top: 32px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Vertical divider */
+        .data-divider {
+            position: absolute;
+            left: 500px; top: 80px; bottom: 80px;
+            width: 1px;
+            background: linear-gradient(to bottom,
+                transparent, rgba(255,255,255,0.1) 20%,
+                rgba(255,255,255,0.1) 80%, transparent);
+            z-index: 2;
+        }
+
+        /* === MIDDLE: Bar chart === */
+        .data-bars {
+            position: absolute;
+            left: 560px; top: 50%;
+            transform: translateY(-50%);
+            width: 700px;
+            z-index: 2;
+        }
+
+        .data-section-title {
+            font-family: var(--font-body);
+            font-size: 15px; font-weight: 500;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: rgba(248,240,224,0.4);
+            margin-bottom: 28px;
+        }
+
+        .bar-row {
+            display: flex; align-items: center;
+            gap: 20px; margin-bottom: 20px;
+        }
+
+        .bar-label {
+            font-family: var(--font-body);
+            font-size: 20px; font-weight: 300;
+            color: var(--cream);
+            width: 220px; flex-shrink: 0;
+            text-align: right;
+        }
+
+        .bar-track {
+            flex: 1; height: 10px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 5px; overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%; width: 0;
+            border-radius: 5px;
+            transition: width 1.2s var(--ease-expo);
+        }
+
+        .bar-amber   { background: linear-gradient(90deg, var(--amber-dark), var(--amber)); }
+        .bar-electric{ background: linear-gradient(90deg, #1898b8, var(--electric)); }
+        .bar-coral   { background: linear-gradient(90deg, #a03020, var(--coral)); }
+
+        .bar-val {
+            font-family: var(--font-display);
+            font-size: 20px; font-weight: 700;
+            color: var(--cream);
+            width: 52px; flex-shrink: 0;
+        }
+
+        /* Vertical divider right */
+        .data-bars::after {
+            content: '';
+            position: absolute;
+            right: -60px; top: 0; bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom,
+                transparent, rgba(255,255,255,0.1) 20%,
+                rgba(255,255,255,0.1) 80%, transparent);
+        }
+
+        /* === RIGHT: Ring gauges === */
+        .data-rings {
+            position: absolute;
+            right: 60px; top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            z-index: 2;
+            display: flex; flex-direction: column; gap: 0;
+        }
+
+        .ring-item {
+            display: flex; align-items: center; gap: 24px;
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .ring-item:first-of-type { padding-top: 0; }
+        .ring-item:last-of-type  { border-bottom: none; }
+
+        .ring-svg {
+            width: 90px; height: 90px; flex-shrink: 0;
+            transform: rotate(-90deg);
+        }
+
+        .ring-bg  { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 10; }
+        .ring-fg  { fill: none; stroke-width: 10; stroke-linecap: round;
+                    transition: stroke-dashoffset 1.4s var(--ease-expo); }
+
+        .ring-amber   { stroke: var(--amber); }
+        .ring-electric{ stroke: var(--electric); }
+        .ring-coral   { stroke: var(--coral); }
+
+        /* Number overlay inside ring — uses absolute trick */
+        .ring-item { position: relative; }
+        .ring-center {
+            position: absolute;
+            left: 0; top: 50%;
+            width: 90px; height: 90px;
+            transform: translateY(-50%);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .ring-num {
+            font-family: var(--font-display);
+            font-size: 24px; font-weight: 900;
+            color: var(--cream);
+        }
+        .ring-pct {
+            font-size: 13px; font-weight: 300;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .ring-label {
+            font-family: var(--font-body);
+            font-size: 17px; font-weight: 300;
+            line-height: 1.4;
+            color: var(--text-dim);
+        }
+
+        /* =========================================
+           SLIDE 4 — JUNGLE PARALLAX (kept for future)
            ========================================= */
         .slide-jungle {
             background: #0a1a0a;
@@ -805,45 +1024,129 @@
                 <span class="slide-num" style="color:rgba(11,22,35,0.3)">03 / 04</span>
             </section>
 
-            <!-- ======= SLIDE 4: JUNGLE PARALLAX ======= -->
-            <section class="slide slide-jungle" id="slide-3">
+            <!-- ======= SLIDE 4: ANIMATED DATA VIZ ======= -->
+            <section class="slide slide-data" id="slide-3">
 
-                <!-- Parallax scene — JS moves each layer on mousemove -->
-                <div class="parallax-scene" id="parallaxScene">
+                <!-- Grid noise texture background -->
+                <div class="data-grid-bg"></div>
 
-                    <!-- data-depth: how much this layer reacts to mouse (0=static, 1=max) -->
-                    <div class="p-layer p-bg" data-depth="0.06">
-                        <img src="jungle-bg.jpeg" alt="Jungel bakgrunn">
+                <!-- === LEFT: Hero stat === -->
+                <div class="data-hero">
+                    <p class="data-eyebrow reveal-data">KI i innkjøp — 2025</p>
+                    <div class="data-big-num reveal-data" style="--d:0.1s">
+                        <span class="count-up" data-target="94">0</span><span class="pct">%</span>
                     </div>
-                    <div class="p-layer p-l4" data-depth="0.12">
-                        <img src="jungle-l4.png" alt="">
-                    </div>
-                    <div class="p-layer p-l1" data-depth="0.18">
-                        <img src="jungle-l1.png" alt="">
-                    </div>
-                    <div class="p-layer p-l5" data-depth="0.22">
-                        <img src="jungle-l5.png" alt="">
-                    </div>
-                    <div class="p-layer p-l3" data-depth="0.30">
-                        <img src="jungle-l3.png" alt="">
-                    </div>
-                    <div class="p-layer p-l2" data-depth="0.40">
-                        <img src="jungle-l2.png" alt="">
-                    </div>
-                </div>
-
-                <!-- Text overlay -->
-                <div class="jungle-text">
-                    <p class="jungle-label">Natur &amp; teknologi</p>
-                    <h2 class="jungle-title">Kompleksitet<br>i balanse</h2>
-                    <p class="jungle-sub">
-                        Som naturen bygger AI systemer<br>
-                        av utallige lag som samspiller<br>
-                        i et større hele.
+                    <p class="data-hero-label reveal-data" style="--d:0.2s">
+                        av innkjøpsledere bruker<br>generativ AI <em>ukentlig</em>
                     </p>
+                    <div class="data-delta reveal-data" style="--d:0.3s">
+                        ↑ 44 prosentpoeng fra 2023
+                    </div>
+                    <p class="data-source reveal-data" style="--d:0.4s">Kilde: Art of Procurement 2025</p>
                 </div>
 
-                <span class="slide-num" style="color:rgba(255,255,255,0.25); z-index:30;">04 / 04</span>
+                <!-- Vertical divider -->
+                <div class="data-divider reveal-data" style="--d:0.15s"></div>
+
+                <!-- === MIDDLE: Bar chart === -->
+                <div class="data-bars">
+                    <p class="data-section-title reveal-data" style="--d:0.2s">Topp bruksområder</p>
+
+                    <div class="bar-row reveal-data" style="--d:0.3s">
+                        <span class="bar-label">Spend analytics</span>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-amber" data-width="53.44"></div>
+                        </div>
+                        <span class="bar-val">53%</span>
+                    </div>
+                    <div class="bar-row reveal-data" style="--d:0.4s">
+                        <span class="bar-label">RFP / tilbud</span>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-electric" data-width="42.33"></div>
+                        </div>
+                        <span class="bar-val">42%</span>
+                    </div>
+                    <div class="bar-row reveal-data" style="--d:0.5s">
+                        <span class="bar-label">Kontraktsanalyse</span>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-coral" data-width="41.27"></div>
+                        </div>
+                        <span class="bar-val">41%</span>
+                    </div>
+
+                    <p class="data-section-title reveal-data" style="--d:0.55s; margin-top:52px;">Viktigste gevinster</p>
+
+                    <div class="bar-row reveal-data" style="--d:0.65s">
+                        <span class="bar-label">Beslutningsstøtte</span>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-amber" data-width="67.68"></div>
+                        </div>
+                        <span class="bar-val">68%</span>
+                    </div>
+                    <div class="bar-row reveal-data" style="--d:0.75s">
+                        <span class="bar-label">Produktivitet</span>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-electric" data-width="49.43"></div>
+                        </div>
+                        <span class="bar-val">49%</span>
+                    </div>
+                    <div class="bar-row reveal-data" style="--d:0.85s">
+                        <span class="bar-label">Kostnadsoptimering</span>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-coral" data-width="28.90"></div>
+                        </div>
+                        <span class="bar-val">29%</span>
+                    </div>
+                </div>
+
+                <!-- === RIGHT: Ring gauges === -->
+                <div class="data-rings">
+                    <p class="data-section-title reveal-data" style="--d:0.25s">Nøkkeltall</p>
+
+                    <div class="ring-item reveal-data" style="--d:0.35s">
+                        <svg class="ring-svg" viewBox="0 0 120 120">
+                            <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                            <circle class="ring-fg ring-amber" cx="60" cy="60" r="50"
+                                data-pct="80"
+                                stroke-dasharray="314"
+                                stroke-dashoffset="314"/>
+                        </svg>
+                        <div class="ring-center">
+                            <span class="ring-num count-up" data-target="80">0</span><span class="ring-pct">%</span>
+                        </div>
+                        <p class="ring-label">Planlegger å ta i<br>bruk AI innen 3 år</p>
+                    </div>
+
+                    <div class="ring-item reveal-data" style="--d:0.5s">
+                        <svg class="ring-svg" viewBox="0 0 120 120">
+                            <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                            <circle class="ring-fg ring-electric" cx="60" cy="60" r="50"
+                                data-pct="74"
+                                stroke-dasharray="314"
+                                stroke-dashoffset="314"/>
+                        </svg>
+                        <div class="ring-center">
+                            <span class="ring-num count-up" data-target="74">0</span><span class="ring-pct">%</span>
+                        </div>
+                        <p class="ring-label">Mener data ikke er<br>AI-klar</p>
+                    </div>
+
+                    <div class="ring-item reveal-data" style="--d:0.65s">
+                        <svg class="ring-svg" viewBox="0 0 120 120">
+                            <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                            <circle class="ring-fg ring-coral" cx="60" cy="60" r="50"
+                                data-pct="64"
+                                stroke-dasharray="314"
+                                stroke-dashoffset="314"/>
+                        </svg>
+                        <div class="ring-center">
+                            <span class="ring-num count-up" data-target="64">0</span><span class="ring-pct">%</span>
+                        </div>
+                        <p class="ring-label">Venter transformasjon<br>innen 5 år</p>
+                    </div>
+                </div>
+
+                <span class="slide-num" style="color:rgba(248,240,224,0.15);">04 / 04</span>
             </section>
 
         </main>
@@ -1058,78 +1361,80 @@
         }
 
         /* =============================================
-           JUNGLE PARALLAX CONTROLLER
-           Tracks mouse position over the viewport and
-           shifts each layer by depth × offset from center
+           CHART ANIMATOR
+           Fires count-up numbers, bar fills and ring
+           draws when slide-3 becomes visible
            ============================================= */
-        class JungleParallax {
+        class ChartAnimator {
             constructor() {
                 this.slide   = document.getElementById('slide-3');
-                this.scene   = document.getElementById('parallaxScene');
-                this.layers  = Array.from(this.slide.querySelectorAll('.p-layer'));
-                this.active  = false;
-                this.raf     = null;
-                this.targetX = 0;
-                this.targetY = 0;
-                this.currentX = 0;
-                this.currentY = 0;
-                this.maxOffset = 80; // max px shift at full depth=1
+                this.played  = false;
 
-                // Watch when this slide becomes active
                 const observer = new MutationObserver(() => {
-                    if (this.slide.classList.contains('visible')) {
-                        this.start();
-                    } else {
-                        this.stop();
+                    if (this.slide.classList.contains('visible') && !this.played) {
+                        this.played = true;
+                        // Small delay so CSS reveal-data transitions start first
+                        setTimeout(() => this.animateAll(), 350);
                     }
                 });
                 observer.observe(this.slide, { attributes: true, attributeFilter: ['class'] });
             }
 
-            start() {
-                this.active = true;
-                window.addEventListener('mousemove', this._onMove = this.onMove.bind(this));
-                this.tick();
+            animateAll() {
+                this.animateBars();
+                this.animateRings();
+                this.animateCounters();
             }
 
-            stop() {
-                this.active = false;
-                window.removeEventListener('mousemove', this._onMove);
-                cancelAnimationFrame(this.raf);
-                // Reset all layers smoothly
-                this.slide.classList.remove('parallax-active');
-                this.layers.forEach(l => { l.style.transform = ''; });
-            }
-
-            onMove(e) {
-                // Normalize mouse to -1..+1 relative to viewport center
-                this.targetX = (e.clientX / window.innerWidth  - 0.5) * 2;
-                this.targetY = (e.clientY / window.innerHeight - 0.5) * 2;
-                this.slide.classList.add('parallax-active');
-            }
-
-            tick() {
-                if (!this.active) return;
-                // Smooth lerp toward target
-                this.currentX += (this.targetX - this.currentX) * 0.06;
-                this.currentY += (this.targetY - this.currentY) * 0.06;
-
-                this.layers.forEach(layer => {
-                    const depth = parseFloat(layer.dataset.depth) || 0;
-                    // Foreground moves OPPOSITE direction to camera (parallax feel)
-                    const dx = -this.currentX * this.maxOffset * depth;
-                    const dy = -this.currentY * this.maxOffset * depth * 0.6;
-                    layer.style.transform = `translate(${dx}px, ${dy}px)`;
+            /* Grow horizontal bars to their target width */
+            animateBars() {
+                this.slide.querySelectorAll('.bar-fill').forEach((bar, i) => {
+                    const target = parseFloat(bar.dataset.width);
+                    setTimeout(() => {
+                        bar.style.width = target + '%';
+                    }, i * 80);
                 });
+            }
 
-                this.raf = requestAnimationFrame(() => this.tick());
+            /* Draw SVG ring arcs via stroke-dashoffset */
+            animateRings() {
+                const circumference = 314; // 2π × r=50
+                this.slide.querySelectorAll('.ring-fg').forEach((ring, i) => {
+                    const pct    = parseFloat(ring.dataset.pct);
+                    const offset = circumference - (pct / 100) * circumference;
+                    setTimeout(() => {
+                        ring.style.strokeDashoffset = offset;
+                    }, i * 150);
+                });
+            }
+
+            /* Count numbers up from 0 to target */
+            animateCounters() {
+                const duration = 1400;
+                const ease = t => 1 - Math.pow(1 - t, 4); // ease-out-quart
+
+                this.slide.querySelectorAll('.count-up').forEach((el, i) => {
+                    const target = parseInt(el.dataset.target);
+                    const delay  = i * 120;
+                    const start  = performance.now() + delay;
+
+                    const tick = (now) => {
+                        if (now < start) { requestAnimationFrame(tick); return; }
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        el.textContent = Math.round(ease(progress) * target);
+                        if (progress < 1) requestAnimationFrame(tick);
+                        else el.textContent = target;
+                    };
+                    requestAnimationFrame(tick);
+                });
             }
         }
 
         /* Boot the presentation when DOM is ready */
         document.addEventListener('DOMContentLoaded', () => {
             new SlidePresentation();
-            new JungleParallax();
+            new ChartAnimator();
         });
     </script>
 </body>
