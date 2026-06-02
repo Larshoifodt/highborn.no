@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fremtidens Intelligens</title>
+
+    <!-- Distinctive font pairing: Unbounded (display) + DM Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           CSS CUSTOM PROPERTIES — change these to
+           retheme the entire deck in seconds
+           ========================================= */
+        :root {
+            --amber:      #F0A020;
+            --amber-dark: #C07010;
+            --navy:       #0B1623;
+            --navy-mid:   #162030;
+            --electric:   #38C8E8;
+            --coral:      #E85040;
+            --cream:      #F8F0E0;
+            --text-dim:   rgba(248, 240, 224, 0.55);
+
+            --font-display: 'Unbounded', sans-serif;
+            --font-body:    'DM Sans', sans-serif;
+
+            --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in:   cubic-bezier(0.55, 0, 1, 0.45);
+            --stage-bg: #0B1623;
+            --slide-bg: #0B1623;
+        }
+
+        /* =========================================
+           viewport-base.css — FIXED 16:9 STAGE
+           ========================================= */
+        html, body {
+            width: 100%; height: 100%;
+            margin: 0; overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+        .deck-viewport {
+            position: fixed; inset: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+        .deck-stage {
+            position: absolute; left: 0; top: 0;
+            width: 1920px; height: 1080px;
+            overflow: hidden;
+            transform-origin: 0 0;
+            background: var(--slide-bg, #fff);
+        }
+        .slide {
+            position: absolute; inset: 0;
+            width: 1920px; height: 1080px;
+            overflow: hidden; display: block;
+            visibility: hidden; opacity: 0;
+            pointer-events: none;
+            background: var(--slide-bg, #0B1623);
+        }
+        .slide.active, .slide.visible {
+            visibility: visible; opacity: 1;
+            pointer-events: auto; z-index: 1;
+        }
+        img, video, canvas, svg {
+            max-width: 100%; max-height: 100%;
+        }
+        .deck-controls {
+            position: fixed; left: 50%; bottom: 22px;
+            transform: translateX(-50%); z-index: 1000;
+        }
+        @media print {
+            html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+            .deck-viewport { position: static; overflow: visible; background: #fff; }
+            .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+            .slide { position: relative; display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; width: 1920px; height: 1080px; break-after: page; page-break-after: always; }
+            .slide:last-child { break-after: auto; page-break-after: auto; }
+            .deck-controls { display: none !important; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+        }
+
+        /* =========================================
+           GLOBAL BASE
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* =========================================
+           SLIDE 1 — HERO / FULL-BLEED IMAGE
+           Zoom-in transition on exit
+           ========================================= */
+        .slide-hero {
+            background: #0B1623;
+        }
+
+        /* The image fills the entire slide */
+        .hero-image {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center right;
+            transform-origin: center center;
+            /* Gentle Ken-Burns entrance */
+            animation: kenBurnsIn 1.4s var(--ease-expo) forwards;
+            will-change: transform;
+        }
+
+        @keyframes kenBurnsIn {
+            from { transform: scale(1.08); }
+            to   { transform: scale(1.0); }
+        }
+
+        /* Zoom-out exit: added via JS when leaving slide 1 */
+        .slide-hero.zoom-exit .hero-image {
+            animation: zoomIntoImage 0.65s var(--ease-in) forwards;
+        }
+
+        @keyframes zoomIntoImage {
+            from { transform: scale(1.0); }
+            to   { transform: scale(1.35); }
+        }
+
+        /* Fade overlay on exit */
+        .slide-hero.zoom-exit::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: var(--navy);
+            animation: fadeOverlay 0.65s var(--ease-in) forwards;
+            z-index: 5;
+        }
+
+        @keyframes fadeOverlay {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* Gradient vignette — darkens left side for text legibility */
+        .hero-vignette {
+            position: absolute; inset: 0;
+            background:
+                linear-gradient(105deg,
+                    rgba(11, 22, 35, 0.92) 0%,
+                    rgba(11, 22, 35, 0.70) 38%,
+                    rgba(11, 22, 35, 0.10) 62%,
+                    transparent 80%
+                );
+            z-index: 2;
+        }
+
+        /* Hero text content — positioned left third */
+        .hero-content {
+            position: absolute;
+            left: 100px; top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            max-width: 820px;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-body);
+            font-size: 22px;
+            font-weight: 300;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s 0.1s var(--ease-expo),
+                        transform 0.6s 0.1s var(--ease-expo);
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 118px;
+            font-weight: 900;
+            line-height: 0.92;
+            letter-spacing: -0.03em;
+            color: var(--cream);
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s 0.25s var(--ease-expo),
+                        transform 0.7s 0.25s var(--ease-expo);
+        }
+
+        /* Amber highlight word */
+        .hero-title .accent { color: var(--amber); }
+
+        .hero-subtitle {
+            font-family: var(--font-body);
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 1.55;
+            color: var(--text-dim);
+            max-width: 580px;
+            margin-bottom: 64px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s 0.4s var(--ease-expo),
+                        transform 0.6s 0.4s var(--ease-expo);
+        }
+
+        .hero-cta {
+            display: inline-flex; align-items: center; gap: 16px;
+            font-family: var(--font-body);
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: var(--navy);
+            background: var(--amber);
+            padding: 20px 44px;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s 0.55s var(--ease-expo),
+                        transform 0.6s 0.55s var(--ease-expo),
+                        background 0.2s ease;
+        }
+        .hero-cta:hover { background: var(--amber-dark); }
+        .hero-cta svg { transition: transform 0.2s ease; }
+        .hero-cta:hover svg { transform: translateX(5px); }
+
+        /* Trigger entrance animations when slide is visible */
+        .slide-hero.visible .hero-eyebrow,
+        .slide-hero.visible .hero-title,
+        .slide-hero.visible .hero-subtitle,
+        .slide-hero.visible .hero-cta {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* Bottom-left corner detail */
+        .hero-footnote {
+            position: absolute;
+            bottom: 60px; left: 100px;
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 0.12em;
+            color: rgba(248, 240, 224, 0.3);
+            text-transform: uppercase;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.6s 0.8s var(--ease-expo);
+        }
+        .slide-hero.visible .hero-footnote { opacity: 1; }
+
+        /* Slide number / progress */
+        .slide-num {
+            position: absolute;
+            bottom: 64px; right: 100px;
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            color: rgba(248, 240, 224, 0.25);
+            z-index: 6;
+        }
+
+        /* =========================================
+           SLIDE 2 — CONTENT SLIDE
+           "Tre skift som endrer alt"
+           ========================================= */
+        .slide-content-2 {
+            background: var(--navy);
+        }
+
+        /* Diagonal amber bar — structural graphic device */
+        .slide-content-2::before {
+            content: '';
+            position: absolute;
+            top: -80px; right: 320px;
+            width: 6px;
+            height: 160%;
+            background: var(--amber);
+            transform: rotate(14deg);
+            opacity: 0.18;
+            z-index: 0;
+        }
+
+        .content2-inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 140px;
+            z-index: 1;
+        }
+
+        .content2-label {
+            font-family: var(--font-body);
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateX(-24px);
+            transition: opacity 0.5s 0.1s var(--ease-expo),
+                        transform 0.5s 0.1s var(--ease-expo);
+        }
+
+        .content2-title {
+            font-family: var(--font-display);
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1.0;
+            letter-spacing: -0.025em;
+            color: var(--cream);
+            margin-bottom: 80px;
+            opacity: 0;
+            transform: translateX(-24px);
+            transition: opacity 0.6s 0.2s var(--ease-expo),
+                        transform 0.6s 0.2s var(--ease-expo);
+        }
+
+        .cards-row {
+            display: flex;
+            gap: 48px;
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.7s 0.35s var(--ease-expo),
+                        transform 0.7s 0.35s var(--ease-expo);
+        }
+
+        .card {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-top: 3px solid var(--amber);
+            padding: 52px 48px 52px;
+            border-radius: 2px;
+        }
+
+        .card-number {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--amber);
+            line-height: 1;
+            margin-bottom: 24px;
+            opacity: 0.6;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--cream);
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
+
+        .card-body {
+            font-family: var(--font-body);
+            font-size: 22px;
+            font-weight: 300;
+            line-height: 1.6;
+            color: var(--text-dim);
+        }
+
+        /* Reveal card row when slide becomes visible */
+        .slide-content-2.visible .content2-label,
+        .slide-content-2.visible .content2-title {
+            opacity: 1; transform: translateX(0);
+        }
+        .slide-content-2.visible .cards-row {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* Stagger cards */
+        .slide-content-2.visible .card:nth-child(1) { transition-delay: 0.35s; }
+        .slide-content-2.visible .card:nth-child(2) { transition-delay: 0.47s; }
+        .slide-content-2.visible .card:nth-child(3) { transition-delay: 0.59s; }
+
+        /* =========================================
+           SLIDE 3 — CLOSING / CTA
+           ========================================= */
+        .slide-closing {
+            background: var(--amber);
+            overflow: hidden;
+        }
+
+        /* Large typographic watermark behind everything */
+        .closing-bg-text {
+            position: absolute;
+            bottom: -80px;
+            right: -40px;
+            font-family: var(--font-display);
+            font-size: 420px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            color: rgba(0,0,0,0.08);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+        }
+
+        .closing-inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 160px;
+            z-index: 1;
+        }
+
+        .closing-eyebrow {
+            font-family: var(--font-body);
+            font-size: 20px;
+            font-weight: 300;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: rgba(11, 22, 35, 0.55);
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.5s 0.1s var(--ease-expo),
+                        transform 0.5s 0.1s var(--ease-expo);
+        }
+
+        .closing-title {
+            font-family: var(--font-display);
+            font-size: 96px;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            color: var(--navy);
+            margin-bottom: 52px;
+            max-width: 900px;
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s 0.2s var(--ease-expo),
+                        transform 0.7s 0.2s var(--ease-expo);
+        }
+
+        .closing-body {
+            font-family: var(--font-body);
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 1.55;
+            color: rgba(11, 22, 35, 0.65);
+            max-width: 640px;
+            margin-bottom: 72px;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.6s 0.38s var(--ease-expo),
+                        transform 0.6s 0.38s var(--ease-expo);
+        }
+
+        .closing-actions {
+            display: flex;
+            gap: 24px;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.6s 0.52s var(--ease-expo),
+                        transform 0.6s 0.52s var(--ease-expo);
+        }
+
+        .btn-primary {
+            font-family: var(--font-body);
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: var(--amber);
+            background: var(--navy);
+            padding: 20px 52px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s ease;
+        }
+        .btn-primary:hover { background: #1a2e45; }
+
+        .btn-ghost {
+            font-family: var(--font-body);
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            color: var(--navy);
+            background: transparent;
+            padding: 20px 52px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid rgba(11, 22, 35, 0.35);
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+        .btn-ghost:hover { border-color: var(--navy); }
+
+        /* Decorative electric line — right side of closing slide */
+        .closing-line {
+            position: absolute;
+            top: 0; right: 0;
+            width: 8px; height: 100%;
+            background: var(--navy);
+            opacity: 0.12;
+        }
+
+        .slide-closing.visible .closing-eyebrow,
+        .slide-closing.visible .closing-title,
+        .slide-closing.visible .closing-body,
+        .slide-closing.visible .closing-actions {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* =========================================
+           NAVIGATION DOTS (outside stage, fixed)
+           ========================================= */
+        .nav-dots {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .nav-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--amber);
+            transform: scale(1.5);
+        }
+
+        /* =========================================
+           INLINE EDIT BUTTON (hover top-left corner)
+           ========================================= */
+        .edit-hotzone {
+            position: fixed; top: 0; left: 0;
+            width: 80px; height: 80px;
+            z-index: 10000; cursor: pointer;
+        }
+        .edit-toggle {
+            position: fixed; top: 18px; left: 18px;
+            background: rgba(240,160,32,0.9);
+            color: #0B1623;
+            border: none; border-radius: 4px;
+            padding: 8px 16px;
+            font-family: var(--font-body);
+            font-size: 13px; font-weight: 500;
+            cursor: pointer; z-index: 10001;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .edit-toggle.show, .edit-toggle.active {
+            opacity: 1; pointer-events: auto;
+        }
+
+        /* =========================================
+           SLIDE 4 — JUNGLE PARALLAX
+           6 PNG layers, mouse-driven depth effect
+           ========================================= */
+        .slide-jungle {
+            background: #0a1a0a;
+            overflow: hidden;
+        }
+
+        /* Parallax container — layers stack inside here */
+        .parallax-scene {
+            position: absolute;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            will-change: transform;
+        }
+
+        /* Every layer is absolute, positioned to match PPTX coordinates */
+        .p-layer {
+            position: absolute;
+            will-change: transform;
+            transition: transform 0.12s ease-out;
+        }
+
+        /* Layer positions converted from PPTX EMUs (÷6350) to px at 1920×1080 */
+        .p-bg   { left: 0;      top: -58px;  width: 2232px; height: 1260px; }
+        .p-l1   { left: 285px;  top: -58px;  width: 900px;  height: 950px;  }  /* mid-left tree */
+        .p-l2   { left: -2px;   top: -61px;  width: 755px;  height: 1085px; }  /* foreground trunk */
+        .p-l3   { left: 0;      top: 568px;  width: 1185px; height: 630px;  }  /* bottom plants */
+        .p-l4   { left: 1265px; top: -58px;  width: 970px;  height: 550px;  }  /* top-right trees */
+        .p-l5   { left: 1047px; top: 414px;  width: 1185px; height: 785px;  }  /* bottom-right scene */
+
+        .p-layer img {
+            width: 100%; height: 100%;
+            object-fit: fill;
+            display: block;
+        }
+
+        /* Entry animation — layers burst in from depth on slide enter */
+        .p-layer { opacity: 0; transform: scale(1.06) translateY(30px); }
+
+        .slide-jungle.visible .p-bg { opacity:1; transform:scale(1) translateY(0); transition: opacity 0.7s 0s ease, transform 0.9s 0s cubic-bezier(0.16,1,0.3,1); }
+        .slide-jungle.visible .p-l4 { opacity:1; transform:scale(1) translateY(0); transition: opacity 0.7s 0.1s ease, transform 0.9s 0.1s cubic-bezier(0.16,1,0.3,1); }
+        .slide-jungle.visible .p-l1 { opacity:1; transform:scale(1) translateY(0); transition: opacity 0.7s 0.18s ease, transform 0.9s 0.18s cubic-bezier(0.16,1,0.3,1); }
+        .slide-jungle.visible .p-l5 { opacity:1; transform:scale(1) translateY(0); transition: opacity 0.7s 0.24s ease, transform 0.9s 0.24s cubic-bezier(0.16,1,0.3,1); }
+        .slide-jungle.visible .p-l3 { opacity:1; transform:scale(1) translateY(0); transition: opacity 0.7s 0.32s ease, transform 0.9s 0.32s cubic-bezier(0.16,1,0.3,1); }
+        .slide-jungle.visible .p-l2 { opacity:1; transform:scale(1) translateY(0); transition: opacity 0.7s 0.40s ease, transform 0.9s 0.40s cubic-bezier(0.16,1,0.3,1); }
+
+        /* Override transition during active mouse parallax (JS adds .parallax-active) */
+        .slide-jungle.parallax-active .p-layer {
+            transition: transform 0.08s linear !important;
+        }
+
+        /* Text overlay — floats centre-right over the scene */
+        .jungle-text {
+            position: absolute;
+            right: 120px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            text-align: right;
+            max-width: 560px;
+            pointer-events: none;
+        }
+
+        .jungle-label {
+            font-family: var(--font-body);
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.5s 0.7s ease, transform 0.5s 0.7s ease;
+        }
+
+        .jungle-title {
+            font-family: var(--font-display);
+            font-size: 80px;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            color: #fff;
+            text-shadow: 0 4px 40px rgba(0,0,0,0.6);
+            margin-bottom: 28px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s 0.8s ease, transform 0.6s 0.8s ease;
+        }
+
+        .jungle-sub {
+            font-family: var(--font-body);
+            font-size: 22px;
+            font-weight: 300;
+            line-height: 1.55;
+            color: rgba(255,255,255,0.7);
+            text-shadow: 0 2px 20px rgba(0,0,0,0.7);
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.6s 0.95s ease, transform 0.6s 0.95s ease;
+        }
+
+        .slide-jungle.visible .jungle-label,
+        .slide-jungle.visible .jungle-title,
+        .slide-jungle.visible .jungle-sub {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* Key hint */
+        .key-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-body);
+            font-size: 13px;
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            z-index: 2000;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation dots -->
+    <nav class="nav-dots" aria-label="Slide navigation">
+        <button class="nav-dot active" data-slide="0" aria-label="Slide 1"></button>
+        <button class="nav-dot" data-slide="1" aria-label="Slide 2"></button>
+        <button class="nav-dot" data-slide="2" aria-label="Slide 3"></button>
+        <button class="nav-dot" data-slide="3" aria-label="Slide 4"></button>
+    </nav>
+
+    <!-- Keyboard hint -->
+    <p class="key-hint" id="keyHint">Piltaster eller scroll for å navigere</p>
+
+    <!-- Inline edit affordance -->
+    <div class="edit-hotzone" id="editHotzone"></div>
+    <button class="edit-toggle" id="editToggle">✏ Rediger tekst</button>
+
+    <!-- =============================================
+         MAIN DECK
+         ============================================= -->
+    <div class="deck-viewport">
+        <main class="deck-stage" id="deckStage">
+
+            <!-- ======= SLIDE 1: HERO ======= -->
+            <section class="slide slide-hero active visible" id="slide-0">
+                <!-- The AI head image — save your image as "ai-head.jpg" next to this file -->
+                <img
+                    src="ai-head.jpg"
+                    alt="AI og menneskelig intelligens flettes sammen"
+                    class="hero-image"
+                    id="heroImg"
+                >
+                <!-- Left-side gradient for text legibility -->
+                <div class="hero-vignette"></div>
+
+                <!-- Text content -->
+                <div class="hero-content">
+                    <p class="hero-eyebrow">Fremtidens teknologi</p>
+                    <h1 class="hero-title">
+                        Kunstig<br>
+                        <span class="accent">Intelligens</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        En presentasjon om hva AI betyr for oss,
+                        samfunnet og mulighetsrommet som åpner seg.
+                    </p>
+                    <div class="hero-cta" role="button" tabindex="0" id="heroCta">
+                        <span>Utforsk videre</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Footer detail -->
+                <p class="hero-footnote">2025 — Fremtid i endring</p>
+                <span class="slide-num">01 / 04</span>
+            </section>
+
+            <!-- ======= SLIDE 2: THREE SHIFTS ======= -->
+            <section class="slide slide-content-2" id="slide-1">
+                <div class="content2-inner">
+                    <p class="content2-label">Tre nøkkelskift</p>
+                    <h2 class="content2-title">Hva endrer seg — og hvorfor det haster</h2>
+
+                    <div class="cards-row">
+                        <div class="card">
+                            <div class="card-number">01</div>
+                            <h3 class="card-title">Arbeid og automatisering</h3>
+                            <p class="card-body">Rutineoppgaver overtas av maskiner. Det frigjør mennesker for kreativt og relasjonelt arbeid som AI aldri fullt ut kan kopiere.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-number">02</div>
+                            <h3 class="card-title">Beslutninger og data</h3>
+                            <p class="card-body">Algoritmer analyserer millioner av datapunkter på sekunder. Nye spørsmål oppstår: hvem er ansvarlig når maskinen tar feil?</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-number">03</div>
+                            <h3 class="card-title">Menneskelig kontakt</h3>
+                            <p class="card-body">Jo mer AI tar over det digitale, desto mer verdifullt blir det analoge — tillit, empati og ekte menneskelig tilstedeværelse.</p>
+                        </div>
+                    </div>
+                </div>
+                <span class="slide-num" style="color:rgba(248,240,224,0.2)">02 / 04</span>
+            </section>
+
+            <!-- ======= SLIDE 3: CLOSING ======= -->
+            <section class="slide slide-closing" id="slide-2">
+                <!-- Large background watermark text -->
+                <div class="closing-bg-text" aria-hidden="true">AI</div>
+                <!-- Decorative right bar -->
+                <div class="closing-line"></div>
+
+                <div class="closing-inner">
+                    <p class="closing-eyebrow">Hva nå?</p>
+                    <h2 class="closing-title">La oss forme fremtiden — bevisst.</h2>
+                    <p class="closing-body">
+                        Teknologien er allerede her. Spørsmålet er ikke <em>om</em> AI vil påvirke oss —
+                        men <em>hvordan</em> vi velger å bruke den.
+                    </p>
+                    <div class="closing-actions">
+                        <button class="btn-primary">Ta kontakt</button>
+                        <button class="btn-ghost">Les mer →</button>
+                    </div>
+                </div>
+
+                <span class="slide-num" style="color:rgba(11,22,35,0.3)">03 / 04</span>
+            </section>
+
+            <!-- ======= SLIDE 4: JUNGLE PARALLAX ======= -->
+            <section class="slide slide-jungle" id="slide-3">
+
+                <!-- Parallax scene — JS moves each layer on mousemove -->
+                <div class="parallax-scene" id="parallaxScene">
+
+                    <!-- data-depth: how much this layer reacts to mouse (0=static, 1=max) -->
+                    <div class="p-layer p-bg" data-depth="0.06">
+                        <img src="jungle-bg.jpeg" alt="Jungel bakgrunn">
+                    </div>
+                    <div class="p-layer p-l4" data-depth="0.12">
+                        <img src="jungle-l4.png" alt="">
+                    </div>
+                    <div class="p-layer p-l1" data-depth="0.18">
+                        <img src="jungle-l1.png" alt="">
+                    </div>
+                    <div class="p-layer p-l5" data-depth="0.22">
+                        <img src="jungle-l5.png" alt="">
+                    </div>
+                    <div class="p-layer p-l3" data-depth="0.30">
+                        <img src="jungle-l3.png" alt="">
+                    </div>
+                    <div class="p-layer p-l2" data-depth="0.40">
+                        <img src="jungle-l2.png" alt="">
+                    </div>
+                </div>
+
+                <!-- Text overlay -->
+                <div class="jungle-text">
+                    <p class="jungle-label">Natur &amp; teknologi</p>
+                    <h2 class="jungle-title">Kompleksitet<br>i balanse</h2>
+                    <p class="jungle-sub">
+                        Som naturen bygger AI systemer<br>
+                        av utallige lag som samspiller<br>
+                        i et større hele.
+                    </p>
+                </div>
+
+                <span class="slide-num" style="color:rgba(255,255,255,0.25); z-index:30;">04 / 04</span>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        /* =============================================
+           SLIDE PRESENTATION CONTROLLER
+           ============================================= */
+        class SlidePresentation {
+            constructor() {
+                this.slides       = Array.from(document.querySelectorAll('.slide'));
+                this.dots         = Array.from(document.querySelectorAll('.nav-dot'));
+                this.stage        = document.getElementById('deckStage');
+                this.current      = 0;
+                this.transitioning = false;
+
+                this.setupScale();
+                this.setupKeyboard();
+                this.setupWheel();
+                this.setupTouch();
+                this.setupDots();
+                this.setupCta();
+                this.setupEditMode();
+                this.hideHintAfterDelay();
+            }
+
+            /* Scale the 1920×1080 stage uniformly to fit the viewport */
+            setupScale() {
+                const scale = () => {
+                    const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                    const x = (window.innerWidth  - 1920 * f) / 2;
+                    const y = (window.innerHeight - 1080 * f) / 2;
+                    this.stage.style.transform = `translate(${x}px,${y}px) scale(${f})`;
+                };
+                scale();
+                window.addEventListener('resize', scale);
+            }
+
+            /* Keyboard: arrows, space, page keys */
+            setupKeyboard() {
+                document.addEventListener('keydown', e => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    if (['ArrowRight','ArrowDown','Space',' ','PageDown'].includes(e.key)) {
+                        e.preventDefault(); this.next();
+                    } else if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) {
+                        e.preventDefault(); this.prev();
+                    }
+                });
+            }
+
+            /* Mouse wheel — debounced */
+            setupWheel() {
+                let cooldown = false;
+                window.addEventListener('wheel', e => {
+                    if (cooldown) return;
+                    cooldown = true;
+                    if (e.deltaY > 0) this.next(); else this.prev();
+                    setTimeout(() => { cooldown = false; }, 900);
+                }, { passive: true });
+            }
+
+            /* Touch swipe */
+            setupTouch() {
+                let startY = 0, startX = 0;
+                window.addEventListener('touchstart', e => {
+                    startY = e.touches[0].clientY;
+                    startX = e.touches[0].clientX;
+                }, { passive: true });
+                window.addEventListener('touchend', e => {
+                    const dy = startY - e.changedTouches[0].clientY;
+                    const dx = startX - e.changedTouches[0].clientX;
+                    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
+                        dy > 0 ? this.next() : this.prev();
+                    } else if (Math.abs(dx) > 40) {
+                        dx > 0 ? this.next() : this.prev();
+                    }
+                }, { passive: true });
+            }
+
+            /* Nav dot clicks */
+            setupDots() {
+                this.dots.forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        const idx = parseInt(dot.dataset.slide);
+                        this.goTo(idx);
+                    });
+                });
+            }
+
+            /* CTA button on slide 1 → advance */
+            setupCta() {
+                const cta = document.getElementById('heroCta');
+                if (cta) {
+                    cta.addEventListener('click', () => this.next());
+                    cta.addEventListener('keydown', e => {
+                        if (e.key === 'Enter' || e.key === ' ') this.next();
+                    });
+                }
+            }
+
+            next() { this.goTo(this.current + 1); }
+            prev() { this.goTo(this.current - 1); }
+
+            /* Core slide transition with optional zoom-out on slide 1 exit */
+            goTo(idx) {
+                if (this.transitioning) return;
+                idx = Math.max(0, Math.min(idx, this.slides.length - 1));
+                if (idx === this.current) return;
+
+                const fromSlide = this.slides[this.current];
+                const toSlide   = this.slides[idx];
+                const goingForward = idx > this.current;
+                this.transitioning = true;
+
+                /* ---- SPECIAL: zoom-into-image when leaving slide 0 forward ---- */
+                if (this.current === 0 && goingForward) {
+                    fromSlide.classList.add('zoom-exit');
+
+                    // After zoom animation completes, show next slide
+                    setTimeout(() => {
+                        fromSlide.classList.remove('active', 'visible', 'zoom-exit');
+                        toSlide.classList.add('active', 'visible');
+                        this.current = idx;
+                        this.updateDots();
+                        this.transitioning = false;
+                    }, 680);
+
+                } else {
+                    /* --- Standard crossfade for all other transitions --- */
+                    // Fade out current
+                    fromSlide.style.transition = 'opacity 0.45s ease';
+                    fromSlide.style.opacity = '0';
+
+                    setTimeout(() => {
+                        fromSlide.classList.remove('active', 'visible');
+                        fromSlide.style.transition = '';
+                        fromSlide.style.opacity    = '';
+
+                        toSlide.style.opacity = '0';
+                        toSlide.style.transition = 'opacity 0.45s ease';
+                        toSlide.classList.add('active', 'visible');
+
+                        // Force reflow
+                        toSlide.getBoundingClientRect();
+                        toSlide.style.opacity = '1';
+
+                        setTimeout(() => {
+                            toSlide.style.transition = '';
+                            toSlide.style.opacity    = '';
+                            this.current = idx;
+                            this.updateDots();
+                            this.transitioning = false;
+                        }, 460);
+                    }, 460);
+                }
+            }
+
+            updateDots() {
+                this.dots.forEach((d, i) => d.classList.toggle('active', i === this.current));
+            }
+
+            /* Hide "bruk piltaster" hint after first navigation */
+            hideHintAfterDelay() {
+                const hint = document.getElementById('keyHint');
+                setTimeout(() => { if (hint) hint.style.opacity = '0'; }, 4000);
+                document.addEventListener('keydown', () => { if (hint) hint.style.opacity = '0'; }, { once: true });
+                window.addEventListener('wheel',    () => { if (hint) hint.style.opacity = '0'; }, { once: true, passive: true });
+            }
+
+            /* ---- INLINE EDIT MODE ---- */
+            setupEditMode() {
+                const hotzone   = document.getElementById('editHotzone');
+                const toggle    = document.getElementById('editToggle');
+                let hideTimeout = null;
+                let editActive  = false;
+
+                const showToggle = () => { clearTimeout(hideTimeout); toggle.classList.add('show'); };
+                const maybeHide  = () => {
+                    hideTimeout = setTimeout(() => {
+                        if (!editActive) toggle.classList.remove('show');
+                    }, 400);
+                };
+
+                hotzone.addEventListener('mouseenter', showToggle);
+                hotzone.addEventListener('mouseleave', maybeHide);
+                toggle.addEventListener('mouseenter',  showToggle);
+                toggle.addEventListener('mouseleave',  maybeHide);
+
+                const activate = () => {
+                    editActive = !editActive;
+                    toggle.classList.toggle('active', editActive);
+                    toggle.textContent = editActive ? '✓ Ferdig' : '✏ Rediger tekst';
+
+                    document.querySelectorAll('h1,h2,h3,p,span,.hero-eyebrow,.hero-subtitle,.hero-cta span,.card-body,.card-title,.closing-title,.closing-body,.closing-eyebrow,.content2-label,.content2-title,.hero-footnote')
+                        .forEach(el => {
+                            el.contentEditable = editActive ? 'true' : 'false';
+                            if (editActive) el.style.outline = '1px dashed rgba(240,160,32,0.4)';
+                            else el.style.outline = '';
+                        });
+                };
+
+                hotzone.addEventListener('click', activate);
+                toggle.addEventListener('click', activate);
+
+                document.addEventListener('keydown', e => {
+                    if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) {
+                        activate();
+                    }
+                });
+            }
+        }
+
+        /* =============================================
+           JUNGLE PARALLAX CONTROLLER
+           Tracks mouse position over the viewport and
+           shifts each layer by depth × offset from center
+           ============================================= */
+        class JungleParallax {
+            constructor() {
+                this.slide   = document.getElementById('slide-3');
+                this.scene   = document.getElementById('parallaxScene');
+                this.layers  = Array.from(this.slide.querySelectorAll('.p-layer'));
+                this.active  = false;
+                this.raf     = null;
+                this.targetX = 0;
+                this.targetY = 0;
+                this.currentX = 0;
+                this.currentY = 0;
+                this.maxOffset = 80; // max px shift at full depth=1
+
+                // Watch when this slide becomes active
+                const observer = new MutationObserver(() => {
+                    if (this.slide.classList.contains('visible')) {
+                        this.start();
+                    } else {
+                        this.stop();
+                    }
+                });
+                observer.observe(this.slide, { attributes: true, attributeFilter: ['class'] });
+            }
+
+            start() {
+                this.active = true;
+                window.addEventListener('mousemove', this._onMove = this.onMove.bind(this));
+                this.tick();
+            }
+
+            stop() {
+                this.active = false;
+                window.removeEventListener('mousemove', this._onMove);
+                cancelAnimationFrame(this.raf);
+                // Reset all layers smoothly
+                this.slide.classList.remove('parallax-active');
+                this.layers.forEach(l => { l.style.transform = ''; });
+            }
+
+            onMove(e) {
+                // Normalize mouse to -1..+1 relative to viewport center
+                this.targetX = (e.clientX / window.innerWidth  - 0.5) * 2;
+                this.targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+                this.slide.classList.add('parallax-active');
+            }
+
+            tick() {
+                if (!this.active) return;
+                // Smooth lerp toward target
+                this.currentX += (this.targetX - this.currentX) * 0.06;
+                this.currentY += (this.targetY - this.currentY) * 0.06;
+
+                this.layers.forEach(layer => {
+                    const depth = parseFloat(layer.dataset.depth) || 0;
+                    // Foreground moves OPPOSITE direction to camera (parallax feel)
+                    const dx = -this.currentX * this.maxOffset * depth;
+                    const dy = -this.currentY * this.maxOffset * depth * 0.6;
+                    layer.style.transform = `translate(${dx}px, ${dy}px)`;
+                });
+
+                this.raf = requestAnimationFrame(() => this.tick());
+            }
+        }
+
+        /* Boot the presentation when DOM is ready */
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+            new JungleParallax();
+        });
+    </script>
+</body>
+</html>
