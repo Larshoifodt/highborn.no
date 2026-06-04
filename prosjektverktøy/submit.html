@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send inn oppgave · Highborn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f8f7f4;
+    color: #1a1a18;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e0ddd6;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 15px;
+    color: #b0aea8;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.01em;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.7rem;
+    line-height: 1.15;
+    color: #1a1a18;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+  }
+
+  h1 em { font-style: italic; color: #6b6b65; }
+
+  .subtitle {
+    font-size: 13px;
+    color: #8b8b85;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+
+  .field { margin-bottom: 1.2rem; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #8b8b85;
+    margin-bottom: 0.4rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #1a1a18;
+    background: #f8f7f4;
+    border: 1px solid #e0ddd6;
+    border-radius: 10px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    resize: none;
+  }
+
+  input:focus, textarea:focus {
+    border-color: #c8622a;
+    background: #fff;
+  }
+
+  textarea { min-height: 90px; line-height: 1.5; }
+
+  .char-count {
+    font-size: 11px;
+    color: #c0bdb8;
+    text-align: right;
+    margin-top: 0.25rem;
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 0.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 20px;
+    background: #1a1a18;
+    color: #f8f7f4;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .btn:hover { background: #2a2a28; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { background: #c0bdb8; cursor: not-allowed; }
+
+  /* Success state */
+  .success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  .success-icon {
+    width: 52px;
+    height: 52px;
+    background: #1a1a18;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes pop {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .success h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .success p { font-size: 13px; color: #8b8b85; }
+
+  .send-another {
+    font-size: 13px;
+    color: #c8622a;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin-top: 0.5rem;
+  }
+
+  .error-msg {
+    font-size: 12px;
+    color: #e05050;
+    margin-top: 0.5rem;
+    text-align: center;
+    min-height: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">Highborn</div>
+
+  <!-- FORM VIEW -->
+  <div id="form-view">
+    <h1>Send inn en<br><em>oppgave</em></h1>
+    <p class="subtitle">Hva bør vi jobbe med?</p>
+
+    <form id="task-form" onsubmit="submitTask(event)">
+      <div class="field">
+        <label for="title">Oppgavenavn *</label>
+        <input
+          id="title"
+          type="text"
+          placeholder="Gi oppgaven et kort navn"
+          maxlength="80"
+          required
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="field">
+        <label for="description">Hva gjelder det?</label>
+        <textarea
+          id="description"
+          placeholder="Beskriv kort hva oppgaven innebærer..."
+          maxlength="300"
+          oninput="updateCharCount(this, 300, 'desc-count')"
+        ></textarea>
+        <div class="char-count"><span id="desc-count">0</span> / 300</div>
+      </div>
+
+      <div class="field">
+        <label for="submitted_by">Hvem sender inn?</label>
+        <input
+          id="submitted_by"
+          type="text"
+          placeholder="Navn, rolle eller anonym"
+          maxlength="60"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="error-msg" id="error-msg"></div>
+
+      <button class="btn" type="submit" id="submit-btn">Send inn oppgave →</button>
+    </form>
+  </div>
+
+  <!-- SUCCESS VIEW -->
+  <div class="success" id="success-view">
+    <div class="success-icon">✓</div>
+    <h2>Sendt inn!</h2>
+    <p>Oppgaven din er lagt til tavlen.</p>
+    <button class="send-another" onclick="resetForm()">Send inn en til</button>
+  </div>
+</div>
+
+<script>
+  /* ── Supabase config ── */
+  const SUPABASE_URL    = 'https://dbmzsjxkppeodtvzllyp.supabase.co';
+  const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibXpzanhrcHBlb2R0dnpsbHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NzEyOTYsImV4cCI6MjA5NjE0NzI5Nn0.JTAnlkR5aRCO9wjj_1xw90I16b1ec6wsL9PwkXoSbmo';
+
+  /* ── Helpers ── */
+  function updateCharCount(el, max, countId) {
+    document.getElementById(countId).textContent = el.value.length;
+  }
+
+  async function submitTask(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const err = document.getElementById('error-msg');
+    err.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Sender...';
+
+    const payload = {
+      title:        document.getElementById('title').value.trim(),
+      description:  document.getElementById('description').value.trim(),
+      submitted_by: document.getElementById('submitted_by').value.trim() || 'Anonym',
+    };
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'apikey':        SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Prefer':        'return=minimal',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      document.getElementById('form-view').style.display = 'none';
+      const sv = document.getElementById('success-view');
+      sv.style.display = 'flex';
+
+    } catch (ex) {
+      err.textContent = 'Noe gikk galt — prøv igjen.';
+      console.error(ex);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send inn oppgave →';
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('task-form').reset();
+    document.getElementById('desc-count').textContent = '0';
+    document.getElementById('error-msg').textContent = '';
+    document.getElementById('success-view').style.display = 'none';
+    document.getElementById('form-view').style.display = 'block';
+  }
+</script>
+</body>
+</html>
