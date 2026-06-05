@@ -328,10 +328,8 @@
 <div id="main-content">
 
   <nav>
-    <a href="#" class="logo" onclick="goHome()">Highborn</a>
     <a href="#" class="active" onclick="goHome()">Hjem</a>
     <a href="#">Ressurser</a>
-    <a href="#">CV</a>
     <a href="#">Galleri</a>
     <a href="#">Txt</a>
     <button class="logout-btn" onclick="logout()">Logg ut</button>
@@ -339,7 +337,7 @@
 
   <div class="hero">
     <div class="hero-eyebrow">Lars Høifødt</div>
-    <h1>Min digitale<br><em>arbeidsmappe</em></h1>
+    <h1>Digital<br><em>arbeidsmappe</em></h1>
   </div>
 
   <div class="toolbar">
@@ -409,11 +407,10 @@
     root: {
       label: 'highborn.no /',
       items: [
-        { type: 'folder', id: 'presentasjoner', name: 'Presentasjoner', meta: '1 fil',    color: '#e8c87a', colorLight: '#f5d97e' },
-        { type: 'folder', id: 'ki-verktoy',     name: 'KI-verktøy',    meta: '1 fil',    color: '#a8c8e8', colorLight: '#c2d9f0' },
-        { type: 'folder', id: 'ressurser',       name: 'Ressurser',     meta: 'Tom',      color: '#b8d8b0', colorLight: '#cce8c4' },
-        { type: 'folder', id: 'cv',              name: 'CV',            meta: 'Tom',      color: '#d4b8e0', colorLight: '#e2ccea' },
-        { type: 'folder', id: 'galleri',         name: 'Galleri',       meta: 'Tom',      color: '#f0b8a8', colorLight: '#f5ccc0' },
+        { type: 'folder', id: 'presentasjoner', name: 'Presentasjoner', meta: '1 fil',  color: '#e8c87a', colorLight: '#f5d97e' },
+        { type: 'folder', id: 'verktoy',        name: 'Verktøy',        meta: '1 mappe', color: '#a8c8e8', colorLight: '#c2d9f0' },
+        { type: 'folder', id: 'ressurser',      name: 'Ressurser',      meta: '1 fil',  color: '#b8d8b0', colorLight: '#cce8c4' },
+        { type: 'folder', id: 'galleri',        name: 'Galleri',        meta: 'Tom',    color: '#f0b8a8', colorLight: '#f5ccc0' },
       ]
     },
     presentasjoner: {
@@ -429,12 +426,25 @@
         },
       ]
     },
-    'ki-verktoy': {
-      label: 'highborn.no / KI-verktøy /',
-      items: []
+    verktoy: {
+      label: 'highborn.no / Verktøy /',
+      items: [
+        { type: 'folder', id: 'prosjektverktoy', name: 'Prosjektverktøy', meta: '2 filer', color: '#a8d8c8', colorLight: '#c2ead8' },
+      ]
     },
-    ressurser: { label: 'highborn.no / Ressurser /', items: [] },
-    cv:        { label: 'highborn.no / CV /',        items: [] },
+    prosjektverktoy: {
+      label: 'highborn.no / Verktøy / Prosjektverktøy /',
+      items: [
+        { type: 'file', name: 'Send inn oppgave', meta: 'Skjema for deltakere', href: 'prosjektverktøy/submit.html', badge: 'HTML', badgeColor: '#c8622a' },
+        { type: 'file', name: 'Oppgavetavle',     meta: 'Live kort + matrise',  href: 'prosjektverktøy/board.html',  badge: 'HTML', badgeColor: '#2a7a5a' },
+      ]
+    },
+    ressurser: {
+      label: 'highborn.no / Ressurser /',
+      items: [
+        { type: 'file', name: 'CV', meta: 'Lars Høifødt', href: '#', badge: 'PDF', badgeColor: '#6b6b65' },
+      ]
+    },
     galleri:   { label: 'highborn.no / Galleri /',   items: [] },
   };
 
@@ -474,10 +484,22 @@
 
   function buildPath(viewId) {
     if (viewId === 'root') return 'highborn.no /';
-    const folderName = FILESYSTEM[viewId]?.label.split('/ ').pop().replace(' /', '') || viewId;
-    return `<span class="path-link" onclick="renderView('root')">highborn.no</span>
-            <span class="path-sep">/</span>
-            ${folderName} /`;
+    const label = FILESYSTEM[viewId]?.label || '';
+    // Strip "highborn.no / " prefix and trailing " /"
+    const parts = label.replace('highborn.no / ', '').replace(/ \/$/, '').split(' / ');
+    let html = `<span class="path-link" onclick="renderView('root')">highborn.no</span>`;
+    // Find parent if nested
+    if (parts.length === 2) {
+      // Find parent folder id
+      const parentId = Object.keys(FILESYSTEM).find(id =>
+        id !== viewId && FILESYSTEM[id].items?.some(i => i.id === viewId)
+      );
+      if (parentId) {
+        html += `<span class="path-sep">/</span><span class="path-link" onclick="renderView('${parentId}')">${parts[0]}</span>`;
+      }
+    }
+    html += `<span class="path-sep">/</span>${parts[parts.length-1]} /`;
+    return html;
   }
 
   function makeBackItem() {
