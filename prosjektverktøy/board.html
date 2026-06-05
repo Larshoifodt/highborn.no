@@ -3,424 +3,531 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oppgavetavle · Highborn</title>
+<title>KI-oppgaveverktøy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #f8f7f4;
-    color: #1a1a18;
-    min-height: 100vh;
-  }
+body {
+  font-family:'DM Sans',sans-serif;
+  background:#f8f7f4;
+  color:#1a1a18;
+  min-height:100vh;
+}
 
-  /* ── Nav ── */
-  nav {
-    background: #efefed;
-    border-bottom: 1px solid #e0ddd6;
-    padding: 0 2rem;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    position: sticky;
-    top: 0;
-    z-index: 200;
-  }
+/* ── Nav ── */
+nav {
+  background:#efefed;
+  border-bottom:1px solid #e0ddd6;
+  padding:0 2rem;
+  height:44px;
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  position:sticky;
+  top:0;
+  z-index:200;
+}
 
-  .logo {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-size: 15px;
-    color: #1a1a18;
-    margin-right: auto;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-  }
+.nav-tab {
+  font-size:12px; font-weight:400; color:#6b6b65;
+  background:none; border:none; font-family:'DM Sans',sans-serif;
+  cursor:pointer; padding:4px 0;
+  border-bottom:1.5px solid transparent;
+  transition:color .2s,border-color .2s;
+  white-space:nowrap;
+}
+.nav-tab:hover { color:#1a1a18; }
+.nav-tab.active { color:#1a1a18; border-bottom-color:#c8622a; }
 
-  .nav-tab {
-    font-size: 12px;
-    font-weight: 400;
-    color: #6b6b65;
-    background: none;
-    border: none;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    padding: 4px 0;
-    border-bottom: 1.5px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
-  }
+.nav-right { margin-left:auto; display:flex; align-items:center; gap:1rem; }
 
-  .nav-tab:hover { color: #1a1a18; }
-  .nav-tab.active { color: #1a1a18; border-bottom-color: #c8622a; }
+.live-label { font-size:11px; color:#8b8b85; display:flex; align-items:center; gap:5px; }
+.live-dot {
+  width:7px; height:7px; background:#4caf50; border-radius:50%;
+  animation:pulse 2s ease-in-out infinite; display:inline-block;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-  .live-dot {
-    width: 7px; height: 7px;
-    background: #4caf50;
-    border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
-    margin-right: 0.2rem;
-    display: inline-block;
-    vertical-align: middle;
-  }
+.pdf-btn {
+  font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500;
+  padding:5px 14px; background:#1a1a18; color:#f8f7f4;
+  border:none; border-radius:7px; cursor:pointer; transition:background .15s;
+}
+.pdf-btn:hover { background:#2a2a28; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.4; }
-  }
+/* ── Views ── */
+.view { display:none; }
+.view.active { display:block; }
 
-  .live-label {
-    font-size: 11px;
-    color: #8b8b85;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
+/* ── Page header ── */
+.page-header {
+  padding:2.5rem 2rem 1.5rem;
+  max-width:1200px; margin:0 auto;
+  display:flex; align-items:flex-end;
+  justify-content:space-between; gap:1rem;
+}
+.page-header h1 {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:2rem; letter-spacing:-.02em;
+}
+.page-header h1 em { font-style:italic; color:#6b6b65; }
+.count-badge {
+  font-size:12px; color:#8b8b85;
+  background:#e8e6e0; padding:4px 10px; border-radius:20px;
+}
 
-  /* ── Views ── */
-  .view { display: none; }
-  .view.active { display: block; }
+/* ── Filter / sort buttons ── */
+.filter-bar {
+  max-width:1200px; margin:0 auto;
+  padding:0 2rem .8rem;
+  display:flex; gap:6px;
+}
+.filter-btn {
+  font-family:'DM Sans',sans-serif; font-size:11px;
+  padding:3px 12px; border-radius:20px;
+  border:1px solid #e0ddd6; background:#fff; color:#6b6b65;
+  cursor:pointer; transition:background .15s,border-color .15s,color .15s;
+}
+.filter-btn:hover { border-color:#c8622a; color:#c8622a; }
+.filter-btn.active { background:#1a1a18; color:#f8f7f4; border-color:#1a1a18; }
 
-  /* ── CARD WALL ── */
-  .wall-header {
-    padding: 2.5rem 2rem 1.5rem;
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1rem;
-  }
+/* ── Card grid ── */
+.card-grid {
+  max-width:1200px; margin:0 auto;
+  padding:0 2rem 4rem;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1rem;
+}
 
-  .wall-header h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-size: 2rem;
-    letter-spacing: -0.02em;
-  }
+/* ── Task card ── */
+.task-card {
+  background:#fff; border:1px solid #e0ddd6;
+  border-left-width:3px; border-radius:12px;
+  overflow:hidden; display:flex; flex-direction:column;
+  transition:box-shadow .2s;
+  animation:slideIn .3s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(12px) scale(.97)} to{opacity:1;transform:none} }
 
-  .wall-header h1 em { font-style: italic; color: #6b6b65; }
+.task-card:hover { box-shadow:0 4px 20px rgba(0,0,0,.07); }
+.task-card.tl-grønn { background:#f4fbf4; border-left-color:#4caf50; }
+.task-card.tl-gul   { background:#fffcf0; border-left-color:#e8a020; }
+.task-card.tl-rød   { background:#fff8f8; border-left-color:#e05050; }
+.task-card.tl-none  { border-left-color:#e0ddd6; }
 
-  .count-badge {
-    font-size: 12px;
-    color: #8b8b85;
-    background: #e8e6e0;
-    padding: 4px 10px;
-    border-radius: 20px;
-  }
+.card-topbar {
+  display:flex; align-items:center;
+  justify-content:space-between; padding:.7rem 1rem 0;
+}
 
-  .card-grid {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem 4rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-  }
+.type-toggle {
+  display:flex; align-items:center; gap:5px;
+  background:#f4f2ee; border:1px solid #e8e6e0;
+  border-radius:20px; padding:3px 4px;
+  cursor:pointer; transition:background .15s; user-select:none;
+}
+.type-toggle:hover { background:#eeecea; }
+.type-option {
+  font-size:13px; padding:2px 6px;
+  border-radius:14px; transition:background .15s; line-height:1;
+}
+.type-option.selected { background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+.type-label { font-size:10px; color:#8b8b85; font-weight:500; letter-spacing:.03em; padding-right:4px; }
 
-  .task-card {
-    background: #fff;
-    border: 1px solid #e0ddd6;
-    border-radius: 12px;
-    padding: 1.2rem 1.2rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    transition: box-shadow 0.2s, transform 0.2s;
-    animation: slideIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-    cursor: default;
-  }
+.card-del {
+  background:none; border:none; cursor:pointer;
+  font-size:13px; color:#c0bdb8; padding:2px 5px;
+  border-radius:4px; transition:color .15s,background .15s;
+  line-height:1;
+}
+.card-del:hover { color:#e05050; background:#fde8e8; }
 
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(12px) scale(0.97); }
-    to   { opacity: 1; transform: none; }
-  }
+.card-body { padding:.6rem 1rem .4rem; flex:1; }
+.card-title { font-size:14px; font-weight:500; line-height:1.35; color:#1a1a18; }
+.card-desc  { font-size:12px; color:#6b6b65; line-height:1.5; margin-top:.3rem; }
 
-  .task-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+.card-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.5rem 1rem .8rem; gap:.5rem;
+}
+.card-author { font-size:11px; color:#b0aea8; }
+.action-btn {
+  background:none; border:none; cursor:pointer;
+  font-size:15px; padding:2px 4px; border-radius:4px;
+  opacity:.4; transition:opacity .15s,background .15s; line-height:1;
+}
+.action-btn:hover { opacity:1; background:#f0ede8; }
+.action-btn.active { opacity:1; color:#e8a020; }
 
-  .card-title {
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.35;
-    color: #1a1a18;
-  }
+/* Traffic light (risiko tab only) */
+.tl-label { font-size:10px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#b0aea8; margin-right:2px; }
+.traffic-light { display:flex; gap:5px; align-items:center; }
+.tl-dot {
+  width:14px; height:14px; border-radius:50%;
+  cursor:pointer; transition:transform .15s,opacity .15s;
+  border:1.5px solid transparent; opacity:.35;
+}
+.tl-dot:hover { transform:scale(1.2); opacity:.7; }
+.tl-dot.active { opacity:1; border-color:rgba(0,0,0,.15); transform:scale(1.15); }
+.tl-grønn { background:#4caf50; }
+.tl-gul   { background:#e8a020; }
+.tl-rød   { background:#e05050; }
 
-  .card-desc {
-    font-size: 12px;
-    color: #6b6b65;
-    line-height: 1.5;
-    flex: 1;
-  }
+/* Empty state */
+.empty-state { grid-column:1/-1; text-align:center; padding:5rem 2rem; color:#b0aea8; }
+.empty-state p { font-size:14px; margin-top:.5rem; }
 
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 0.2rem;
-    gap: 0.5rem;
-  }
+/* ── REDIGER canvas ── */
+.rediger-wrap { padding:1.5rem 2rem; max-width:1200px; margin:0 auto; }
+.rediger-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:1rem; }
+.rediger-header h1 {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:1.6rem; letter-spacing:-.02em;
+}
+.rediger-header h1 em { font-style:italic; color:#6b6b65; }
+.rediger-hint { font-size:12px; color:#b0aea8; }
 
-  .card-author {
-    font-size: 11px;
-    color: #b0aea8;
-  }
+.canvas-area {
+  position:relative; width:100%;
+  height:520px; background:#fff;
+  border:1px solid #e0ddd6; border-radius:14px;
+  overflow:hidden;
+}
 
-  .card-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
+.canvas-card {
+  position:absolute;
+  background:#fff; border:1px solid #e0ddd6;
+  border-left-width:3px; border-radius:10px;
+  padding:.7rem .9rem; width:200px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  cursor:grab; user-select:none;
+  transition:box-shadow .15s;
+}
+.canvas-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.1); }
+.canvas-card:active { cursor:grabbing; }
+.canvas-card.tl-grønn { background:#f4fbf4; border-left-color:#4caf50; }
+.canvas-card.tl-gul   { background:#fffcf0; border-left-color:#e8a020; }
+.canvas-card.tl-rød   { background:#fff8f8; border-left-color:#e05050; }
+.canvas-card.tl-none  { border-left-color:#e0ddd6; }
 
-  .action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 2px 4px;
-    border-radius: 4px;
-    opacity: 0.5;
-    transition: opacity 0.15s, background 0.15s;
-    line-height: 1;
-  }
+.canvas-card-title {
+  font-size:12px; font-weight:500; color:#1a1a18;
+  line-height:1.3; outline:none;
+}
+.canvas-card-title:focus { border-bottom:1px dashed #c8622a; }
+.canvas-card-meta { font-size:10px; color:#b0aea8; margin-top:4px; }
+.canvas-card-del {
+  position:absolute; top:5px; right:5px;
+  background:none; border:none; cursor:pointer;
+  font-size:11px; color:#c0bdb8; padding:1px 4px;
+  border-radius:3px; opacity:0; transition:opacity .15s,color .15s;
+}
+.canvas-card:hover .canvas-card-del { opacity:1; }
+.canvas-card-del:hover { color:#e05050; background:#fde8e8; }
 
-  .action-btn:hover { opacity: 1; background: #f0ede8; }
-  .action-btn.active { opacity: 1; }
-  .action-btn.star.active { color: #e8a020; }
+/* Word cloud */
+.wordcloud-section {
+  margin-top:1.5rem; padding:1.2rem 1.4rem;
+  background:#fff; border:1px solid #e0ddd6; border-radius:12px;
+}
+.wordcloud-title {
+  font-size:11px; font-weight:500; letter-spacing:.07em;
+  text-transform:uppercase; color:#b0aea8; margin-bottom:.8rem;
+}
+.wordcloud {
+  display:flex; flex-wrap:wrap; gap:.5rem .7rem; align-items:baseline;
+  min-height:40px;
+}
+.wc-word {
+  color:#4a4a45; line-height:1;
+  transition:color .15s;
+}
+.wc-word:hover { color:#c8622a; }
 
-  .card-label {
-    font-size: 10px;
-    font-weight: 500;
-    padding: 2px 7px;
-    border-radius: 20px;
-    letter-spacing: 0.04em;
-  }
+/* ── TYPE tab ── */
+.type-layout {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:0; max-width:1200px; margin:0 auto;
+  padding:0 2rem 4rem;
+}
+.type-col { padding:1.5rem 1rem; }
+.type-col:first-child { border-right:1px solid #e0ddd6; padding-left:0; }
+.type-col:last-child { padding-right:0; }
+.type-col-header {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:1.3rem; letter-spacing:-.02em;
+  margin-bottom:1rem; padding-bottom:.5rem;
+  border-bottom:1px solid #e0ddd6;
+  display:flex; align-items:center; gap:.5rem;
+}
+.type-col-header em { font-style:italic; color:#6b6b65; }
+.type-count { font-size:11px; color:#b0aea8; font-family:'DM Sans',sans-serif; margin-left:auto; }
+.type-mini-card {
+  background:#fff; border:1px solid #e0ddd6;
+  border-left:3px solid #e0ddd6; border-radius:9px;
+  padding:.7rem .9rem; margin-bottom:.6rem;
+  font-size:13px; font-weight:500; color:#1a1a18;
+  display:flex; align-items:center; gap:.5rem;
+}
+.type-mini-card.tl-grønn { background:#f4fbf4; border-left-color:#4caf50; }
+.type-mini-card.tl-gul   { background:#fffcf0; border-left-color:#e8a020; }
+.type-mini-card.tl-rød   { background:#fff8f8; border-left-color:#e05050; }
+.type-mini-author { font-size:11px; color:#b0aea8; font-weight:400; margin-left:auto; }
 
-  /* Label colours */
-  .label-rød    { background: #fde8e8; color: #c04040; }
-  .label-gul    { background: #fdf5d8; color: #a07010; }
-  .label-grønn  { background: #e4f5e4; color: #2e7d32; }
-  .label-blå    { background: #e3f0fb; color: #1565c0; }
-  .label-lilla  { background: #f3e8fd; color: #7b1fa2; }
-  .label-grå    { background: #f0ede8; color: #6b6b65; }
+/* ── RISIKO split ── */
+.vurdering-layout {
+  display:grid; grid-template-columns:1fr 1fr;
+  height:calc(100vh - 44px);
+}
+.vurdering-cards { border-right:1px solid #e0ddd6; overflow-y:auto; padding:2rem; }
+.vurdering-cards h2 {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:1.4rem; letter-spacing:-.02em; color:#1a1a18;
+}
+.vurdering-cards h2 em { font-style:italic; color:#6b6b65; }
 
-  /* Label picker */
-  .label-picker {
-    position: absolute;
-    background: #fff;
-    border: 1px solid #e0ddd6;
-    border-radius: 10px;
-    padding: 0.5rem;
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    z-index: 300;
-    width: 180px;
-  }
+.risiko-card {
+  background:#fff; border:1px solid #e0ddd6;
+  border-left:3px solid #e0ddd6; border-radius:10px;
+  padding:.9rem 1rem; margin-bottom:.6rem;
+  display:flex; flex-direction:column; gap:.35rem;
+}
+.risiko-card.tl-grønn { background:#f4fbf4; border-left-color:#4caf50; }
+.risiko-card.tl-gul   { background:#fffcf0; border-left-color:#e8a020; }
+.risiko-card.tl-rød   { background:#fff8f8; border-left-color:#e05050; }
 
-  .label-opt {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: opacity 0.1s;
-    border: none;
-    font-family: 'DM Sans', sans-serif;
-  }
+.risiko-card-top { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.risiko-title { font-size:13px; font-weight:500; color:#1a1a18; flex:1; }
+.risiko-meta  { font-size:11px; color:#b0aea8; }
 
-  .label-opt:hover { opacity: 0.7; }
+.vurdering-info { overflow-y:auto; padding:2rem 2.5rem; background:#f8f7f4; }
+.info-section { margin-bottom:2rem; }
+.info-section h3 {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:1.1rem; letter-spacing:-.01em; color:#1a1a18;
+  margin-bottom:.8rem; padding-bottom:.4rem;
+  border-bottom:1px solid #e0ddd6;
+}
+.info-body { font-size:12.5px; color:#4a4a45; line-height:1.7; }
+.info-body p { margin-bottom:.7rem; }
+.risk-tag {
+  display:inline-block; font-size:11px; font-weight:500;
+  padding:2px 8px; border-radius:4px;
+  margin-right:4px; vertical-align:middle;
+}
+.risk-forbudt { background:#fde8e8; color:#c04040; }
+.risk-høy     { background:#fdf5d8; color:#a07010; }
+.risk-lav     { background:#e4f5e4; color:#2e7d32; }
 
-  .card-wrapper { position: relative; }
+/* ── MATRIX ── */
+.matrix-container { padding:2rem; max-width:900px; margin:0 auto; }
+.matrix-header { margin-bottom:1.5rem; display:flex; align-items:flex-end; gap:1rem; }
+.matrix-header h1 {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:2rem; letter-spacing:-.02em;
+}
+.matrix-header h1 em { font-style:italic; color:#6b6b65; }
+.matrix-hint { font-size:12px; color:#b0aea8; }
 
-  /* Empty state */
-  .empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 5rem 2rem;
-    color: #b0aea8;
-  }
+.matrix-layout {
+  display:grid; grid-template-columns:28px 1fr;
+  grid-template-rows:1fr 28px; gap:8px; height:540px;
+}
+.axis-label-y {
+  grid-row:1; grid-column:1;
+  display:flex; align-items:center; justify-content:center;
+  writing-mode:vertical-rl; transform:rotate(180deg);
+  font-size:11px; font-weight:500; letter-spacing:.08em;
+  text-transform:uppercase; color:#8b8b85;
+}
+.axis-label-x {
+  grid-row:2; grid-column:2;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:500; letter-spacing:.08em;
+  text-transform:uppercase; color:#8b8b85;
+}
+.matrix-grid {
+  grid-row:1; grid-column:2; position:relative;
+  display:grid; grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  border:1px solid #e0ddd6; border-radius:12px;
+  overflow:hidden; background:#fff;
+}
+.quadrant {
+  position:relative; border:1px solid #e8e6e0; padding:.6rem .8rem;
+}
+.quadrant-label {
+  font-size:10px; font-weight:500; letter-spacing:.06em;
+  text-transform:uppercase; color:#c0bdb8;
+  pointer-events:none; user-select:none;
+}
+.q-top-left    { background:#f0f7ee; }
+.q-top-right   { background:#fff8e8; }
+.q-bottom-left { background:#f8f7f4; }
+.q-bottom-right{ background:#fdf0f0; }
+.matrix-grid.drag-over { outline:2px dashed #c8622a; outline-offset:-2px; }
 
-  .empty-state p { font-size: 14px; margin-top: 0.5rem; }
+.mini-card {
+  position:absolute; border:1.5px solid #e0ddd6;
+  border-radius:8px; padding:5px 8px;
+  font-size:11px; font-weight:500; color:#1a1a18;
+  max-width:130px; line-height:1.3;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+  cursor:grab; transition:box-shadow .15s;
+  transform:translate(-50%,-50%);
+  z-index:10; user-select:none;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:#fff;
+}
+.mini-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.12); z-index:20; }
+.mini-card:active { cursor:grabbing; }
+.mini-card.tl-grønn { background:#e8f5e8; border-color:#4caf50; }
+.mini-card.tl-gul   { background:#fff8e0; border-color:#e8a020; }
+.mini-card.tl-rød   { background:#fde8e8; border-color:#e05050; }
 
-  /* ── 2×2 MATRIX ── */
-  .matrix-container {
-    padding: 2rem;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+.unplaced-list { margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:6px; }
+.unplaced-chip {
+  font-size:12px; padding:5px 12px;
+  background:#fff; border:1px solid #e0ddd6;
+  border-radius:20px; cursor:grab;
+  transition:background .15s,border-color .15s; user-select:none;
+}
+.unplaced-chip:hover { background:#f0ede8; border-color:#c8622a; }
+.unplaced-chip:active { cursor:grabbing; }
+.unplaced-hint { font-size:12px; color:#b0aea8; margin-top:.6rem; }
 
-  .matrix-header {
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: flex-end;
-    gap: 1rem;
-  }
+/* Notes */
+.notes-section { margin-top:2rem; padding-top:1.5rem; border-top:1px solid #e0ddd6; }
+.notes-section h3 {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:1.1rem; letter-spacing:-.01em; color:#1a1a18; margin-bottom:.7rem;
+}
+.notes-section h3 em { font-style:italic; color:#6b6b65; }
+.notes-textarea {
+  width:100%; min-height:160px;
+  font-family:'DM Sans',sans-serif; font-size:13px; color:#1a1a18;
+  background:#fff; border:1px solid #e0ddd6; border-radius:10px;
+  padding:12px 14px; outline:none; resize:vertical; line-height:1.6;
+  transition:border-color .2s;
+}
+.notes-textarea:focus { border-color:#c8622a; }
+.notes-textarea::placeholder { color:#c0bdb8; }
 
-  .matrix-header h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-size: 2rem;
-    letter-spacing: -0.02em;
-  }
+/* ── Accordion (risiko-sjekkliste) ── */
+.acc-section-label {
+  font-size:10px; font-weight:500; letter-spacing:.08em;
+  text-transform:uppercase; color:#b0aea8;
+  margin:1.4rem 0 .5rem;
+}
+.acc-item {
+  border:1px solid #e0ddd6; border-radius:10px;
+  margin-bottom:5px; overflow:hidden; background:#fff;
+}
+.acc-header {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 14px; cursor:pointer; user-select:none;
+  transition:background .15s;
+}
+.acc-header:hover { background:#f8f7f4; }
+.acc-title { font-size:13px; font-weight:500; flex:1; line-height:1.3; color:#1a1a18; }
+.acc-badge {
+  font-size:10px; font-weight:500; padding:2px 8px;
+  border-radius:20px; flex-shrink:0; white-space:nowrap;
+}
+.badge-rød   { background:#fde8e8; color:#c04040; }
+.badge-gul   { background:#fdf5d8; color:#a07010; }
+.badge-grønn { background:#e4f5e4; color:#2e7d32; }
+.acc-arrow {
+  font-size:12px; color:#b0aea8; flex-shrink:0;
+  transition:transform .2s; display:inline-block;
+}
+.acc-arrow.open { transform:rotate(90deg); }
+.acc-body { display:none; padding:0 14px 14px 14px; border-top:1px solid #f0ede8; }
+.acc-body.open { display:block; }
+.acc-lead { font-size:12.5px; color:#6b6b65; line-height:1.65; margin-bottom:.7rem; padding-top:.8rem; }
+.acc-checks { list-style:none; padding:0; margin:0 0 .7rem; }
+.acc-checks li {
+  font-size:12.5px; color:#4a4a45; line-height:1.55;
+  padding:3px 0; display:flex; gap:8px;
+}
+.acc-checks li::before { content:"—"; color:#c0bdb8; flex-shrink:0; }
+.acc-example {
+  font-size:12px; color:#6b6b65; line-height:1.55;
+  background:#f8f7f4; border-radius:7px;
+  padding:.5rem .7rem; margin-bottom:.7rem;
+}
+.acc-example strong { color:#4a4a45; }
+.acc-laws { display:flex; flex-wrap:wrap; gap:4px; padding-top:.6rem; border-top:1px solid #f0ede8; }
+.law-tag { font-size:10px; padding:2px 7px; border-radius:6px; }
+.law-eu   { background:#e3f0fb; color:#1565c0; }
+.law-no   { background:#e4f5e4; color:#2e7d32; }
+.law-warn { background:#fdf5d8; color:#a07010; }
 
-  .matrix-header h1 em { font-style: italic; color: #6b6b65; }
+/* JSON-knapp */
+.json-btn {
+  font-family:'DM Sans',sans-serif; font-size:11px;
+  padding:4px 12px; background:#f0ede8; color:#6b6b65;
+  border:1px solid #e0ddd6; border-radius:7px;
+  cursor:pointer; transition:background .15s;
+}
+.json-btn:hover { background:#e8e6e0; color:#1a1a18; }
 
-  .matrix-hint {
-    font-size: 12px;
-    color: #b0aea8;
-  }
-
-  .matrix-layout {
-    display: grid;
-    grid-template-columns: 28px 1fr;
-    grid-template-rows: 1fr 28px;
-    gap: 8px;
-    height: 560px;
-  }
-
-  .axis-label-y {
-    grid-row: 1;
-    grid-column: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #8b8b85;
-  }
-
-  .axis-label-x {
-    grid-row: 2;
-    grid-column: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #8b8b85;
-  }
-
-  .matrix-grid {
-    grid-row: 1;
-    grid-column: 2;
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    border: 1px solid #e0ddd6;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #fff;
-  }
-
-  .quadrant {
-    position: relative;
-    border: 1px solid #e8e6e0;
-    padding: 0.6rem 0.8rem;
-    min-height: 0;
-  }
-
-  .quadrant-label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #c0bdb8;
-    pointer-events: none;
-    user-select: none;
-  }
-
-  /* Quadrant tints */
-  .q-top-left    { background: #f0f7ee; }
-  .q-top-right   { background: #fff8e8; }
-  .q-bottom-left { background: #f8f7f4; }
-  .q-bottom-right{ background: #fdf0f0; }
-
-  /* Drop area: the grid itself is the drop target */
-  .matrix-grid.drag-over { outline: 2px dashed #c8622a; outline-offset: -2px; }
-
-  /* Placed mini-cards */
-  .mini-card {
-    position: absolute;
-    background: #fff;
-    border: 1px solid #e0ddd6;
-    border-radius: 8px;
-    padding: 5px 8px;
-    font-size: 11px;
-    font-weight: 500;
-    color: #1a1a18;
-    max-width: 120px;
-    line-height: 1.3;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    cursor: grab;
-    transition: box-shadow 0.15s;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    user-select: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .mini-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.12); z-index: 20; }
-  .mini-card:active { cursor: grabbing; }
-
-  /* Unplaced sidebar */
-  .unplaced-list {
-    margin-top: 1.2rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .unplaced-chip {
-    font-size: 12px;
-    padding: 5px 12px;
-    background: #fff;
-    border: 1px solid #e0ddd6;
-    border-radius: 20px;
-    cursor: grab;
-    transition: background 0.15s, border-color 0.15s;
-    user-select: none;
-  }
-
-  .unplaced-chip:hover { background: #f0ede8; border-color: #c8622a; }
-  .unplaced-chip:active { cursor: grabbing; }
-
-  .unplaced-hint {
-    font-size: 12px;
-    color: #b0aea8;
-    margin-top: 0.6rem;
-  }
+/* ── Print ── */
+@media print {
+  * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  nav,.pdf-btn,.live-label,.unplaced-list,.unplaced-hint,
+  .action-btn,.type-toggle,.traffic-light,
+  #view-wall,#view-rediger,#view-type,#view-risiko { display:none !important; }
+  body { background:#fff; }
+  #view-matrix { display:block !important; }
+  .matrix-container { padding:0; max-width:100%; }
+  .matrix-header h1 { font-size:1.4rem; }
+  .matrix-hint { display:none; }
+  .matrix-layout { height:480px; }
+  .pdf-card-list { display:block !important; }
+}
+.pdf-card-list { display:none; margin-top:2rem; page-break-before:always; }
+.pdf-card-list h2 {
+  font-family:'Fraunces',serif; font-weight:300;
+  font-size:1.2rem; letter-spacing:-.02em; margin-bottom:1rem;
+}
+.pdf-task-row {
+  display:flex; gap:1rem; padding:.6rem 0;
+  border-bottom:1px solid #e0ddd6; align-items:flex-start;
+}
+.pdf-task-title { font-size:13px; font-weight:500; flex:0 0 180px; }
+.pdf-task-desc  { font-size:12px; color:#6b6b65; flex:1; line-height:1.4; }
+.pdf-task-meta  { font-size:11px; color:#b0aea8; flex:0 0 90px; text-align:right; }
 </style>
 </head>
 <body>
 
-<!-- ── Nav ── -->
 <nav>
-  <a class="logo" href="../index.html">Highborn</a>
-  <button class="nav-tab active" onclick="showView('wall')">Kortvegg</button>
+  <button class="nav-tab active" onclick="showView('wall')">Innspill</button>
+  <button class="nav-tab" onclick="showView('rediger')">Rediger</button>
+  <button class="nav-tab" onclick="showView('type')">Type</button>
+  <button class="nav-tab" onclick="showView('risiko')">Risiko</button>
   <button class="nav-tab" onclick="showView('matrix')">2×2 Matrise</button>
-  <div class="live-label">
-    <span class="live-dot"></span> Live
+  <div class="nav-right">
+    <div class="live-label"><span class="live-dot"></span> Live</div>
+    <button class="json-btn" onclick="exportJSON()" title="Last ned alle data som JSON-sikkerhetskopi">↓ JSON</button>
+    <button class="pdf-btn" onclick="exportPDF()">↓ Last ned PDF</button>
   </div>
 </nav>
 
-<!-- ── CARD WALL VIEW ── -->
+<!-- ── 1. INNSPILL ── -->
 <div class="view active" id="view-wall">
-  <div class="wall-header">
-    <div>
-      <h1>Innsendte<br><em>oppgaver</em></h1>
-    </div>
+  <div class="page-header">
+    <h1>Innspill<br><em>KI-oppgaver</em></h1>
     <span class="count-badge" id="card-count">0 oppgaver</span>
+  </div>
+  <div class="filter-bar" id="wall-filter-bar">
+    <button class="filter-btn active" onclick="setWallFilter('alle',this)">Alle</button>
+    <button class="filter-btn" onclick="setWallFilter('personal',this)">👤 Personlig</button>
+    <button class="filter-btn" onclick="setWallFilter('standard',this)">🏛 Standardisert</button>
   </div>
   <div class="card-grid" id="card-grid">
     <div class="empty-state" id="empty-state">
@@ -430,284 +537,815 @@
   </div>
 </div>
 
-<!-- ── MATRIX VIEW ── -->
+<!-- ── 2. REDIGER ── -->
+<div class="view" id="view-rediger">
+  <div class="rediger-wrap">
+    <div class="rediger-header">
+      <h1>Rediger &amp;<br><em>gruppér</em></h1>
+      <span class="rediger-hint">Dra kort for å gruppere · Dobbeltklikk for å redigere tittel</span>
+    </div>
+    <div class="canvas-area" id="canvas-area"></div>
+    <div class="wordcloud-section">
+      <div class="wordcloud" id="wordcloud"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 3. TYPE ── -->
+<div class="view" id="view-type">
+  <div class="page-header" style="max-width:1200px">
+    <div>
+      <h1>Personlig vs.<br><em>Standardisert</em></h1>
+      <p style="font-size:13px;color:#6b6b65;margin-top:.6rem;max-width:520px;line-height:1.6">
+        Bør KI-oppgaven brukes som et personlig verktøy — eller standardiseres på tvers av organisasjonen? Dra kortene til riktig kolonne ved å bruke togglen på hvert kort.
+      </p>
+    </div>
+  </div>
+  <div class="type-layout">
+    <div class="type-col">
+      <div class="type-col-header">
+        <span>👤 Personlig</span><span class="type-count" id="type-pers-count">0</span>
+      </div>
+      <div id="type-pers-list"></div>
+    </div>
+    <div class="type-col">
+      <div class="type-col-header">
+        <span>🏛 <em>Standardisert</em></span><span class="type-count" id="type-std-count">0</span>
+      </div>
+      <div id="type-std-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 4. RISIKO ── -->
+<div class="view" id="view-risiko">
+  <div class="vurdering-layout">
+    <div class="vurdering-cards">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+        <h2>Innspill<br><em>KI-oppgaver</em></h2>
+        <div style="display:flex;gap:5px">
+          <button class="filter-btn active" onclick="setRisikoFilter('alle',this)">Alle</button>
+          <button class="filter-btn" onclick="setRisikoFilter('rød',this)" style="color:#e05050">🔴</button>
+          <button class="filter-btn" onclick="setRisikoFilter('gul',this)" style="color:#e8a020">🟡</button>
+          <button class="filter-btn" onclick="setRisikoFilter('grønn',this)" style="color:#4caf50">🟢</button>
+          <button class="filter-btn" onclick="setRisikoFilter('ingen',this)">–</button>
+        </div>
+      </div>
+      <div id="risiko-list"></div>
+    </div>
+    <div class="vurdering-info">
+      <p style="font-size:13px;color:#8b8b85;margin-bottom:1rem;line-height:1.6">
+        Trykk på hvert punkt for å se hva dere bør diskutere. Bruk dette som sjekkliste når dere vurderer innspillene.
+      </p>
+      <div id="risiko-sjekkliste"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 5. 2×2 MATRISE ── -->
 <div class="view" id="view-matrix">
   <div class="matrix-container">
     <div class="matrix-header">
-      <div>
-        <h1>Prioriterings-<br><em>matrise</em></h1>
-      </div>
+      <h1>Prioriterings-<br><em>matrise</em></h1>
       <span class="matrix-hint">Dra kort fra listen og slipp dem i matrisen</span>
     </div>
-
     <div class="matrix-layout">
       <div class="axis-label-y">Potensial ↑</div>
       <div class="matrix-grid" id="matrix-grid"
         ondragover="matrixDragOver(event)"
         ondrop="matrixDrop(event)"
-        ondragleave="matrixDragLeave(event)"
-      >
-        <div class="quadrant q-top-left">
-          <div class="quadrant-label">Høy verdi · Lav innsats</div>
-        </div>
-        <div class="quadrant q-top-right">
-          <div class="quadrant-label">Høy verdi · Høy innsats</div>
-        </div>
-        <div class="quadrant q-bottom-left">
-          <div class="quadrant-label">Lav verdi · Lav innsats</div>
-        </div>
-        <div class="quadrant q-bottom-right">
-          <div class="quadrant-label">Lav verdi · Høy innsats</div>
-        </div>
+        ondragleave="matrixDragLeave(event)">
+        <div class="quadrant q-top-left"><div class="quadrant-label">Høy verdi · Lav innsats</div></div>
+        <div class="quadrant q-top-right"><div class="quadrant-label">Høy verdi · Høy innsats</div></div>
+        <div class="quadrant q-bottom-left"><div class="quadrant-label">Lav verdi · Lav innsats</div></div>
+        <div class="quadrant q-bottom-right"><div class="quadrant-label">Lav verdi · Høy innsats</div></div>
       </div>
       <div class="axis-label-x">Innsats →</div>
     </div>
-
-    <div class="unplaced-hint" id="unplaced-hint" style="display:none">
-      Ikke plassert ennå — dra til matrisen:
-    </div>
+    <div class="unplaced-hint" id="unplaced-hint" style="display:none">Ikke plassert ennå — dra til matrisen:</div>
     <div class="unplaced-list" id="unplaced-list"></div>
+    <div class="notes-section">
+      <h3>Referat og <em>betraktninger</em></h3>
+      <textarea class="notes-textarea" id="matrix-notes" placeholder="Skriv inn observasjoner, beslutninger eller neste steg…"></textarea>
+    </div>
+    <div class="pdf-card-list" id="pdf-card-list">
+      <h2>Alle innsendte oppgaver</h2>
+      <div id="pdf-rows"></div>
+    </div>
   </div>
 </div>
 
-<!-- Label picker (shared, portalled to body) -->
-<div class="label-picker" id="label-picker" style="display:none">
-  <button class="label-opt label-rød"   onclick="applyLabel(event,'rød')">Rød</button>
-  <button class="label-opt label-gul"   onclick="applyLabel(event,'gul')">Gul</button>
-  <button class="label-opt label-grønn" onclick="applyLabel(event,'grønn')">Grønn</button>
-  <button class="label-opt label-blå"   onclick="applyLabel(event,'blå')">Blå</button>
-  <button class="label-opt label-lilla" onclick="applyLabel(event,'lilla')">Lilla</button>
-  <button class="label-opt label-grå"   onclick="applyLabel(event,'grå')">Grå</button>
-</div>
-
 <script>
-  /* ── Supabase config ── */
-  const SUPABASE_URL  = 'https://dbmzsjxkppeodtvzllyp.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibXpzanhrcHBlb2R0dnpsbHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NzEyOTYsImV4cCI6MjA5NjE0NzI5Nn0.JTAnlkR5aRCO9wjj_1xw90I16b1ec6wsL9PwkXoSbmo';
+const SUPABASE_URL  = 'https://dbmzsjxkppeodtvzllyp.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibXpzanhrcHBlb2R0dnpsbHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NzEyOTYsImV4cCI6MjA5NjE0NzI5Nn0.JTAnlkR5aRCO9wjj_1xw90I16b1ec6wsL9PwkXoSbmo';
 
-  /* ── State ── */
-  let tasks = {};           // id → task object
-  let pickerTargetId = null;
-  let dragId = null;        // which task is being dragged onto matrix
+/* ── State ── */
+let tasks = {};
+let dragId = null;
+const recentPatches = new Map(); // id → timestamp — prevents poll overwriting local changes
 
-  /* ── Views ── */
-  function showView(name) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
-    document.querySelector(`[onclick="showView('${name}')"]`).classList.add('active');
-    if (name === 'matrix') renderMatrix();
-  }
+let wallFilter   = 'alle';
+let risikoFilter = 'alle';
 
-  /* ── Fetch all tasks ── */
-  async function fetchAll() {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/tasks?order=created_at.asc`,
-      { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } }
-    );
+/* ── TL helpers ── */
+const TL_BG     = { grønn:'#e8f5e8', gul:'#fff8e0', rød:'#fde8e8' };
+const TL_BORDER = { grønn:'#4caf50', gul:'#e8a020', rød:'#e05050' };
+
+/* ── Views ── */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'rediger') renderRediger();
+  if (name === 'type')    renderType();
+  if (name === 'risiko')  renderRisiko();
+  if (name === 'matrix')  renderMatrix();
+}
+
+/* ── Fetch (with patch-protection) ── */
+async function fetchAll() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/tasks?order=created_at.asc`, {
+      headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` }
+    });
     if (!res.ok) return;
     const rows = await res.json();
-    rows.forEach(t => { tasks[t.id] = t; });
-    renderWall();
-    renderMatrix();
-  }
-
-  /* ── Supabase Realtime (server-sent events) ── */
-  function subscribeRealtime() {
-    const url = `${SUPABASE_URL}/realtime/v1/sse?` + new URLSearchParams({
-      apikey: SUPABASE_ANON,
-      'x-client-info': 'highborn-board',
-    });
-    // Use REST polling as reliable fallback (every 4s)
-    setInterval(fetchAll, 4000);
-  }
-
-  /* ── Render card wall ── */
-  function renderWall() {
-    const grid = document.getElementById('card-grid');
-    const empty = document.getElementById('empty-state');
-    const taskList = Object.values(tasks);
-
-    document.getElementById('card-count').textContent =
-      `${taskList.length} oppgave${taskList.length !== 1 ? 'r' : ''}`;
-
-    // Remove cards no longer in tasks
-    grid.querySelectorAll('.card-wrapper[data-id]').forEach(el => {
-      if (!tasks[el.dataset.id]) el.remove();
-    });
-
-    // Add new cards
-    taskList.forEach(t => {
-      if (!grid.querySelector(`[data-id="${t.id}"]`)) {
-        grid.appendChild(makeCard(t));
+    const now = Date.now();
+    rows.forEach(t => {
+      const patchedAt = recentPatches.get(t.id);
+      if (patchedAt && now - patchedAt < 10000) {
+        // Keep our local version — server hasn't confirmed patch yet
+        if (!tasks[t.id]) tasks[t.id] = t;
       } else {
-        refreshCard(t);
+        tasks[t.id] = t;
+        recentPatches.delete(t.id);
       }
     });
+    renderAll();
+  } catch(e) {}
+}
 
-    empty.style.display = taskList.length === 0 ? 'block' : 'none';
+function renderAll() {
+  renderWall();
+  const active = document.querySelector('.view.active')?.id?.replace('view-','');
+  if (active === 'rediger') {
+    // Ikke re-render canvas mens bruker redigerer tekst i et kort
+    if (!document.activeElement?.closest?.('.canvas-card')) renderRediger();
   }
+  if (active === 'type')   renderType();
+  if (active === 'risiko') renderRisiko();
+  if (active === 'matrix') renderMatrix();
+}
 
-  function makeCard(t) {
-    const wrap = document.createElement('div');
-    wrap.className = 'card-wrapper';
-    wrap.dataset.id = t.id;
+setInterval(fetchAll, 4000);
 
-    const labelClass = t.label ? `card-label label-${t.label}` : 'card-label label-grå';
-    const labelText  = t.label ? t.label.charAt(0).toUpperCase() + t.label.slice(1) : '';
-    const starActive = t.starred ? 'active' : '';
+/* ══════════════════════════════════════════
+   1. INNSPILL
+══════════════════════════════════════════ */
+function setWallFilter(f, btn) {
+  wallFilter = f;
+  document.querySelectorAll('#wall-filter-bar .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderWall();
+}
 
-    wrap.innerHTML = `
-      <div class="task-card">
-        <div class="card-title">${esc(t.title)}</div>
-        ${t.description ? `<div class="card-desc">${esc(t.description)}</div>` : ''}
-        <div class="card-footer">
-          <span class="card-author">${esc(t.submitted_by || 'Anonym')}</span>
-          <div class="card-actions">
-            ${t.label ? `<span class="${labelClass}">${esc(labelText)}</span>` : ''}
-            <button class="action-btn" title="Etikett" onclick="openLabelPicker(event,'${t.id}')">🏷</button>
-            <button class="action-btn star ${starActive}" title="Stjerne" onclick="toggleStar('${t.id}')">★</button>
-          </div>
-        </div>
-      </div>
-    `;
-    return wrap;
-  }
+function renderWall() {
+  const grid     = document.getElementById('card-grid');
+  const taskList = Object.values(tasks).filter(t =>
+    wallFilter === 'alle' ? true : t.task_type === wallFilter
+  );
 
-  function refreshCard(t) {
-    const wrap = document.querySelector(`[data-id="${t.id}"]`);
-    if (!wrap) return;
-    const newCard = makeCard(t);
-    wrap.innerHTML = newCard.innerHTML;
-  }
+  document.getElementById('card-count').textContent =
+    `${taskList.length} oppgave${taskList.length !== 1 ? 'r' : ''}`;
 
-  /* ── Label picker ── */
-  function openLabelPicker(e, id) {
-    e.stopPropagation();
-    pickerTargetId = id;
-    const picker = document.getElementById('label-picker');
-    const rect = e.target.getBoundingClientRect();
-    picker.style.display = 'flex';
-    picker.style.top  = (rect.bottom + window.scrollY + 4) + 'px';
-    picker.style.left = (rect.left + window.scrollX - 60) + 'px';
-    picker.style.position = 'absolute';
-  }
-
-  document.addEventListener('click', () => {
-    document.getElementById('label-picker').style.display = 'none';
+  grid.querySelectorAll('.card-wrapper[data-id]').forEach(el => {
+    if (!tasks[el.dataset.id]) el.remove();
   });
 
-  function applyLabel(e, label) {
-    e.stopPropagation();
-    document.getElementById('label-picker').style.display = 'none';
-    if (!pickerTargetId) return;
-    patch(pickerTargetId, { label });
+  taskList.forEach(t => {
+    if (!grid.querySelector(`[data-id="${t.id}"]`)) grid.appendChild(makeCard(t));
+    else refreshCard(t);
+  });
+
+  // Hide cards not matching filter
+  grid.querySelectorAll('.card-wrapper[data-id]').forEach(el => {
+    const t = tasks[el.dataset.id];
+    if (!t) return;
+    el.style.display = (wallFilter === 'alle' || t.task_type === wallFilter) ? '' : 'none';
+  });
+
+  document.getElementById('empty-state').style.display = taskList.length === 0 ? 'block' : 'none';
+}
+
+function makeCard(t) {
+  const wrap = document.createElement('div');
+  wrap.className = 'card-wrapper';
+  wrap.dataset.id = t.id;
+
+  const isPers = t.task_type === 'personal';
+  const tlClass = t.traffic_light ? `tl-${t.traffic_light}` : 'tl-none';
+  const star = t.starred ? 'active' : '';
+
+  const typeIcon = isPers ? '👤' : '🏛';
+  wrap.innerHTML = `
+    <div class="task-card ${tlClass}">
+      <div class="card-topbar">
+        <span style="font-size:12px;color:#8b8b85">${typeIcon} ${isPers?'Personlig':'Standardisert'}</span>
+        <button class="card-del" onclick="deleteTask('${t.id}')" title="Slett">✕</button>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${esc(t.title)}</div>
+        ${t.description?`<div class="card-desc">${esc(t.description)}</div>`:''}
+      </div>
+      <div class="card-footer">
+        <span class="card-author">${esc(t.submitted_by||'Anonym')}</span>
+        <button class="action-btn ${star}" onclick="toggleStar('${t.id}')">★</button>
+      </div>
+    </div>`;
+  return wrap;
+}
+
+function refreshCard(t) {
+  const wrap = document.querySelector(`[data-id="${t.id}"]`);
+  if (!wrap) return;
+  wrap.innerHTML = makeCard(t).innerHTML;
+}
+
+/* ══════════════════════════════════════════
+   2. REDIGER (free canvas)
+══════════════════════════════════════════ */
+let canvasDrag = null;
+const CANVAS_KEY = 'hb_canvas_pos';
+
+function getCanvasPositions() {
+  try { return JSON.parse(localStorage.getItem(CANVAS_KEY)||'{}'); } catch(e) { return {}; }
+}
+function saveCanvasPos(id, x, y) {
+  const pos = getCanvasPositions();
+  pos[id] = { x, y };
+  localStorage.setItem(CANVAS_KEY, JSON.stringify(pos));
+}
+
+function renderRediger() {
+  const canvas = document.getElementById('canvas-area');
+  const pos    = getCanvasPositions();
+  const taskList = Object.values(tasks);
+  const W = canvas.offsetWidth  || 900;
+  const H = canvas.offsetHeight || 500;
+
+  canvas.innerHTML = '';
+
+  taskList.forEach((t, i) => {
+    const p = pos[t.id] || { x: 20 + (i % 5) * 210, y: 20 + Math.floor(i / 5) * 110 };
+    const tlClass = t.traffic_light ? `tl-${t.traffic_light}` : 'tl-none';
+    const isPers  = t.task_type === 'personal';
+
+    const el = document.createElement('div');
+    el.className = `canvas-card ${tlClass}`;
+    el.dataset.id = t.id;
+    el.style.left = Math.min(p.x, W - 210) + 'px';
+    el.style.top  = Math.min(p.y, H - 90)  + 'px';
+    el.innerHTML  = `
+      <span style="font-size:10px;opacity:.5;margin-right:3px">${isPers?'👤':'🏛'}</span>
+      <span class="canvas-card-title" contenteditable="true"
+        ondblclick="event.stopPropagation()"
+        onblur="saveCanvasField('${t.id}','title',this)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+      >${esc(t.title)}</span>
+      <div class="canvas-card-desc" contenteditable="true"
+        style="font-size:11px;color:#6b6b65;margin-top:4px;outline:none;line-height:1.4;min-height:14px"
+        ondblclick="event.stopPropagation()"
+        onblur="saveCanvasField('${t.id}','description',this)"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}"
+        data-placeholder="Legg til beskrivelse…"
+      >${esc(t.description||'')}</div>
+      <div class="canvas-card-meta">${esc(t.submitted_by||'Anonym')}</div>
+      <button class="canvas-card-del" onclick="deleteTask('${t.id}')">✕</button>`;
+
+    el.addEventListener('mousedown', canvasMouseDown);
+    canvas.appendChild(el);
+  });
+
+  renderWordCloud();
+}
+
+function canvasMouseDown(e) {
+  if (e.target.matches('[contenteditable],.canvas-card-del')) return;
+  const el     = e.currentTarget;
+  const canvas = document.getElementById('canvas-area');
+  const cRect  = canvas.getBoundingClientRect();
+  canvasDrag = {
+    el,
+    ox: e.clientX - cRect.left - el.offsetLeft,
+    oy: e.clientY - cRect.top  - el.offsetTop
+  };
+  el.style.zIndex = 50;
+  e.preventDefault();
+}
+
+document.addEventListener('mousemove', e => {
+  if (!canvasDrag) return;
+  const canvas = document.getElementById('canvas-area');
+  const rect   = canvas.getBoundingClientRect();
+  const x = Math.max(0, Math.min(e.clientX - rect.left - canvasDrag.ox, rect.width  - canvasDrag.el.offsetWidth));
+  const y = Math.max(0, Math.min(e.clientY - rect.top  - canvasDrag.oy, rect.height - canvasDrag.el.offsetHeight));
+  canvasDrag.el.style.left = x + 'px';
+  canvasDrag.el.style.top  = y + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+  if (!canvasDrag) return;
+  saveCanvasPos(canvasDrag.el.dataset.id,
+    parseInt(canvasDrag.el.style.left),
+    parseInt(canvasDrag.el.style.top));
+  canvasDrag.el.style.zIndex = '';
+  canvasDrag = null;
+});
+
+function saveCanvasField(id, field, el) {
+  const val = el.textContent.trim();
+  if (!tasks[id]) return;
+  if (field === 'title' && !val) { el.textContent = tasks[id].title; return; }
+  if (val !== (tasks[id][field]||'')) patch(id, { [field]: val });
+}
+
+function renderWordCloud() {
+  const stopWords = new Set(['og','i','for','til','av','en','et','å','som','på','er','vi','med','de','det','ikke','seg','den','kan','om','men','har','fra','ved','inn','ut','at','vi','alle','nye','en','ei','ei','bli','må','ha','være','gjøre','bruke','bruker']);
+  const freq = {};
+  Object.values(tasks).forEach(t => {
+    ((t.title||'') + ' ' + (t.description||''))
+      .toLowerCase()
+      .match(/\b[a-zæøå]{3,}\b/g)
+      ?.forEach(w => { if (!stopWords.has(w)) freq[w] = (freq[w]||0) + 1; });
+  });
+  const words = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0, 35);
+  const maxF  = words[0]?.[1] || 1;
+  const wc    = document.getElementById('wordcloud');
+  if (!wc) return;
+  if (words.length === 0) { wc.innerHTML = '<span style="font-size:12px;color:#c0bdb8">Ingen ord ennå…</span>'; return; }
+  wc.innerHTML = words.map(([w, f]) => {
+    const size = 11 + Math.round((f / maxF) * 18);
+    const op   = 0.45 + (f / maxF) * 0.55;
+    return `<span class="wc-word" style="font-size:${size}px;opacity:${op}">${esc(w)}</span>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════
+   3. TYPE
+══════════════════════════════════════════ */
+function renderType() {
+  const persList = document.getElementById('type-pers-list');
+  const stdList  = document.getElementById('type-std-list');
+
+  const pers = Object.values(tasks).filter(t => t.task_type === 'personal');
+  const std  = Object.values(tasks).filter(t => t.task_type !== 'personal');
+
+  document.getElementById('type-pers-count').textContent = pers.length;
+  document.getElementById('type-std-count').textContent  = std.length;
+
+  const makeTypeCard = t => {
+    const tlClass = t.traffic_light ? `tl-${t.traffic_light}` : '';
+    const isPers  = t.task_type === 'personal';
+    return `<div class="type-mini-card ${tlClass}">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${esc(t.title)}</div>
+        ${t.description?`<div style="font-size:11px;color:#6b6b65;margin-top:2px">${esc(t.description)}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <span class="type-mini-author">${esc(t.submitted_by||'Anonym')}</span>
+        <div class="type-toggle" onclick="toggleType('${t.id}')" title="Klikk for å bytte" style="margin-left:4px">
+          <span class="type-option${isPers?' selected':''}">👤</span>
+          <span class="type-option${!isPers?' selected':''}">🏛</span>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  persList.innerHTML = pers.length ? pers.map(makeTypeCard).join('') : '<p style="font-size:13px;color:#b0aea8">Ingen personlige oppgaver…</p>';
+  stdList.innerHTML  = std.length  ? std.map(makeTypeCard).join('')  : '<p style="font-size:13px;color:#b0aea8">Ingen standardiserte oppgaver…</p>';
+}
+
+/* ══════════════════════════════════════════
+   4. RISIKO
+══════════════════════════════════════════ */
+function setRisikoFilter(f, btn) {
+  risikoFilter = f;
+  document.querySelectorAll('#view-risiko .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRisiko();
+}
+
+function renderRisiko() {
+  const list = document.getElementById('risiko-list');
+  const order = { rød:0, gul:1, grønn:2, '':3 };
+
+  let taskList = Object.values(tasks).sort((a,b) => {
+    const ta = order[a.traffic_light||''];
+    const tb = order[b.traffic_light||''];
+    return ta !== tb ? ta - tb : new Date(a.created_at) - new Date(b.created_at);
+  });
+
+  if (risikoFilter !== 'alle') {
+    taskList = risikoFilter === 'ingen'
+      ? taskList.filter(t => !t.traffic_light)
+      : taskList.filter(t => t.traffic_light === risikoFilter);
   }
 
-  /* ── Star toggle ── */
-  function toggleStar(id) {
-    const current = tasks[id]?.starred || false;
-    patch(id, { starred: !current });
+  if (!taskList.length) {
+    list.innerHTML = '<p style="font-size:13px;color:#b0aea8">Ingen oppgaver med dette filteret…</p>';
+    return;
   }
 
-  /* ── PATCH task ── */
-  async function patch(id, fields) {
-    // Optimistic update
-    if (tasks[id]) {
-      Object.assign(tasks[id], fields);
-      refreshCard(tasks[id]);
-    }
-    await fetch(`${SUPABASE_URL}/rest/v1/tasks?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: SUPABASE_ANON,
-        Authorization: `Bearer ${SUPABASE_ANON}`,
-        Prefer: 'return=minimal',
+  list.innerHTML = taskList.map(t => {
+    const tlClass = t.traffic_light ? `tl-${t.traffic_light}` : '';
+    const isPers  = t.task_type === 'personal';
+    const tl      = t.traffic_light || '';
+    return `
+      <div class="risiko-card ${tlClass}">
+        <div class="risiko-card-top">
+          <span class="risiko-title">${esc(t.title)}</span>
+          <span style="font-size:11px;opacity:.6">${isPers?'👤':'🏛'}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem;margin-top:.2rem">
+          <span class="tl-label">Risiko</span>
+          <div class="traffic-light">
+            <div class="tl-dot tl-grønn${tl==='grønn'?' active':''}" title="Grønn – lav risiko"  onclick="setTL('${t.id}','grønn')"></div>
+            <div class="tl-dot tl-gul${tl==='gul'?' active':''}"     title="Gul – middels risiko" onclick="setTL('${t.id}','gul')"></div>
+            <div class="tl-dot tl-rød${tl==='rød'?' active':''}"     title="Rød – høy risiko"     onclick="setTL('${t.id}','rød')"></div>
+          </div>
+        </div>
+        <div class="risiko-meta">${esc(t.submitted_by||'Anonym')}</div>
+      </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════
+   5. MATRIX
+══════════════════════════════════════════ */
+function renderMatrix() {
+  const grid = document.getElementById('matrix-grid');
+  const ul   = document.getElementById('unplaced-list');
+
+  grid.querySelectorAll('.mini-card').forEach(el => el.remove());
+  ul.innerHTML = '';
+
+  const all      = Object.values(tasks);
+  const placed   = all.filter(t => t.matrix_x != null && t.matrix_y != null);
+  const unplaced = all.filter(t => t.matrix_x == null || t.matrix_y == null);
+
+  placed.forEach(t => {
+    const el = document.createElement('div');
+    const tlClass = t.traffic_light ? `tl-${t.traffic_light}` : '';
+    el.className  = `mini-card ${tlClass}`;
+    el.title      = t.title;
+    el.style.left = (t.matrix_x * 100) + '%';
+    el.style.top  = (t.matrix_y * 100) + '%';
+    el.draggable  = true;
+    el.dataset.id = t.id;
+    const icon = t.task_type === 'personal' ? '👤' : '🏛';
+    el.innerHTML  = `<span style="font-size:9px;opacity:.6">${icon}</span> ${esc(t.title)}`;
+    el.addEventListener('dragstart', e => { dragId = e.target.dataset.id; e.dataTransfer.effectAllowed='move'; });
+    grid.appendChild(el);
+  });
+
+  unplaced.forEach(t => {
+    const chip = document.createElement('div');
+    chip.className   = 'unplaced-chip';
+    chip.textContent = t.title;
+    chip.draggable   = true;
+    chip.dataset.id  = t.id;
+    chip.addEventListener('dragstart', e => { dragId = e.target.dataset.id; e.dataTransfer.effectAllowed='move'; });
+    ul.appendChild(chip);
+  });
+
+  document.getElementById('unplaced-hint').style.display = unplaced.length > 0 ? 'block' : 'none';
+}
+
+function matrixDragOver(e) {
+  e.preventDefault();
+  document.getElementById('matrix-grid').classList.add('drag-over');
+}
+function matrixDragLeave() {
+  document.getElementById('matrix-grid').classList.remove('drag-over');
+}
+function matrixDrop(e) {
+  e.preventDefault();
+  document.getElementById('matrix-grid').classList.remove('drag-over');
+  if (!dragId) return;
+  const rect = document.getElementById('matrix-grid').getBoundingClientRect();
+  const x = Math.max(.02, Math.min(.98, (e.clientX - rect.left)  / rect.width));
+  const y = Math.max(.02, Math.min(.98, (e.clientY - rect.top)   / rect.height));
+  patch(dragId, { matrix_x: x, matrix_y: y });
+  renderMatrix();
+  dragId = null;
+}
+
+/* ══════════════════════════════════════════
+   ACTIONS
+══════════════════════════════════════════ */
+function toggleType(id) {
+  const cur = tasks[id]?.task_type || 'standard';
+  patch(id, { task_type: cur === 'personal' ? 'standard' : 'personal' });
+}
+
+function setTL(id, color) {
+  const cur = tasks[id]?.traffic_light || '';
+  patch(id, { traffic_light: cur === color ? null : color });
+}
+
+function toggleStar(id) {
+  patch(id, { starred: !(tasks[id]?.starred || false) });
+}
+
+async function deleteTask(id) {
+  const title = tasks[id]?.title || 'oppgave';
+  if (!confirm(`Slette "${title}"?`)) return;
+  delete tasks[id];
+  // Clean up canvas pos
+  const pos = getCanvasPositions(); delete pos[id];
+  localStorage.setItem(CANVAS_KEY, JSON.stringify(pos));
+  renderAll();
+  await fetch(`${SUPABASE_URL}/rest/v1/tasks?id=eq.${id}`, {
+    method: 'DELETE',
+    headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` }
+  });
+}
+
+async function patch(id, fields) {
+  if (tasks[id]) { Object.assign(tasks[id], fields); }
+  recentPatches.set(id, Date.now());
+  renderAll();
+  await fetch(`${SUPABASE_URL}/rest/v1/tasks?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: SUPABASE_ANON,
+      Authorization: `Bearer ${SUPABASE_ANON}`,
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify(fields),
+  });
+}
+
+/* ── PDF ── */
+function exportPDF() {
+  showView('matrix');
+  const rows = document.getElementById('pdf-rows');
+  const tlLabel = { grønn:'🟢 Lav', gul:'🟡 Middels', rød:'🔴 Høy' };
+  rows.innerHTML = '';
+  Object.values(tasks)
+    .sort((a,b) => new Date(a.created_at)-new Date(b.created_at))
+    .forEach(t => {
+      rows.innerHTML += `
+        <div class="pdf-task-row">
+          <div class="pdf-task-title">
+            ${t.starred?'★ ':''}${esc(t.title)}<br>
+            <span style="font-weight:300;color:#8b8b85;font-size:10px">
+              ${t.task_type==='personal'?'👤 Personlig':'🏛 Standardisert'}
+              ${t.traffic_light?' · '+tlLabel[t.traffic_light]:''}
+            </span>
+          </div>
+          <div class="pdf-task-desc">${esc(t.description||'')}</div>
+          <div class="pdf-task-meta">
+            ${esc(t.submitted_by||'Anonym')}<br>
+            ${t.matrix_x!=null?'✓ Plassert':'–'}
+          </div>
+        </div>`;
+    });
+
+  // Include notes in PDF
+  const notes = document.getElementById('matrix-notes').value.trim();
+  if (notes) {
+    rows.innerHTML += `<div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e0ddd6">
+      <div style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#8b8b85;margin-bottom:.5rem">Referat</div>
+      <div style="font-size:12px;color:#4a4a45;line-height:1.6;white-space:pre-wrap">${esc(notes)}</div>
+    </div>`;
+  }
+
+  setTimeout(() => window.print(), 150);
+}
+
+/* ── Utils ── */
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── JSON export ── */
+function exportJSON() {
+  const data = {
+    exported: new Date().toISOString(),
+    tasks: Object.values(tasks),
+    notes: document.getElementById('matrix-notes').value,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ki-oppgaver-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+/* ── Risiko-sjekkliste accordion ── */
+const CHECKLIST = [
+  {
+    section: "Personvern og data",
+    items: [
+      {
+        title: "Behandles det personopplysninger?",
+        badge: "Kritisk å avklare", badgeColor: "rød",
+        lead: "Dette er det første spørsmålet dere alltid må stille. Svaret bestemmer nesten alle andre krav.",
+        checks: [
+          "Inneholder inputen navn, e-postadresser, fødselsnummer, roller eller annet som kan knyttes til en person?",
+          "Er det snakk om særlige kategorier — helse, fagforeningsmedlemskap, etnisitet, straffbare forhold?",
+          "Kan KI-systemet koble opplysninger på tvers slik at noen blir identifiserbare — selv om enkeltdelene er anonyme?",
+          "Hvor lagres dataene — i Norge, EU, eller tredjeland (f.eks. USA)?",
+        ],
+        example: "Sortere fellesmail — ja, personopplysninger. Evaluere anonymiserte tilbud — kanskje ikke.",
+        laws: [
+          { label: "GDPR art. 4 og 9", type: "eu" },
+          { label: "GDPR art. 44–49 (tredjeland)", type: "eu" },
+          { label: "Datatilsynets veileder", type: "no" },
+        ],
       },
-      body: JSON.stringify(fields),
-    });
-  }
+      {
+        title: "Har vi rettslig grunnlag og databehandleravtale?",
+        badge: "Kritisk å avklare", badgeColor: "rød",
+        lead: "Selv om dere har en avtale med leverandøren betyr det ikke at alle bruksformål er dekket.",
+        checks: [
+          "Finnes det en databehandleravtale (DPA) med KI-leverandøren som dekker dette spesifikke formålet?",
+          "Brukes dataene til å trene modellen videre? Mange gratisverktøy gjør dette som standard.",
+          "Er Microsoft 365 Copilot-avtalen signert — og dekker den akkurat denne bruken?",
+          "Har dere rettslig grunnlag: samtykke, oppgave av allmenn interesse, eller lovhjemmel?",
+        ],
+        laws: [
+          { label: "GDPR art. 6 og 28", type: "eu" },
+          { label: "Personopplysningsloven § 1", type: "no" },
+          { label: "Schrems II (tredjeland)", type: "warn" },
+        ],
+      },
+    ],
+  },
+  {
+    section: "Beslutning og ansvar",
+    items: [
+      {
+        title: "Støtter KI-en en beslutning som påvirker enkeltpersoner?",
+        badge: "Høy risiko", badgeColor: "rød",
+        lead: "Så snart KI brukes til å vurdere, rangere eller filtrere noe som gjelder en person, gjelder skjerpede krav.",
+        checks: [
+          "Er dette en beslutning med rettslig eller tilsvarende virkning for en person (vedtak, avslag, rangering i konkurranse)?",
+          "Er det et menneske som tar den endelige beslutningen — eller bare «godkjenner» det KI-en foreslår uten reell kontroll?",
+          "Kan den berørte parten klage, og kan klagebehandler forstå og forklare hvorfor KI-en konkluderte som den gjorde?",
+          "Er systemet klassifisert som høy-risiko KI etter EU AI Act? Rekruttering og offentlig tjenesteyting er det som regel.",
+        ],
+        example: "KI som rangerer leverandørtilbud = høy risiko. KI som sammendrar tilbudet for saksbehandler = lavere risiko.",
+        laws: [
+          { label: "GDPR art. 22", type: "eu" },
+          { label: "EU AI Act art. 6 og 26", type: "eu" },
+          { label: "Forvaltningsloven § 24–25", type: "no" },
+        ],
+      },
+      {
+        title: "Kan KI-en diskriminere eller forsterke skjevheter?",
+        badge: "Viktig å vurdere", badgeColor: "gul",
+        lead: "KI-modeller lærer av historiske data og kan reprodusere systematiske ulemper for bestemte grupper.",
+        checks: [
+          "Vet dere hva modellen er trent på — og om treningsdataen representerer alle berørte grupper likt?",
+          "Kan KI-en vektlegge faktorer som korrelerer med kjønn, alder, etnisitet eller funksjonsnedsettelse?",
+          "Finnes det en plan for å teste og overvåke utfall over tid?",
+          "Hvem er ansvarlig hvis det viser seg at KI-en systematisk behandler en gruppe dårligere?",
+        ],
+        laws: [
+          { label: "EU AI Act art. 9 (risikostyring)", type: "eu" },
+          { label: "Likestillings- og diskrimineringsloven", type: "no" },
+          { label: "ARP-plikten (aktivitetsplikt)", type: "no" },
+        ],
+      },
+    ],
+  },
+  {
+    section: "Pålitelighet og kvalitet",
+    items: [
+      {
+        title: "Kan KI-en produsere feil som ser troverdige ut?",
+        badge: "Viktig å vurdere", badgeColor: "gul",
+        lead: "Språkmodeller kan hallusinere — de finner på lovhenvisninger, tall og saksreferanser som høres riktige ut men ikke er det.",
+        checks: [
+          "Hva er konsekvensen hvis KI-en tar feil i akkurat denne oppgaven?",
+          "Er det rutiner for at et menneske etterprøver fakta, tall og referanser?",
+          "Forstår den som bruker verktøyet hvilke typer feil det er mest sannsynlig å gjøre?",
+          "Er oppgaven av en type der presisjon er kritisk — f.eks. juridiske vurderinger, medisinske opplysninger, økonomi?",
+        ],
+        example: "KI som sorterer mail etter tema — lav konsekvens ved feil. KI som siterer lovtekst i et vedtak — høy konsekvens.",
+        laws: [
+          { label: "Forvaltningsloven § 17 (utredningsplikt)", type: "no" },
+          { label: "EU AI Act art. 13 (transparens)", type: "warn" },
+        ],
+      },
+    ],
+  },
+  {
+    section: "Anskaffelse og leverandør",
+    items: [
+      {
+        title: "Er verktøyet lovlig anskaffet til dette formålet?",
+        badge: "Viktig å vurdere", badgeColor: "gul",
+        lead: "Å ta i bruk et KI-verktøy systematisk kan utløse anskaffelsesregler — selv om dere allerede betaler for plattformen.",
+        checks: [
+          "Er dette et verktøy dere bruker ad hoc privat, eller skal det innføres som en del av en arbeidsprosess?",
+          "Overstiger verdien av systemet terskelverdiene i anskaffelsesregelverket?",
+          "Behandler systemet personopplysninger eller støtter det beslutninger? Hvis ja: krav om DPIA før innføring.",
+          "Er leverandøren CE-merket for høy-risiko KI (kreves for å kjøpe/ta i bruk slike systemer fra 2026)?",
+        ],
+        laws: [
+          { label: "Anskaffelsesloven og -forskriften", type: "no" },
+          { label: "GDPR art. 35 (DPIA)", type: "eu" },
+          { label: "EU AI Act art. 26 og 71", type: "eu" },
+        ],
+      },
+      {
+        title: "Informasjonssikkerhet — hva kan gå ut?",
+        badge: "Viktig å vurdere", badgeColor: "gul",
+        lead: "Sensitiv informasjon som sendes til en sky-tjeneste kan bli lagret, logget, brukt til trening — eller lekke.",
+        checks: [
+          "Hva er sikkerhetsklassifiseringen på materialet som prosesseres — åpent, intern, fortrolig?",
+          "Har leverandøren ISO 27001 eller tilsvarende sertifisering? Er det gjort en sikkerhetsrisikovurdering?",
+          "Kan KI-agenter med tilgang til e-post eller filsystem manipuleres av ondsinnet innhold i dokumentene de leser (prompt injection)?",
+          "Hva skjer med driften hvis leverandøren plutselig endrer vilkår, øker priser eller legger ned?",
+        ],
+        laws: [
+          { label: "NSM grunnprinsipper", type: "no" },
+          { label: "Sikkerhetsloven (ved skjermingsverdig info)", type: "no" },
+          { label: "ISO/IEC 42001 (KI-styring)", type: "warn" },
+        ],
+      },
+    ],
+  },
+  {
+    section: "Transparens og dokumentasjon",
+    items: [
+      {
+        title: "Kan vi dokumentere og forklare det som ble gjort?",
+        badge: "God praksis", badgeColor: "grønn",
+        lead: "Offentlig forvaltning har plikt til etterprøvbarhet. KI-bruk endrer ikke det — det skjerper det.",
+        checks: [
+          "Er det dokumentert at KI ble brukt i saksbehandlingen, og på hvilken måte?",
+          "Kan en klagebehandler forstå grunnlaget for en beslutning uten å ha tilgang til KI-verktøyet?",
+          "Oppfyller arkiveringen kravene i arkivloven — lagres prompter og svar der det er relevant?",
+          "Er det merket i dokumentet/vedtaket at KI er benyttet, der dette er relevant for mottakeren?",
+        ],
+        laws: [
+          { label: "Arkivloven § 6", type: "no" },
+          { label: "Offentleglova", type: "no" },
+          { label: "EU AI Act art. 13 (transparens)", type: "eu" },
+          { label: "Forvaltningsloven § 24", type: "no" },
+        ],
+      },
+    ],
+  },
+];
 
-  /* ── MATRIX ── */
-  function renderMatrix() {
-    const grid = document.getElementById('matrix-grid');
-    const unplacedList = document.getElementById('unplaced-list');
-    const hint = document.getElementById('unplaced-hint');
+function renderChecklist() {
+  const container = document.getElementById('risiko-sjekkliste');
+  if (!container) return;
+  container.innerHTML = CHECKLIST.map(section => `
+    <div class="acc-section-label">${esc(section.section)}</div>
+    ${section.items.map((item, i) => {
+      const id = `acc-${section.section.replace(/\s/g,'-')}-${i}`;
+      return `
+        <div class="acc-item">
+          <div class="acc-header" onclick="toggleAcc('${id}')">
+            <span class="acc-title">${esc(item.title)}</span>
+            <span class="acc-badge badge-${item.badgeColor}">${esc(item.badge)}</span>
+            <span class="acc-arrow" id="arr-${id}">›</span>
+          </div>
+          <div class="acc-body" id="${id}">
+            <p class="acc-lead">${esc(item.lead)}</p>
+            <ul class="acc-checks">
+              ${item.checks.map(c => `<li>${esc(c)}</li>`).join('')}
+            </ul>
+            ${item.example ? `<div class="acc-example"><strong>Eksempel:</strong> ${esc(item.example)}</div>` : ''}
+            <div class="acc-laws">
+              ${item.laws.map(l => `<span class="law-tag law-${l.type}">${esc(l.label)}</span>`).join('')}
+            </div>
+          </div>
+        </div>`;
+    }).join('')}
+  `).join('');
+}
 
-    // Remove existing mini-cards (not quadrant labels)
-    grid.querySelectorAll('.mini-card').forEach(el => el.remove());
-    unplacedList.innerHTML = '';
+function toggleAcc(id) {
+  const body  = document.getElementById(id);
+  const arrow = document.getElementById('arr-' + id);
+  const open  = body.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
 
-    const taskList = Object.values(tasks);
-    const placed   = taskList.filter(t => t.matrix_x != null && t.matrix_y != null);
-    const unplaced = taskList.filter(t => t.matrix_x == null || t.matrix_y == null);
+renderChecklist();
 
-    placed.forEach(t => {
-      const el = document.createElement('div');
-      el.className = 'mini-card';
-      el.textContent = t.title;
-      el.title = t.title;
-      el.style.left = (t.matrix_x * 100) + '%';
-      el.style.top  = (t.matrix_y * 100) + '%';
-      el.draggable = true;
-      el.dataset.id = t.id;
-      el.addEventListener('dragstart', onMiniCardDragStart);
-      grid.appendChild(el);
-    });
-
-    unplaced.forEach(t => {
-      const chip = document.createElement('div');
-      chip.className = 'unplaced-chip';
-      chip.textContent = t.title;
-      chip.draggable = true;
-      chip.dataset.id = t.id;
-      chip.addEventListener('dragstart', onMiniCardDragStart);
-      unplacedList.appendChild(chip);
-    });
-
-    hint.style.display = unplaced.length > 0 ? 'block' : 'none';
-  }
-
-  function onMiniCardDragStart(e) {
-    dragId = e.target.dataset.id;
-    e.dataTransfer.effectAllowed = 'move';
-  }
-
-  function matrixDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    document.getElementById('matrix-grid').classList.add('drag-over');
-  }
-
-  function matrixDragLeave(e) {
-    document.getElementById('matrix-grid').classList.remove('drag-over');
-  }
-
-  function matrixDrop(e) {
-    e.preventDefault();
-    document.getElementById('matrix-grid').classList.remove('drag-over');
-    if (!dragId) return;
-
-    const grid = document.getElementById('matrix-grid');
-    const rect = grid.getBoundingClientRect();
-    const x = Math.max(0.02, Math.min(0.98, (e.clientX - rect.left) / rect.width));
-    const y = Math.max(0.02, Math.min(0.98, (e.clientY - rect.top)  / rect.height));
-
-    patch(dragId, { matrix_x: x, matrix_y: y });
-    renderMatrix();
-    dragId = null;
-  }
-
-  /* ── Utilities ── */
-  function esc(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  /* ── Boot ── */
-  fetchAll();
-  subscribeRealtime();
+/* ── Boot ── */
+fetchAll();
 </script>
 </body>
 </html>
