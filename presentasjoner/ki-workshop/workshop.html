@@ -1,0 +1,4187 @@
+<!doctype html>
+<html lang="nb" data-temp="myk" data-ink="rosa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workshop: Kunstig intelligens — Innkjøp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── tusj/tokens.css ── */
+/* ============================================================
+   Bottega — system: tusj  v0.2
+   Lars' personlige stil. Risografi: flate spotfarger, med vilje
+   litt ute av register, på ubleket papir.
+
+   To brytere, uavhengige av hverandre:
+     <html data-temp="brut|myk">      temperament — kantenes hardhet
+     <html data-ink="rosa|gronn|oransje">  blekkfarge
+
+   Tokens. Alt annet leser herfra; ingen hex utenfor denne fila.
+   ============================================================ */
+
+:root {
+  /* --- Papir — likt i begge temperamenter, så de leser som familie */
+  --paper:        #F1EFE8;
+  --paper-raised: #FAF9F4;
+  --paper-sunk:   #E7E4DA;
+
+  /* --- Blekk — varm nesten-svart. Ekte svart finnes ikke i risotrykk. */
+  --ink:       #1F1B16;
+  --ink-soft:  #5E564A;
+  --ink-faint: #9A9184;
+
+  /* --- Spotfarge -----------------------------------------------
+     --spot-raw er den ene sanne verdien per blekk (se [data-ink]).
+     --spot utledes av temperamentet: Brut bruker den rå fargen,
+     Myk blander den mot papiret. Én kilde per farge, aldri to.
+     --second er andrestemmen og ligger fast gjennom alle tre. */
+  --spot-raw:  #E8397F;
+  --spot-soft: #F9D9E5;
+  --second:      #2159A5;
+  --second-soft: #D6E0F0;
+  --yellow:      #F2B33D;
+
+  --rule: #D5D0C4;
+
+  /* --- Typografi ------------------------------------------------ */
+  --font-display: "Bricolage Grotesque", "Arial Black", sans-serif;
+  --font-body:    "Newsreader", Georgia, serif;
+  --font-mono:    "Space Mono", "Courier New", monospace;
+
+  --step--1: 0.8125rem;
+  --step-0:  1.125rem;
+  --step-1:  1.375rem;
+  --step-2:  1.75rem;
+  --step-3:  clamp(2rem, 1.3rem + 2.6vw, 3rem);
+  --step-4:  clamp(2.8rem, 1.2rem + 6.4vw, 5.5rem);
+
+  --leading-body:  1.55;
+  --tracking-mono: 0.12em;
+
+  /* --- Rom ------------------------------------------------------ */
+  --space-1: 0.375rem;
+  --space-2: 0.75rem;
+  --space-3: 1.25rem;
+  --space-4: 2rem;
+  --space-5: 3.25rem;
+  --space-6: 5rem;
+
+  --measure: 62ch;
+}
+
+/* ============================================================
+   TEMPERAMENT — hvor harde kantene er.
+   Endrer form, aldri farge eller innhold.
+   ============================================================ */
+
+/* BRUT (standard) — nybrutalisme: tykk ramme, hardt hjørne,
+   flat skygge forskjøvet i registerets retning. Skriker litt. */
+:root,
+[data-temp="brut"] {
+  --spot-mix: 100%;
+  --spot: color-mix(in srgb, var(--spot-raw) var(--spot-mix), var(--paper));
+
+  --radius:    2px;
+  --radius-lg: 2px;
+
+  --edge-w:     2px;
+  --edge:       var(--ink);
+  --edge-quiet: var(--ink);
+
+  --misregister-x: 2.5px;
+  --misregister-y: 2.5px;
+
+  --shadow-card: var(--misregister-x) var(--misregister-y) 0 var(--spot);
+  --shadow-lift: var(--misregister-x) var(--misregister-y) 0 var(--spot);
+
+  --display-weight:   800;
+  --display-leading:  0.98;
+  --display-tracking: -0.02em;
+
+  --ico-stroke: 2.4;
+  --surface:    var(--paper-raised);
+}
+
+/* MYK — samme system, senket skuldre: runde hjørner, tynn og lys
+   ramme, skygge som diffus glød i stedet for hardt avtrykk.
+   Registerforskyvningen er beholdt, men halvert — signaturen skal
+   fortsatt kjennes igjen. */
+[data-temp="myk"] {
+  /* Mykere farge, ikke en annen farge: spotfargen blandes 14 % mot
+     papiret. Tar av kanten uten å innføre en ny hex å vedlikeholde.
+     --spot-mix er skilt ut så ting som har sin EGEN --spot-raw — som
+     vennene til figuren — kan utlede den samme mykningen selv. */
+  --spot-mix: 86%;
+  --spot: color-mix(in srgb, var(--spot-raw) var(--spot-mix), var(--paper));
+
+  --radius:    14px;
+  --radius-lg: 22px;
+
+  --edge-w:     1.5px;
+  --edge:       var(--rule);
+  --edge-quiet: transparent;
+
+  --misregister-x: 1.5px;
+  --misregister-y: 1.5px;
+
+  --shadow-card: 0 2px 4px rgba(31, 27, 22, 0.04),
+                 0 14px 28px -14px rgba(31, 27, 22, 0.22);
+  --shadow-lift: 0 10px 22px -12px color-mix(in srgb, var(--spot) 70%, transparent);
+
+  --display-weight:   600;
+  --display-leading:  1.08;
+  --display-tracking: -0.012em;
+
+  --ico-stroke: 2.2;
+  --surface:    color-mix(in srgb, var(--paper-raised) 70%, var(--paper));
+}
+
+/* ============================================================
+   BLEKK — hovedfargen. Tre ekte risofarger.
+   Uavhengig av temperament: alle kombinasjoner er gyldige.
+   ============================================================ */
+
+[data-ink="gronn"] {
+  --spot-raw:  #00A05B;
+  --spot-soft: #CFEBDD;
+}
+
+[data-ink="oransje"] {
+  --spot-raw:  #F0562F;
+  --spot-soft: #FBDCD1;
+}
+
+/* ── tusj/system.css ── */
+/* ============================================================
+   Bottega — system: tusj  v0.2
+   Elementer, komponenter og ikonmekanikken. Leser kun tokens.css.
+
+   Ingen regel her vet hvilket temperament som er valgt — form
+   hentes utelukkende fra --radius / --edge-w / --edge / --shadow-*.
+   Skal en ny komponent støtte begge temperamenter, er det nok å
+   bruke de tokenene.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body * { transition: border-radius .2s ease, box-shadow .2s ease, border-color .2s ease; }
+}
+
+/* --- Layout --------------------------------------------------- */
+
+.sheet {
+  max-width: 68rem;
+  margin-inline: auto;
+  padding: var(--space-4);
+}
+
+.measure { max-width: var(--measure); }
+
+figure { margin: 0; }
+
+/* --- Kort ----------------------------------------------------- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--space-3);
+  margin-block: var(--space-3);
+}
+
+.card {
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-card);
+}
+
+.card > .label { margin-bottom: var(--space-2); }
+
+.section {
+  padding-block: var(--space-6);
+  border-top: 1.5px solid var(--rule);
+}
+.section:first-child { border-top: 0; }
+
+/* ============================================================
+   IKONER — signaturen
+   Rene former + et filter som rister dem. Alle nye ikoner arver
+   håndtegnet strek gratis.
+
+   Bruk:
+     <svg viewBox="0 0 48 48" class="ico"><use href="#i-cat"/><use href="#i-cat"/></svg>
+   Første <use> er spøkelset (spotfarge, forskjøvet), andre er blekket.
+   ============================================================ */
+
+.ico {
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: visible;
+  filter: url(#tusj-wobble);
+
+  /* Må stå her, ikke på <symbol>: <use> kloner inn i en shadow-tree
+     og arver fra <use>-elementet, ikke fra symbolets opphav. */
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--ico-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ico > use:first-child {
+  color: var(--spot);
+  transform: translate(var(--misregister-x), var(--misregister-y));
+}
+
+.ico > use:last-child {
+  color: var(--ink);
+  mix-blend-mode: multiply;
+}
+
+.ico--second > use:first-child { color: var(--second); }
+.ico--sm { width: 2rem; height: 2rem; }
+.ico--lg { width: 6rem; height: 6rem; }
+
+/* Kokende strek — tegneseriens levende linje. Skrus på per ikon. */
+.ico--boil { filter: url(#tusj-boil); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ico--boil { filter: url(#tusj-wobble); }
+}
+
+/* --- Ikonrutenett --------------------------------------------- */
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+  gap: var(--space-3);
+  margin-block: var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.icon-grid li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-1);
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.icon-grid span {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* --- Typografi ------------------------------------------------- */
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  margin: 0 0 var(--space-3);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--step-4); }
+h2 { font-size: var(--step-3); }
+h3 { font-size: var(--step-1); margin-bottom: var(--space-1); }
+
+/* Registerforskyvningen brukt på tekst: én ordgruppe får spøkelse bak seg. */
+.offset {
+  position: relative;
+  display: inline-block;
+  color: var(--ink);
+}
+.offset::before {
+  content: attr(data-echo);
+  position: absolute;
+  inset: 0;
+  transform: translate(var(--misregister-x), var(--misregister-y));
+  color: var(--spot);
+  z-index: -1;
+}
+
+.lede { font-size: var(--step-1); line-height: 1.45; }
+
+p { margin: 0 0 var(--space-3); }
+
+.label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: var(--space-2);
+}
+
+a { color: var(--second); text-underline-offset: 0.16em; }
+
+:focus-visible { outline: 2.5px solid var(--spot); outline-offset: 3px; }
+
+/* --- Utrop ----------------------------------------------------- */
+
+.callout {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  background: var(--spot-soft);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  margin-block: var(--space-4);
+}
+
+.callout--second { background: var(--second-soft); }
+.callout p:last-child { margin: 0; }
+.callout .ico { flex: 0 0 auto; }
+
+/* --- Stolper: sannsynlighet, fordeling, hva som helst ---------- */
+
+.bars { margin: 0; }
+
+.bars div {
+  display: grid;
+  grid-template-columns: 6rem 1fr 3.5rem;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.bars dt {
+  font-family: var(--font-body);
+  font-size: var(--step-1);
+  text-align: right;
+}
+
+.bars dd {
+  margin: 0;
+  height: 0.9rem;
+  background: var(--paper-sunk);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.bars dd i {
+  display: block;
+  height: 100%;
+  width: var(--v, 0%);
+  background: var(--spot);
+}
+
+.bars b {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 400;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.bars div:first-child b { color: var(--ink); font-weight: 700; }
+
+/* --- Fargeprøver ------------------------------------------------ */
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin-block: var(--space-3);
+}
+
+.swatches i {
+  display: block;
+  height: 4rem;
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-1);
+}
+
+.swatches b { display: block; font-family: var(--font-display); font-size: var(--step--1); }
+.swatches span { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--ink-faint); }
+
+/* --- Slide ------------------------------------------------------ */
+
+.slide {
+  aspect-ratio: 16 / 9;
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.25rem, 3.5%, 2.75rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  container-type: inline-size;
+  box-shadow: var(--shadow-card);
+}
+
+.slide h2 { font-size: clamp(1.4rem, 6cqi, 3.4rem); margin: 0; }
+
+.slide__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: clamp(0.55rem, 1.5cqi, 0.75rem);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* --- Knapp ------------------------------------------------------ */
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  padding: 0.7em 1.3em;
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lift);
+  cursor: pointer;
+}
+
+.btn:active { transform: translate(var(--misregister-x), var(--misregister-y)); box-shadow: none; }
+
+/* ============================================================
+   GRAFER
+   Samme skjelvende strek som ikonene, men mildere (#tusj-fine) —
+   tall og akser må forbli lesbare. Alt henter farge fra --spot /
+   --second / --ink, så grafer følger både temperament og blekk.
+   ============================================================ */
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: url(#tusj-fine);
+}
+
+.chart .axis {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.chart text {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  fill: var(--ink-faint);
+}
+
+.chart .val { fill: var(--ink); font-weight: 700; }
+
+.chart figcaption { font-family: var(--font-mono); }
+
+/* Histogram */
+.hist .bar {
+  fill: var(--spot);
+  stroke: var(--ink);
+  stroke-width: 1.3;
+  transform-box: fill-box;
+  transform-origin: bottom;
+}
+.hist .bar--quiet { fill: var(--spot-soft); }
+
+/* Kurve */
+.line .area  { fill: var(--spot-soft); opacity: 0.6; stroke: none; }
+.line .curve { fill: none; stroke: var(--spot); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.line .dot   { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+
+/* Nettverk */
+.net .edge     { fill: none; stroke: var(--ink); stroke-width: 0.8; opacity: 0.26; }
+.net .edge--on { stroke: var(--spot); stroke-width: 1.8; opacity: 1; }
+.net .node     { fill: var(--surface); stroke: var(--ink); stroke-width: 1.8; }
+.net .node--on { fill: var(--spot); }
+.net .pulse    { fill: var(--spot); stroke: var(--ink); stroke-width: 0.8; }
+
+/* ------------------------------------------------------------
+   ANIMASJON
+   Ett mønster for alle grafer: .reveal på beholderen, og en
+   IntersectionObserver setter .is-in når den kommer til syne.
+   Utgangstilstandene ligger inne i no-preference, så en bruker
+   med redusert bevegelse ser ferdig graf umiddelbart — aldri
+   en tom ramme.
+
+   Strektegning bruker pathLength="1" i markupen, så samme CSS
+   virker uansett hvor lang stien er. Ingen JS-måling.
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal .bar        { transform: scaleY(0); }
+  .reveal .draw       { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .reveal .pop        { opacity: 0; transform: scale(0.3); transform-box: fill-box; transform-origin: center; }
+  .reveal .fade       { opacity: 0; }
+
+  .reveal.is-in .bar  { animation: t-grow .55s cubic-bezier(.2,.85,.3,1) forwards; }
+  .reveal.is-in .draw { animation: t-draw 1s ease-out forwards; }
+  .reveal.is-in .pop  { animation: t-pop .45s cubic-bezier(.2,1.5,.4,1) forwards; }
+  .reveal.is-in .fade { animation: t-fade .5s ease forwards; }
+
+  .reveal.is-in .bar,
+  .reveal.is-in .draw,
+  .reveal.is-in .pop,
+  .reveal.is-in .fade { animation-delay: calc(var(--i, 0) * var(--stagger, 55ms)); }
+
+  @keyframes t-grow { to { transform: scaleY(1); } }
+  @keyframes t-draw { to { stroke-dashoffset: 0; } }
+  @keyframes t-pop  { to { opacity: 1; transform: scale(1); } }
+  @keyframes t-fade { to { opacity: 1; } }
+}
+
+/* Signalet som løper gjennom nettet er SMIL, ikke CSS — det følger
+   en sti. Skjules helt ved redusert bevegelse. */
+@media (prefers-reduced-motion: reduce) {
+  .net .pulse { display: none; }
+}
+
+/* ============================================================
+   FIGUREN OG KAMERAET
+   Roboten er en dukke med ledd: hvert lem er en <g> som roteres
+   om sitt eget hengsel. Kameraet er én transform på .cam — vi
+   klipper aldri, vi flytter blikket. Derfor kan token-maskineriet
+   ligge inni hodet hans fra første bilde, bittelite og usynlig,
+   og bli lesbart når kameraet kommer nær nok.
+   ============================================================ */
+
+.stage {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  filter: url(#tusj-fine);
+}
+
+.cam { transition: transform 1.4s cubic-bezier(.6,.02,.2,1); }
+
+/* Kamerastillinger. Regnet ut slik at punktet vi vil se på havner
+   midt i ruta: translate(cx - s*px, cy - s*py) scale(s).
+   Hodet til hovedfiguren står i scenekoordinat (160, 66). */
+[data-shot="inn"]    .cam,
+[data-shot="folge"]  .cam { transform: translate(0px, 0px) scale(1); }
+[data-shot="hode"]   .cam { transform: translate(-512px, -177px) scale(4.2); }
+[data-shot="tokens"] .cam { transform: translate(-608px, -226px) scale(4.8); }
+
+/* Streken tynnes ut når kameraet går nær, ellers blir konturen en
+   murvegg. Samme figur, samme opplevd tykkelse. */
+/* Figuren utleder sin egen spotfarge. Uten dette ville en venn med
+   egen --spot-raw beholdt full metning i myk, mens hovedfiguren myknet
+   — én kilde per farge, men to ulike uttrykk. */
+.bot {
+  --bot-stroke: 3.4;
+  --spot: color-mix(in srgb, var(--spot-raw) var(--spot-mix), var(--paper));
+}
+[data-shot="hode"]   .bot { --bot-stroke: 1.1; }
+[data-shot="tokens"] .bot { --bot-stroke: 0.95; }
+
+.bot * { transition: stroke-width 1.4s cubic-bezier(.6,.02,.2,1); }
+
+.bot {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: var(--bot-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bot .fill-ink  { fill: var(--ink); stroke: none; }
+.bot .fill-spot { fill: var(--spot); }
+.bot .fill-pap  { fill: var(--paper-raised); }
+.bot .shadow    { fill: var(--ink); stroke: none; opacity: 0.14; }
+
+/* Hengsler. transform-box: view-box gjør at origo tolkes i
+   figurens egne koordinater, ikke i elementets omsluttende boks. */
+.bot .arm-l, .bot .arm-r, .bot .leg-l, .bot .leg-r, .bot .head, .bot .ant-l, .bot .ant-r {
+  transform-box: view-box;
+}
+.bot .arm-l { transform-origin: 29px 92px; }
+.bot .arm-r { transform-origin: 71px 92px; }
+.bot .leg-l { transform-origin: 40px 128px; }
+.bot .leg-r { transform-origin: 60px 128px; }
+.bot .head  { transform-origin: 50px 78px; }
+.bot .ant-l { transform-origin: 36px 30px; }
+.bot .ant-r { transform-origin: 64px 30px; }
+
+/* Ansiktet viker for maskineriet når vi kommer inn i hodet. */
+.bot .face, .bot .brain { transition: opacity .7s ease; }
+.bot .brain { opacity: 0; }
+[data-shot="hode"]   .bot .face,
+[data-shot="tokens"] .bot .face  { opacity: 0; }
+[data-shot="hode"]   .bot .brain,
+[data-shot="tokens"] .bot .brain { opacity: 1; }
+
+/* Vennene kommer til når hovedfiguren har landet. */
+.bot--friend { opacity: 0; }
+[data-shot="folge"]  .bot--friend,
+[data-shot="hode"]   .bot--friend,
+[data-shot="tokens"] .bot--friend { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .bot--friend { transition: opacity .5s ease; transition-delay: calc(var(--i,0) * 260ms); }
+
+  /* Gangsyklus: motsatt fase på armer og bein, og en liten
+     kroppsnikk på dobbel takt — det er nikken som gjør det levende. */
+  /* Fire skritt, ikke uendelig: han skal komme fram og bli stående,
+     ikke gå på stedet. 4 × .62s ≈ de 2,6 sekundene turen tar.
+     Syklusene begynner og slutter i null, så han lander rolig. */
+  [data-shot="inn"] .bot--main            { animation: t-walkin 2.6s cubic-bezier(.35,0,.3,1) forwards; }
+  [data-shot="inn"] .bot--main .leg-l,
+  [data-shot="inn"] .bot--main .arm-r     { animation: t-swing-a .52s ease-in-out 5; }
+  [data-shot="inn"] .bot--main .leg-r,
+  [data-shot="inn"] .bot--main .arm-l     { animation: t-swing-b .52s ease-in-out 5; }
+  [data-shot="inn"] .bot--main .rig       { animation: t-gait .52s ease-in-out 5; }
+
+  /* Antennene henger etter kroppen. Forsinkelsen er hele poenget. */
+  .bot .ant-l { animation: t-ant 2.1s ease-in-out infinite; }
+  .bot .ant-r { animation: t-ant 2.1s ease-in-out infinite reverse; animation-delay: .3s; }
+
+  /* Levende ansikt. Lange perioder og skjeve forsinkelser, så det aldri
+     ser ut som en løkke — blikket vandrer, smilet rører på seg. */
+  .bot .pupil { transform-box: fill-box; transform-origin: center; animation: t-look 7s ease-in-out infinite; animation-delay: 4.6s; }
+  .bot .mouth { transform-box: fill-box; transform-origin: center; animation: t-smile 5.5s ease-in-out infinite; animation-delay: 5.2s; }
+
+  /* Ansiktet skal stå stille når kameraet er inne i hodet. */
+  [data-shot="hode"] .bot .pupil, [data-shot="hode"] .bot .mouth,
+  [data-shot="tokens"] .bot .pupil, [data-shot="tokens"] .bot .mouth { animation: none; }
+
+  @keyframes t-look  { 0%,18%,44%,62%,88%,100% { transform: none; } 24%,36% { transform: translate(-2.6px, .6px); } 68%,80% { transform: translate(2.4px, -.6px); } }
+  @keyframes t-smile { 0%,52%,82%,100% { transform: none; } 60% { transform: scaleY(1.3) rotate(2deg); } 72% { transform: scaleY(.85); } }
+
+  /* Kroppen svaier per skritt, ikke bare nikker. */
+  @keyframes t-gait { 0%,50%,100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-2px) rotate(-1.6deg); } 75% { transform: translateY(-2px) rotate(1.6deg); } }
+
+  @keyframes t-walkin  { from { transform: translateX(-260px); } to { transform: translateX(0); } }
+  @keyframes t-swing-a { 0%,100% { transform: rotate(0); } 25% { transform: rotate(17deg); }  75% { transform: rotate(-17deg); } }
+  @keyframes t-swing-b { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-17deg); } 75% { transform: rotate(17deg); } }
+  @keyframes t-bob     { 0%,100% { transform: translateY(0); }  50% { transform: translateY(-1.6px); } }
+  @keyframes t-ant     { 0%,100% { transform: rotate(-5deg); }  50% { transform: rotate(5deg); } }
+}
+
+/* Token-maskineriet inne i hodet. Tegnet smått, blir lesbart av
+   kameraet — ikke av at noe byttes ut. */
+.brain .chip     { fill: var(--surface); stroke: var(--ink); stroke-width: 0.45; }
+.brain .chip-txt { font-family: var(--font-body); font-size: 4.4px; fill: var(--ink); stroke: none; }
+.brain .lbl      { font-family: var(--font-mono); font-size: 2.5px; fill: var(--ink-faint); stroke: none; letter-spacing: .1em; }
+.brain .track    { fill: var(--paper-sunk); stroke: var(--ink); stroke-width: 0.35; }
+/* fill-box, ikke view-box: stolpen skal vokse fra sin egen venstrekant,
+   ikke fra viewBoxens. */
+.brain .fillbar  { fill: var(--spot); stroke: none; transform-box: fill-box; transform-origin: left center; }
+.brain .word     { font-family: var(--font-body); font-size: 3.6px; fill: var(--ink); stroke: none; }
+.brain .num      { font-family: var(--font-mono); font-size: 2.8px; fill: var(--ink-soft); stroke: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .brain .fillbar { transform: scaleX(0); }
+  [data-shot="tokens"] .brain .fillbar {
+    animation: t-fillbar .7s cubic-bezier(.2,.85,.3,1) forwards;
+    animation-delay: calc(var(--i,0) * 140ms + 300ms);
+  }
+  @keyframes t-fillbar { to { transform: scaleX(1); } }
+}
+
+/* --- Bryterne (kun i spesimenet) -------------------------------- */
+
+.dials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block: var(--space-3);
+}
+
+.dial { display: flex; gap: var(--space-1); }
+
+.dial button {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  padding: 0.55em 1em;
+  background: var(--surface);
+  color: var(--ink-soft);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.dial button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.dial button[data-ink] { padding-inline: 0.7em; }
+.dial button[data-ink]::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em; height: 0.7em;
+  margin-right: 0.5em;
+  border-radius: var(--radius);
+  background: var(--sw);
+  vertical-align: -0.05em;
+}
+
+/* ── deck.css ── */
+/* ============================================================
+   KI-workshop — deck-skall
+   Bygger på designsystemet Tusj (tusj/tokens.css + tusj/system.css).
+   Her ligger BARE det som er presentasjonsspesifikt: sliden som
+   flate, navigasjonen, og forsidens komposisjon.
+   ============================================================ */
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+/* --- Slides ---------------------------------------------------- */
+
+.deck { position: relative; height: 100vh; width: 100vw; }
+
+.deck-slide {
+  position: absolute;
+  inset: 0;
+  container-type: inline-size;   /* komposisjonene måles i cqi, som i stillbildene */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2.5rem, 7vw, 6rem);
+  box-sizing: border-box;
+  overflow: hidden;          /* figuren starter utenfor høyre kant */
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Sliden på vei ut skal fortsatt vises mens den kjører. JS tar bort
+   .is-ut når reisen er over. */
+.deck-slide.is-active,
+.deck-slide.is-ut { opacity: 1; visibility: visible; }
+
+/* ============================================================
+   OVERGANGER — decket som en rull, ikke som en bunke
+   Retningen bor på sliden: data-inn="opp" (standard) betyr at
+   innholdet kommer nedenfra og skyver forrige slide oppover;
+   data-inn="ned" snur reisen. JS leser data-inn, speilvender den
+   når man går bakover, og skriver resultatet til data-vei — som
+   er det CSS ser på. Da overlever den skrevne retningen at man
+   blar fram og tilbake.
+
+   Merk: ingen opacity på reisen. Sliden skal være FERDIG TEGNET
+   mens den beveger seg — det er hele forskjellen på en rull og
+   en overtoning. Derfor har agendaen og spørsmålet heller ingen
+   fx-innganger på barna sine.
+   ============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* .reis settes bare når vi kommer FRA en annen slide. Uten den ville
+     forsiden reist inn nedenfra ved første visning — decket skal åpne
+     stille, ikke med en bevegelse ingen har bedt om. */
+  .deck-slide.is-active.play.reis          { animation: t-inn-opp .78s cubic-bezier(.22,.86,.28,1) both; }
+  .deck-slide.is-active.play.reis[data-vei="ned"] { animation-name: t-inn-ned; }
+
+  .deck-slide.is-ut                   { animation: t-ut-opp .62s cubic-bezier(.5,0,.72,.42) both; }
+  .deck-slide.is-ut[data-ut="ned"]    { animation-name: t-ut-ned; }
+
+  /* Zoom-overgangen: sliden vi forlater ruller ikke, den tones bort
+     mens den nye vokser opp fra samme punkt. Ruller den, ser det ut
+     som to bevegelser i stedet for én. */
+  .deck-slide.is-ut[data-ut="zoom"]   { animation-name: t-ut-tone; animation-duration: .55s; }
+  @keyframes t-ut-tone { from { opacity: 1; } to { opacity: 0; } }
+
+  /* Markøren står rolig mens det skrives, og begynner å blinke først
+     når setningen er ferdig — som en markør som venter på svar. */
+  .sporsmal__markor.blinker { animation: t-blink 1.06s steps(1, end) infinite; }
+  @keyframes t-blink { 0%, 55% { opacity: 1; } 55.01%, 100% { opacity: 0; } }
+
+  @keyframes t-inn-opp { from { transform: translateY(100%);  } to { transform: none; } }
+  @keyframes t-inn-ned { from { transform: translateY(-100%); } to { transform: none; } }
+  @keyframes t-ut-opp  { from { transform: none; } to { transform: translateY(-100%); } }
+  @keyframes t-ut-ned  { from { transform: none; } to { transform: translateY(100%);  } }
+}
+
+/* --- Navigasjon ------------------------------------------------ */
+
+.deck-nav {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2.5rem);
+  bottom: clamp(1rem, 3vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-faint);
+  user-select: none;
+  z-index: 10;
+}
+
+.deck-nav b { color: var(--ink-soft); font-weight: 700; }
+
+/* Prikkene: hvor er vi. Grå og stille — de skal kunne ses når man
+   leter etter dem, og forsvinne når man ikke gjør det. Derfor ingen
+   spotfarge her; den er reservert for det som betyr noe på flaten. */
+.deck-prikker {
+  position: fixed;
+  right: clamp(0.9rem, 2.2vw, 2rem);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  z-index: 10;
+}
+
+.deck-prikker b {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  opacity: 0.3;
+  cursor: pointer;
+}
+
+.deck-prikker b:hover { opacity: 0.55; }
+.deck-prikker b.na    { opacity: 0.9; transform: scale(1.3); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .deck-prikker b { transition: opacity .35s ease, transform .35s ease; }
+}
+
+.deck-hint {
+  position: fixed;
+  left: clamp(1rem, 3vw, 2.5rem);
+  bottom: clamp(1rem, 3vw, 2.5rem);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: 0;
+  z-index: 10;
+}
+
+.deck-hint.is-on { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .deck-hint { transition: opacity .4s ease; }
+}
+
+/* ============================================================
+   SLIDE 1 — Forsiden
+   Komposisjonen er den godkjente fra designverktøyet. Merk
+   figur-wrapperen: height 0 + align-self flex-end gjør at roboten
+   IKKE blåser opp radhøyden. Uten det havner overtittelen langt
+   fra tittelen.
+   ============================================================ */
+
+.forside__over {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.7rem;
+}
+
+.forside__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.8rem, 2vw, 1.8rem);
+}
+
+.forside h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: clamp(2.6rem, 7.5vw, 6.8rem);
+  white-space: nowrap;
+}
+
+.forside__figur {
+  margin: 0 0 -0.4rem 0;
+  width: clamp(80px, 9.5vw, 150px);
+  flex: 0 0 auto;
+  align-self: flex-end;
+  height: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.forside__figur svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: url(#tusj-wobble-bot);
+}
+
+.forside__under {
+  margin: 1.5rem 0 0;
+  font-size: 1.25rem;
+  color: var(--ink-soft);
+}
+
+/* ============================================================
+   INNGANGER
+   Spilles når .play settes på den aktive sliden. Utgangstilstandene
+   ligger inne i no-preference, så en bruker med redusert bevegelse
+   ser ferdig slide umiddelbart — aldri en tom flate som venter.
+   ============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .deck-slide .fx-fade,
+  .deck-slide .fx-rise         { opacity: 0; }
+  .deck-slide .offset::before  { opacity: 0; }
+
+  .deck-slide.play .fx-fade    { animation: t-fade .7s ease both; animation-delay: var(--d, 0s); }
+  .deck-slide.play .fx-rise    { animation: t-rise .8s cubic-bezier(.2,.85,.3,1) both; animation-delay: var(--d, 0s); }
+  .deck-slide.play .offset::before { animation: t-fade .6s ease both; animation-delay: 1s; }
+
+  /* Figuren spaserer inn fra høyre. Ingen oversving på slutten —
+     ellers ser det ut som han hopper tilbake. */
+  .deck-slide.play .walker            { animation: t-walkin-hoyre 3.12s cubic-bezier(.35,0,.3,1) both; animation-delay: .55s; }
+  .deck-slide.play .walker .leg-l,
+  .deck-slide.play .walker .arm-r     { animation: t-swing-a .52s ease-in-out .55s 6; }
+  .deck-slide.play .walker .leg-r,
+  .deck-slide.play .walker .arm-l     { animation: t-swing-b .52s ease-in-out .55s 6; }
+  .deck-slide.play .walker .rig       { animation: t-gait .52s ease-in-out .55s 6; }
+
+  @keyframes t-rise         { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes t-walkin-hoyre { from { transform: translateX(55vw); } to { transform: translateX(0); } }
+}
+
+/* ============================================================
+   SLIDE 2 — Agenda
+   MOCK: teksten er plassholder til programmet er låst. Formen er
+   ekte — matrisen er det som kommer nedenfra og tar plassen etter
+   forsiden.
+   ============================================================ */
+
+/* Retunet 2026-08-07: matrisen gikk fra seks kort i to rader til ni
+   i tre da agendaen ble låst. Tallene under er justert for tre rader
+   — med de gamle rant «Hele dagen» ut over toppen og fotlinja under
+   bunnen på en 1280×720-flate. */
+.agenda {
+  justify-content: center;
+  padding: 4cqi 5cqi;   /* smalere sider: Dings skal ha plass ved siden av matrisen */
+}
+
+/* Matrisen og figuren står side om side. flex-end: Dings står på
+   samme grunnlinje som nederste kortrad, ikke og svever. */
+.agenda__rad {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5cqi;
+  width: 100%;
+}
+.agenda__matrise { flex: 1; }
+
+.agenda__figur {
+  flex: none;
+  width: 11cqi;
+  margin: 0;
+}
+.agenda__figur svg { display: block; width: 100%; height: auto; }
+
+.agenda__over {
+  font-family: var(--font-mono);
+  font-size: 1.15cqi;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--spot);
+  margin: 0 0 1.4cqi;
+}
+
+.agenda h2 {
+  margin: 0 0 2.4cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 5.2cqi;
+}
+
+.agenda__matrise {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5cqi;
+  text-align: left;
+}
+
+.agenda__kort {
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.7cqi 1.9cqi;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7cqi;
+}
+
+.agenda__kort--dere { border-color: var(--spot); }
+
+/* Dagens tyngdepunkt skal se ut som dagens tyngdepunkt. */
+.agenda__kort--bred { grid-column: 1 / -1; }
+
+/* Pausen er ikke en bolk — den er skjøtet mellom halvdelene, og
+   skal lese som luft i rutenettet, ikke som enda et kort. */
+.agenda__kort--pause {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--rule);
+  box-shadow: none;
+}
+.agenda__kort--pause .agenda__min,
+.agenda__kort--pause .agenda__hva { color: var(--ink-faint); }
+
+.agenda__min {
+  font-family: var(--font-mono);
+  font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-faint);
+}
+.agenda__kort--dere .agenda__min { color: var(--spot); }
+
+.agenda__hva {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 1.95cqi;
+  line-height: 1.18;
+}
+
+.agenda__fot {
+  margin: 2.2cqi 0 0;
+  font-family: var(--font-mono);
+  font-size: 1.2cqi;
+  color: var(--ink-faint);
+}
+
+/* ============================================================
+   SLIDE 3 — Spørsmålet
+   Komposisjonen er godkjent i `stillbilder.html` (bilde 1).
+   Målene er de samme, i cqi, så flaten oppfører seg likt her.
+   ============================================================ */
+
+.deck-reise {
+  position: absolute; left: 4cqi; right: 4cqi; top: 8.5cqi; z-index: 3;
+  display: flex; align-items: center; gap: 1.6cqi;
+  margin: 0; padding: 0; list-style: none;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.deck-reise li { display: flex; align-items: center; gap: 1.6cqi; }
+.deck-reise li::after { content: ''; width: 2.6cqi; height: 1.5px; background: var(--rule); }
+.deck-reise li:last-child::after { display: none; }
+.deck-reise .na { color: var(--ink); position: relative; }
+.deck-reise .na::before {
+  content: ''; position: absolute; left: 50%; top: -1.6cqi;
+  transform: translateX(-50%);
+  width: 0.8cqi; height: 0.8cqi; border-radius: 50%; background: var(--spot);
+}
+
+.sporsmal__scene {
+  position: absolute; inset: 13.5cqi 6cqi 6.5cqi;
+  display: flex; align-items: center; justify-content: center; gap: 3cqi;
+}
+
+.sporsmal__kort {
+  flex: 0 1 52cqi;
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 3cqi 3.6cqi 3.2cqi;
+  transform: rotate(-1.1deg);     /* lagt ned for hånd */
+  text-align: left;
+}
+
+.sporsmal__merke {
+  display: block;
+  font-family: var(--font-mono); font-size: 1.1cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-soft); margin-bottom: 1.6cqi;
+}
+
+.sporsmal__tekst {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 3.4cqi; line-height: 1.3;
+}
+
+/* Markøren må være inline etter siste tegn — som flex-barn hopper den
+   ned på egen linje så snart spørsmålet brekker i to. */
+.sporsmal__tekst i { font-style: normal; }
+
+/* Resten av setningen står usynlig og holder på plassen sin mens
+   den skrives inn. Uten den ville kortet vokst under skrivingen og
+   dratt figuren sidelengs. */
+.sporsmal__rest { opacity: 0; }
+
+.sporsmal__markor {
+  display: inline-block; width: 1.1cqi; height: 2.8cqi;
+  background: var(--spot); vertical-align: -0.32cqi;
+  margin: 0 0.3cqi;
+}
+
+.sporsmal__tall {
+  margin: 2.2cqi 0 0;
+  font-family: var(--font-mono); font-size: 1.15cqi; color: var(--ink-faint);
+}
+
+.sporsmal__pil { flex: 0 0 9cqi; color: var(--spot); }
+.sporsmal__pil svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sporsmal__pil path {
+  fill: none; stroke: currentColor; stroke-width: 2.2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+.sporsmal__figur { flex: 0 0 20cqi; margin: 0; }
+.sporsmal__figur svg {
+  display: block; width: 100%; height: auto;
+  overflow: visible; filter: url(#tusj-wobble-bot);
+}
+
+.deck-fot {
+  position: absolute; left: 4cqi; right: 4cqi; bottom: 2.6cqi;
+  margin: 0; z-index: 3;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: 0.06em; color: var(--ink-faint);
+  text-align: left;
+}
+
+/* ============================================================
+   SLIDE 4 — Inni hodet
+   Kameraet går inn; ingenting byttes ut. Maskineriet har ligget
+   i hodet siden forsiden, bittelite — det blir bare lesbart når
+   vi kommer nær nok. Ansiktet tones ut og hjernen inn av systemet
+   selv, via [data-shot] på sliden.
+
+   Vinduet er et eget viewBox rundt hodet (10 20 80 80), ikke hele
+   figuren: da slipper vi å skalere bort halve flaten for å komme
+   nær, og tallene inne i hodet blir store nok for en projektor.
+   ============================================================ */
+
+/* ============================================================
+   SLIDE 4 — Ordbiter
+   Zoomen fra slide 3 lander på rent lerret: vi har gått INN i
+   roboten, og det er ikke lenger hodet vi ser på — det er det den
+   ser. Derfor ingen ramme og ingen omriss her; omrisset begrenset
+   både plassen og blikket.
+
+   Bare setningen står på flaten. Den kommer opp hel, og deler seg
+   i ordbiter etterpå.
+   ============================================================ */
+
+/* Litt under midten, ikke på: reise-stripa spiser toppen, så optisk
+   midte ligger lavere enn matematisk. */
+/* Buene tuppes bak beholderne, ikke oppå: de kommer fra en brikke og
+   går til en annen, og skal se ut som de starter under den. */
+.bitene__buer {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1; pointer-events: none;
+  overflow: visible;
+}
+.bitene__buer path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+}
+
+.bitene__setning {
+  z-index: 2;
+  position: absolute; left: 8cqi; right: 8cqi; top: 52%;
+  transform: translateY(-50%);
+  display: flex; flex-wrap: wrap;
+  justify-content: center; align-items: baseline;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 2.6cqi;
+  line-height: 1.7;
+}
+
+/* --m er mellomrommet slik setningen leses FØR delingen: ekte
+   ordmellomrom mellom ord, ingenting inne i et ord. «kaffemaskin»
+   skal se ut som ett ord til den deler seg. */
+.bit {
+  margin-left: var(--m, 0.26em);
+  padding: 0;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+}
+.bit:first-child { margin-left: 0; }
+
+/* Delt: hver bit får sin egen beholder, og setningen utvider seg
+   litt. Mellomrommene blir like store overalt — det er nettopp
+   inne i ordene det blir synlig at noe har skjedd. */
+.bitene__setning.delt .bit {
+  margin-left: 0.28em;
+  padding: 0.18em 0.32em;
+  background: var(--paper-sunk);
+  border-color: var(--rule);
+}
+.bitene__setning.delt .bit:first-child { margin-left: 0; }
+
+.bitene__tall {
+  position: absolute; left: 0; right: 0; top: 63%;
+  margin: 0; text-align: center;
+  font-family: var(--font-mono); font-size: 1.3cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: 0;
+}
+.bitene__tall.na { opacity: 1; }
+
+/* ── Steg 3 · nabolagene ─────────────────────────────────────
+   Samme ordbit, to steder i verden. Ingen etiketter og ingen
+   forklaring på flaten — det er nettopp dette Lars sier.
+   ──────────────────────────────────────────────────────── */
+
+.ordsky {
+  position: absolute;
+  width: 36cqi; height: 20cqi;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Setningen er borte i dette steget, så skyene kan eie flaten. 33cqi
+   er den optiske midten når reise-stripa har spist toppen. */
+.ordsky--a { left: 27cqi; top: 33cqi; }
+.ordsky--b { left: 73cqi; top: 33cqi; }
+
+.ordsky span {
+  position: absolute;
+  left: calc(50% + var(--x) * 1cqi);
+  top:  calc(50% + var(--y) * 1cqi);
+  transform: translate(-50%, -50%);
+  font-family: var(--font-body);
+  font-size: 1.5cqi;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  opacity: 0;
+}
+
+.bitene[data-steg="2"] .ordsky      { opacity: 1; }
+.bitene[data-steg="2"] .ordsky span { opacity: 0.55; }
+
+/* Resten av setningen går helt bort, og buene har gjort sitt. Å la
+   den ligge svakt igjen delte oppmerksomheten mellom to bilder. */
+.bitene[data-steg="2"] .bit:not(.bit--to) { opacity: 0; }
+.bitene[data-steg="2"] .bitene__buer      { opacity: 0; }
+.bitene[data-steg="2"] .bitene__tall      { opacity: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* transform ligger i samme liste som resten: da arver de to
+     kaffe-brikkene den samme forsinkelsen som delingen brukte, og
+     de forlater linja etter hverandre i stedet for samtidig. */
+  .bit {
+    transition: margin-left .55s cubic-bezier(.22,.86,.28,1),
+                padding .55s cubic-bezier(.22,.86,.28,1),
+                background-color .55s ease,
+                border-color .55s ease,
+                opacity .45s ease,
+                transform .95s cubic-bezier(.3,.82,.3,1);
+    transition-delay: calc(var(--k, 0) * 45ms);
+  }
+  .bitene__tall  { transition: opacity .5s ease .5s; }
+  .bitene__buer  { transition: opacity .45s ease; }
+  .ordsky span {
+    transition: opacity .5s ease;
+    transition-delay: calc(var(--k, 0) * 55ms + .45s);
+  }
+}
+
+/* ============================================================
+   SLIDE 5 — Inni hodet (gjettingen)
+   Vinduet er et eget viewBox i 16:9, valgt av MASKINERIET og ikke
+   av hodet: etikettene starter x≈26 og tallene slutter x≈76,7,
+   øverste etikett ligger y≈34,5 og nederste tall y≈73,5. Alt annet
+   er marg.
+   ============================================================ */
+.hode__figur {
+  position: absolute;
+  inset: 11cqi 0 0;
+  margin: 0;
+  overflow: hidden;
+  z-index: 1;
+  transform-origin: center;
+}
+
+.hode__figur svg {
+  display: block; width: 100%; height: 100%;
+  filter: url(#tusj-wobble-bot);
+}
+
+/* Kameraet inne i figuren står stille her — zoomen gjøres av selve
+   overgangen fra slide 3. Men systemets egne [data-shot]-stillinger
+   er regnet ut for scenen i designverktøyet og ville rykket bildet
+   ut av flaten, så de nulles. Resten av det systemet gjør på et
+   skudd — ansikt ut, hjerne inn, tynnere strek, stolper som fylles —
+   beholdes. */
+.deck-slide.hode[data-shot] .hode__figur .cam { transform: none; }
+
+/* Brukes i ett bilde av JS når sliden skal settes tilbake til
+   utgangspunktet uten å reise dit. */
+.deck-slide.nullstill .cam,
+.deck-slide.nullstill .bot .face,
+.deck-slide.nullstill .bot .brain { transition: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Zoomen: figuren settes ned i størrelsen og posisjonen roboten
+     hadde på slide 3, og reiser derfra til sin egen plass. */
+  .hode__figur { transition: transform 1.15s cubic-bezier(.42,.02,.22,1); }
+}
+
+/* ============================================================
+   SLIDE 6 — Tre kilder, ett svar
+   Avslutningen på bolk 2. Tre baner møtes i ett punkt, og ut
+   kommer ett svar. Poenget ligger i steg 3: svaret ser helt likt
+   ut uansett hvilken av de tre det kom fra.
+   ============================================================ */
+
+.kilder__baner {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1; pointer-events: none;
+  overflow: visible;
+}
+.kilder__baner path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-width: 1.8;
+  opacity: 0.3;
+}
+
+.kilder__kort {
+  position: absolute;
+  left: calc(var(--x) * 1cqi);
+  top: 13cqi;
+  width: 25cqi;
+  transform: translateX(-50%);
+  z-index: 2;
+  text-align: left;
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.8cqi 2cqi 2cqi;
+}
+
+/* Hvert kort får ett lite bilde av hva slags kilde det er —
+   en vegg av tekst, spørsmålet ditt, et dokument. */
+.kilder__bilde {
+  height: 6.4cqi;
+  margin-bottom: 1.6cqi;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 0.7cqi;
+  overflow: hidden;
+}
+.kilder__bilde i {
+  display: block; height: 0.55cqi;
+  background: var(--ink);
+  opacity: 0.22;
+  border-radius: 1px;
+}
+.kilder__bilde--dok {
+  border-left: 0.5cqi solid var(--spot);
+  padding-left: 1.2cqi;
+  justify-content: flex-start;
+  padding-top: 1cqi;
+}
+.kilder__bilde--prompt {
+  background: var(--paper-sunk);
+  border-radius: var(--radius);
+  padding: 0 1.2cqi;
+  justify-content: center;
+}
+.kilder__bilde--prompt span {
+  font-family: var(--font-body);
+  font-size: 1.35cqi;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.kilder__nr {
+  display: block;
+  font-family: var(--font-mono); font-size: 1.05cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.8cqi;
+}
+
+/* To linjer avsatt uansett hvor kort tittelen er: ellers får de tre
+   kortene ulik høyde, og da leses de som ulikt viktige. */
+.kilder__hva {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 2cqi; line-height: 1.15;
+  min-height: 4.6cqi;
+}
+
+/* Punktet der de tre møtes — samme prikk som buene bruker. */
+.kilder__punkt {
+  position: absolute; left: 50%; top: 38cqi;
+  width: 1.4cqi; height: 1.4cqi;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+  z-index: 2;
+}
+
+.kilder__svar {
+  position: absolute; left: 12cqi; right: 12cqi; top: 44cqi;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 2.6cqi;
+  opacity: 0;
+}
+
+.kilder__sporsmal {
+  position: absolute; left: 0; right: 0; top: 50.5cqi;
+  margin: 0;
+  font-family: var(--font-mono); font-size: 1.3cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+  opacity: 0;
+}
+
+.kilder[data-steg="1"] .kilder__punkt,
+.kilder[data-steg="2"] .kilder__punkt { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.kilder[data-steg="1"] .kilder__svar,
+.kilder[data-steg="2"] .kilder__svar  { opacity: 1; }
+.kilder[data-steg="2"] .kilder__sporsmal { opacity: 1; }
+
+/* Når spørsmålet stilles, blir de tre kortene like: du ser ikke
+   på flaten hvilket av dem svaret kom fra — og det er poenget. */
+.kilder[data-steg="2"] .kilder__bilde i,
+.kilder[data-steg="2"] .kilder__bilde--prompt span { opacity: 0.12; }
+.kilder[data-steg="2"] .kilder__bilde--dok { border-left-color: var(--rule); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .kilder__punkt    { transition: opacity .4s ease, transform .5s cubic-bezier(.2,1.4,.4,1); }
+  .kilder__svar     { transition: opacity .6s ease .35s; }
+  .kilder__sporsmal { transition: opacity .5s ease .2s; }
+  .kilder__bilde i,
+  .kilder__bilde--prompt span,
+  .kilder__bilde--dok { transition: opacity .6s ease, border-left-color .6s ease; }
+}
+
+/* ============================================================
+   SLIDE 6 — Treningen
+   Zoomen går inn i kortet «Det den har lest». Her tåler flaten mer
+   tekst enn ellers, fordi dette er det ene stedet i bolken der en
+   forenkling ville gjort resten verdiløs. Tre kolonner, én av
+   gangen — så Lars styrer tempoet med tasten.
+   ============================================================ */
+
+.trening__over {
+  position: absolute; left: 6cqi; top: 12.5cqi;
+  margin: 0;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+
+.trening__rad {
+  position: absolute; left: 6cqi; right: 6cqi; top: 25cqi;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 5cqi;
+  text-align: left;
+}
+
+.trening__steg { opacity: 0; }
+
+.trening__nr {
+  display: block;
+  font-family: var(--font-mono); font-size: 1.1cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 1.2cqi;
+}
+/* Fagordet står som en stille lapp: der for den som spør, usynlig
+   for den som ikke gjør det. */
+.trening__nr b {
+  font-weight: 400;
+  margin-left: 0.8cqi;
+  padding: 0.15em 0.5em;
+  border: 1.5px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+}
+
+.trening__hva {
+  margin: 0 0 1.4cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 2.5cqi; line-height: 1.15;
+}
+
+.trening__om {
+  margin: 0;
+  font-size: 1.7cqi; line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.trening[data-steg="0"] .trening__steg:nth-child(1),
+.trening[data-steg="1"] .trening__steg:nth-child(-n+2),
+.trening[data-steg="2"] .trening__steg { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .trening__steg { transform: translateY(1.4cqi); transition: opacity .5s ease, transform .5s cubic-bezier(.22,.86,.28,1); }
+  .trening[data-steg="0"] .trening__steg:nth-child(1),
+  .trening[data-steg="1"] .trening__steg:nth-child(-n+2),
+  .trening[data-steg="2"] .trening__steg { transform: none; }
+}
+
+/* ============================================================
+   SLIDE 7 — Gjettingen
+   Gaget bærer sliden: den «tenker» med en teller som går, og så
+   er fasit at det tok millisekunder. Kontrasten mellom 00:12 og
+   ordet «millisekunder» er hele poenget — derfor står de i samme
+   skrift og på samme plass.
+   ============================================================ */
+
+.gjett__tenker,
+.gjett__fasit {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 52cqi;
+}
+
+.gjett__fasit { opacity: 0; pointer-events: none; }
+.gjett[data-steg="1"] .gjett__tenker { opacity: 0; }
+.gjett[data-steg="1"] .gjett__fasit  { opacity: 1; }
+
+.gjett__prikker { display: flex; justify-content: center; gap: 1cqi; margin-bottom: 2.4cqi; }
+.gjett__prikker i {
+  width: 1.1cqi; height: 1.1cqi; border-radius: 50%;
+  background: var(--ink-faint);
+}
+
+.gjett__ord {
+  margin: 0 0 1.6cqi; text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 3.6cqi;
+}
+
+.gjett__tid,
+.gjett__fart {
+  margin: 0; text-align: center;
+  font-family: var(--font-mono); font-size: 2.2cqi;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.gjett__neida {
+  margin: 0 0 2.8cqi; text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 3.6cqi;
+  color: var(--spot);
+}
+
+.gjett__fart { margin-top: 2.4cqi; color: var(--ink); }
+
+/* Systemets stolper er satt i rem. Her skal de skalere med flaten. */
+.gjett .bars div { grid-template-columns: 9cqi 1fr 6cqi; gap: 1.4cqi; margin-bottom: 1cqi; }
+.gjett .bars dt  { font-size: 2.2cqi; }
+.gjett .bars dd  { height: 1.8cqi; }
+.gjett .bars b   { font-size: 1.5cqi; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .gjett__tenker, .gjett__fasit { transition: opacity .45s ease; }
+  .gjett__prikker i { animation: t-puls 1.1s ease-in-out infinite; }
+  .gjett__prikker i:nth-child(2) { animation-delay: .18s; }
+  .gjett__prikker i:nth-child(3) { animation-delay: .36s; }
+  @keyframes t-puls { 0%, 100% { opacity: .25; } 50% { opacity: .9; } }
+}
+
+/* ============================================================
+   SLIDE 8 — Runden
+   ============================================================ */
+
+.runden__rader {
+  position: absolute; left: 8cqi; right: 8cqi; top: 20cqi;
+}
+
+.runden__rad {
+  display: grid; grid-template-columns: 1fr 5cqi auto;
+  align-items: center; gap: 2cqi;
+  margin-bottom: 1.9cqi;
+}
+
+.runden__ctx {
+  font-family: var(--font-mono); font-size: 2cqi;
+  text-align: right; color: var(--ink-soft);
+  border-bottom: 1.5px solid var(--rule);
+  padding-bottom: 0.9cqi;
+}
+
+.runden__pil { color: var(--spot); font-size: 2.2cqi; text-align: center; }
+
+.runden__ny {
+  justify-self: start;
+  background: var(--spot); color: var(--paper-raised);
+  border-radius: var(--radius);
+  padding: 0.5cqi 1.6cqi;
+  font-family: var(--font-mono); font-size: 2cqi;
+}
+.runden__ny--stopp { background: var(--paper-sunk); color: var(--ink-faint); }
+
+/* ============================================================
+   SLIDE 9 — Svaret
+   ============================================================ */
+
+.svaret__kort {
+  position: absolute; left: 50%; top: 46%;
+  transform: translate(-50%, -50%) rotate(-0.6deg);
+  width: 62cqi;
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 3cqi 3.6cqi 3.4cqi;
+  text-align: left;
+}
+
+.svaret__merke {
+  display: block;
+  font-family: var(--font-mono); font-size: 1.1cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-soft); margin-bottom: 1.6cqi;
+}
+
+.svaret__tekst {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 2.6cqi; line-height: 1.45;
+}
+
+.svaret__note {
+  position: absolute; left: 0; right: 0; top: 72%;
+  margin: 0; text-align: center;
+  font-family: var(--font-mono); font-size: 1.3cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+  opacity: 0;
+}
+.svaret[data-steg="1"] .svaret__note { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .svaret__note { transition: opacity .5s ease; }
+}
+
+/* ============================================================
+   SLIDE 10 — Runden rundt bordet (bolk 3)
+   Timens viktigste sju minutter, og den stilleste sliden i decket.
+   Ingenting beveger seg her: alt som beveger seg konkurrerer med
+   den som snakker.
+   ============================================================ */
+
+.bordet__over {
+  margin: 0 0 2.4cqi;
+  font-family: var(--font-mono); font-size: 1.3cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+
+.bordet__sporsmal {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 6.4cqi;
+  max-width: 80cqi;
+}
+
+/* ============================================================
+   SLIDE 11 — Er det det samme hvem du bruker? (bolk 5)
+   Samme figur tre ganger, tre ulike blekk. --spot-raw settes på
+   wrapperen; .bot utleder sin egen --spot av den, så temperamentet
+   følger med. Ingen ny hex noe sted.
+   ============================================================ */
+
+.tre__sporsmal {
+  margin: 0 0 4cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 5.4cqi;
+}
+
+.tre__rad {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 8cqi;
+}
+
+.tre__figur { margin: 0; width: 15cqi; }
+.tre__figur svg {
+  display: block; width: 100%; height: auto;
+  overflow: visible; filter: url(#tusj-wobble-bot);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* De kommer inn etter hverandre. Samme gange som på forsiden,
+     bare med hver sin forsinkelse — tre klasser slår de to i
+     forsidens regel, så disse vinner uten !important. */
+  .deck-slide.play .tre__figur.walker            { animation-delay: var(--d, .55s); }
+  .deck-slide.play .tre__figur.walker .leg-l,
+  .deck-slide.play .tre__figur.walker .arm-r,
+  .deck-slide.play .tre__figur.walker .leg-r,
+  .deck-slide.play .tre__figur.walker .arm-l,
+  .deck-slide.play .tre__figur.walker .rig      { animation-delay: var(--d, .55s); }
+}
+
+/* ============================================================
+   MAKTSPORET — slides hentet fra highborn-presentasjonen
+   Innholdet står som det sto; bare formen er ny. Disse slidene
+   er tettere enn resten av decket med vilje: de er oppslagsverk
+   for seks personer rundt et bord, ikke plakater for en sal.
+   ============================================================ */
+
+.valg, .penta, .aktor, .makt {
+  display: block;
+  text-align: left;
+  padding: 0;
+}
+
+.deck-kilde {
+  position: absolute; left: 6cqi; right: 6cqi; bottom: 2.2cqi;
+  margin: 0;
+  font-family: var(--font-mono); font-size: 1.05cqi;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+
+/* --- Valgene tas nå (Gladstein) -------------------------------- */
+
+.valg {
+  display: grid;
+  grid-template-columns: 1fr 30cqi;
+  gap: 6cqi;
+  align-items: center;
+  padding: 8cqi 6cqi 7cqi;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.valg__over {
+  margin: 0 0 1.4cqi;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+
+.valg__tittel {
+  margin: 0 0 3.4cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 5cqi;
+}
+
+.valg__punkter { list-style: none; margin: 0 0 3.2cqi; padding: 0; }
+.valg__punkter li {
+  position: relative;
+  padding-left: 2.6cqi;
+  margin-bottom: 1.4cqi;
+  font-size: 1.65cqi; line-height: 1.45;
+  color: var(--ink-soft);
+}
+.valg__punkter li::before {
+  content: ''; position: absolute; left: 0; top: 0.62em;
+  width: 0.9cqi; height: 0.9cqi; border-radius: 50%;
+  background: var(--spot);
+}
+.valg__punkter b { color: var(--ink); font-weight: 600; }
+
+.valg__sitat {
+  margin: 0;
+  border-left: 0.4cqi solid var(--spot);
+  padding-left: 2cqi;
+}
+.valg__sitat p {
+  margin: 0 0 0.8cqi;
+  font-family: var(--font-body); font-style: italic;
+  font-size: 1.8cqi; line-height: 1.4;
+}
+.valg__sitat cite {
+  font-family: var(--font-mono); font-size: 1.05cqi;
+  font-style: normal; color: var(--ink-faint);
+}
+
+.valg__portrett { margin: 0; }
+.valg__portrett img {
+  display: block; width: 100%; height: auto;
+  border-radius: var(--radius-lg);
+  border: var(--edge-w) solid var(--edge);
+  box-shadow: var(--shadow-card);
+}
+.valg__portrett figcaption { margin-top: 1.4cqi; }
+.valg__portrett b {
+  display: block;
+  font-family: var(--font-display); font-weight: var(--display-weight);
+  font-size: 1.8cqi;
+}
+.valg__portrett span {
+  display: block;
+  font-family: var(--font-mono); font-size: 1cqi; color: var(--ink-faint);
+  line-height: 1.4;
+}
+
+/* --- Pentagate + avis-scrollen --------------------------------- */
+
+.penta {
+  display: grid;
+  grid-template-columns: 1fr 44cqi;
+  gap: 5cqi;
+  align-items: center;
+  padding: 8cqi 6cqi 7cqi;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.penta__over {
+  margin: 0 0 1.4cqi;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+
+.penta__tittel {
+  margin: 0 0 2.4cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: 0.95;
+  letter-spacing: var(--display-tracking);
+  font-size: 7cqi;
+}
+
+.penta__ingress {
+  margin: 0 0 3cqi;
+  font-size: 1.7cqi; line-height: 1.5; color: var(--ink-soft);
+}
+
+.penta__nokler { list-style: none; margin: 0; padding: 0; }
+.penta__nokler li {
+  position: relative;
+  padding-left: 2.6cqi;
+  margin-bottom: 1.1cqi;
+  font-family: var(--font-mono); font-size: 1.2cqi;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.penta__nokler li::before {
+  content: ''; position: absolute; left: 0; top: 0.35em;
+  width: 0.9cqi; height: 0.9cqi; border-radius: 50%;
+  background: var(--rule);
+}
+.penta__nokler li.na { color: var(--ink); }
+.penta__nokler li.na::before { background: var(--spot); }
+
+/* Avisen. Rammen er en nettleser, vinduet klipper, og rullen
+   flyttes av JS. Dette er komposisjonen som skal løftes inn i
+   Tusj som komponent — den er for god til å bo i én presentasjon. */
+.avis {
+  display: flex; flex-direction: column;
+  height: 38cqi;
+  background: var(--paper-raised);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.avis__chrome {
+  display: flex; align-items: center; gap: 0.7cqi;
+  padding: 1cqi 1.4cqi;
+  background: var(--paper-sunk);
+  border-bottom: 1.5px solid var(--rule);
+}
+.avis__prikk { width: 0.85cqi; height: 0.85cqi; border-radius: 50%; background: var(--rule); }
+.avis__url {
+  margin: 0 0 0 1.2cqi;
+  font-family: var(--font-mono); font-size: 0.95cqi;
+  color: var(--ink-faint);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.avis__vindu { position: relative; flex: 1; overflow: hidden; }
+.avis__rull { padding: 2.4cqi 2.8cqi 8cqi; }
+
+.avis__kilde {
+  margin: 0 0 1cqi;
+  font-family: var(--font-mono); font-size: 1.1cqi;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--spot);
+}
+.avis__tittel {
+  margin: 0 0 1cqi;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: 2.1cqi; line-height: 1.2;
+}
+.avis__byline {
+  margin: 0 0 1.8cqi;
+  font-family: var(--font-mono); font-size: 0.95cqi;
+  color: var(--ink-faint);
+}
+.avis__avsnitt {
+  margin: 0 0 1.4cqi;
+  font-family: var(--font-body);
+  font-size: 1.35cqi; line-height: 1.6;
+}
+.avis__avsnitt--matt { opacity: 0.3; }
+
+/* Markeringen sveiper inn ved å vokse fra venstre — samme grep
+   som i originalen. */
+.avis__merk {
+  background-image: linear-gradient(var(--yellow), var(--yellow));
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  padding: 0.1em 0;
+}
+.avis__merk.lys { background-size: 100% 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .avis__rull { transition: transform .95s cubic-bezier(.4,.02,.2,1); }
+  .avis__merk { transition: background-size .7s cubic-bezier(.16,1,.3,1) .35s; }
+}
+
+/* --- Tabellene (aktørene og brukermakt) ------------------------ */
+
+/* Åtte rader skal ned på én flate uten å bli uleselige. Tallene
+   under er målt, ikke gjettet: tabellen fikk 534 px på en 720 px
+   flate og måtte ned til ~435. */
+.aktor, .makt { padding: 6cqi 6cqi 5cqi; box-sizing: border-box; height: 100%; }
+
+.aktor__topp { margin-bottom: 2cqi; }
+.aktor__topp h2 {
+  margin: 0 0 0.8cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 4.4cqi;
+}
+.aktor__topp p {
+  margin: 0;
+  font-size: 1.5cqi; color: var(--ink-soft);
+}
+
+.tab { width: 100%; border-collapse: collapse; }
+.tab th {
+  font-family: var(--font-mono); font-size: 0.95cqi; font-weight: 400;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+  text-align: left;
+  padding: 0 1.4cqi 1cqi 0;
+  border-bottom: var(--edge-w) solid var(--edge);
+}
+.tab td {
+  padding: 0.62cqi 1.3cqi 0.62cqi 0;
+  border-bottom: 1.5px solid var(--rule);
+  vertical-align: top;
+  font-size: 1.15cqi; line-height: 1.32;
+  color: var(--ink-soft);
+}
+.tab td b {
+  display: block;
+  font-family: var(--font-display); font-weight: var(--display-weight);
+  font-size: 1.45cqi; color: var(--ink);
+}
+.tab td span {
+  display: block;
+  font-family: var(--font-mono); font-size: 0.9cqi;
+  color: var(--ink-faint);
+}
+
+/* To tinter, ingen nye farger: spot for den som skiller seg
+   positivt ut, andrestemmen for den som krever et forbehold. */
+.tab__uthev td { background: var(--spot-soft); }
+.tab__advar td { background: var(--second-soft); }
+.tab__uthev td:first-child { border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+.tab__advar td:first-child { border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+.tab__uthev td, .tab__advar td { padding-left: 1cqi; }
+
+.tab--bytt .tab__ut { color: var(--ink-faint); text-decoration: line-through; }
+.tab--bytt .tab__inn { color: var(--ink); font-weight: 600; }
+.tab--bytt .tab__inn span { font-weight: 400; }
+
+/* ================================================================
+   UTGANGSPUNKTET — kapittelet før deltakelsen (2026-08-07)
+   Seks slides: vitrinen, de fire lagene, den tomme boksen,
+   tre setninger, grønt-testen, kapittel 6.
+
+   Ingen hex her heller: alt kommer fra tokens.
+   ================================================================ */
+
+/* --- U0 · Temasiden ---------------------------------------------
+   Forsiden til kapittelet: tittel til venstre med Dings ved foten,
+   de tre symbolene til høyre. .ico-mønsteret er systemets — to <use>,
+   spøkelse i spotfarge under blekket. */
+
+.tema {
+  display: grid;
+  grid-template-columns: 0.85fr 1.3fr;
+  align-items: center;
+  gap: 4.5cqi;
+  padding: 6cqi 6cqi 5cqi;
+  box-sizing: border-box;
+  height: 100%;
+  text-align: left;
+}
+
+.tema__over {
+  margin: 0 0 1.6cqi;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+.tema__tittel {
+  margin: 0 0 2cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 7.4cqi;
+}
+.tema__ingress {
+  margin: 0;
+  font-size: 1.9cqi; line-height: 1.4;
+  color: var(--ink-soft);
+  max-width: 30cqi;
+}
+
+/* Dings ser bort på de tre. Ingen .walker — hun har spasert inn for
+   lengst; her står hun bare. */
+.tema__figur {
+  width: 13cqi;
+  margin: 3cqi 0 0;
+}
+.tema__figur svg { display: block; width: 100%; height: auto; }
+
+.tema__porter {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 2.6cqi;
+}
+.tema__porter li {
+  display: flex; align-items: flex-start; gap: 2.6cqi;
+}
+.tema__porter .ico {
+  flex: none;
+  width: 8.5cqi; height: 8.5cqi;
+}
+.tema__porter h3 {
+  margin: 0 0 0.6cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 2.6cqi;
+}
+.tema__porter p {
+  margin: 0;
+  font-size: 1.55cqi; line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* Felles flate. Samme grep som .aktor/.makt, men med venstrestilt
+   innhold satt eksplisitt — .deck-slide sentrerer, og disse
+   komposisjonene leses som dokumenter, ikke som plakater.
+
+   .vitrine er PARKERT (parkert/atte-ting.html) — reglene står igjen
+   så sliden kan limes rett inn igjen. */
+.vitrine, .lagene, .hierarki, .setninger, .gront, .kap6 {
+  padding: 6cqi 6cqi 4cqi;
+  box-sizing: border-box;
+  height: 100%;
+  align-items: stretch;
+  justify-content: center;   /* færre rader enn aktørtabellen — sentrert står bedre enn toppstilt */
+  text-align: left;
+}
+
+/* --- Stegene ----------------------------------------------------
+   Barna av .deck-trinn kommer inn ett klikk om gangen, kumulativt,
+   i DOM-rekkefølge. settSteg() skriver data-steg på sliden for ALLE
+   slides, også de uten data-maks-steg — derfor holder det å lese
+   den her, uten en linje ny JS.
+
+   Utgangstilstanden ligger UTENFOR reduced-motion-vakten med vilje:
+   dette er en tilstand i framdriften (innholdet skal ikke være der
+   ennå), ikke en inngangsanimasjon. Bare overgangen er bevegelse,
+   og den ligger inne i vakten — samme mønster som .avis__merk. */
+.deck-trinn > *,
+.deck-trinn__ett { opacity: 0; }
+
+.deck-slide[data-steg="1"] .deck-trinn > :nth-child(-n+1),
+.deck-slide[data-steg="2"] .deck-trinn > :nth-child(-n+2),
+.deck-slide[data-steg="3"] .deck-trinn > :nth-child(-n+3),
+.deck-slide[data-steg="4"] .deck-trinn > :nth-child(-n+4),
+.deck-slide[data-steg="5"] .deck-trinn > :nth-child(-n+5),
+.deck-slide[data-steg="6"] .deck-trinn > :nth-child(-n+6),
+.deck-slide[data-steg="7"] .deck-trinn > :nth-child(-n+7),
+.deck-slide[data-steg="8"] .deck-trinn > :nth-child(-n+8) { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .deck-trinn > *,
+  .deck-trinn__ett { transition: opacity .55s ease; }
+}
+
+/* --- U1 · Vitrinen --------------------------------------------- */
+
+.vitrine__rutenett {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.6cqi;
+  margin-top: 1cqi;
+}
+.vitrine__kort {
+  position: relative;
+  padding: 2cqi 1.8cqi 1.8cqi;
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.vitrine__kort > b {
+  display: block;
+  font-family: var(--font-mono); font-size: 0.95cqi;
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-faint);
+  margin-bottom: 0.9cqi;
+}
+.vitrine__kort h3 {
+  margin: 0 0 0.7cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 1.75cqi;
+}
+.vitrine__kort p {
+  margin: 0;
+  font-size: 1.15cqi; line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+/* --- U2 · De fire lagene ---------------------------------------- */
+
+.lagene__tab td:last-child { font-weight: 600; }
+.lagene__nei { color: var(--ink-faint); }
+.lagene__ja  { color: var(--ink); }
+
+/* Det åpne feltet utenfor veggene — siste klikk. */
+.lagene__utenfor {
+  margin: 2.4cqi 0 0;
+  padding-top: 1.8cqi;
+  border-top: var(--edge-w) dashed var(--rule);
+  font-size: 1.5cqi; line-height: 1.4;
+  color: var(--ink-soft);
+}
+.lagene__utenfor span {
+  font-family: var(--font-mono); font-size: 1.1cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink);
+}
+.lagene[data-steg="5"] .lagene__utenfor { opacity: 1; }
+
+/* --- U3 · Hierarkiet og den tomme boksen ------------------------ */
+
+/* Boksene ligger i klikkrekkefølge i DOM-en og plasseres med
+   `order` — så kommer den tomme sist i avsløringen, men står
+   nummer tre i rekka. Hullet blir synlig etter at alt annet er
+   fylt inn; det er hele poenget med sliden. */
+.hierarki__stabel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4cqi;
+  margin-top: 1.4cqi;
+}
+.hierarki__boks {
+  display: grid;
+  grid-template-columns: 12cqi 1fr auto;
+  align-items: baseline;
+  gap: 0 2cqi;
+  padding: 1.8cqi 2.2cqi;
+  background: var(--surface);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.hierarki__niva {
+  grid-row: 1 / span 2;
+  margin: 0;
+  font-family: var(--font-mono); font-size: 0.95cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+}
+/* Kolonnene settes eksplisitt. Uten det plasserer grid-en datoen —
+   som har definert rad — FØR tittelen, og tittelen havner ytterst
+   til høyre. */
+.hierarki__boks h3 {
+  grid-column: 2;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 2.2cqi;
+}
+.hierarki__note {
+  grid-column: 2;
+  margin: 0.4cqi 0 0;
+  font-size: 1.2cqi;
+  color: var(--ink-soft);
+}
+.hierarki__dato {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-family: var(--font-mono); font-size: 1.2cqi;
+  color: var(--ink-soft);
+}
+
+/* Hullet: papiret uten trykk. Stiplet ramme, ingen skygge — den
+   ser ut som en plass som venter på noe, ikke som et kort. */
+.hierarki__boks--tom {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--spot);
+  box-shadow: none;
+}
+.hierarki__boks--tom h3 { color: var(--spot); }
+.hierarki__boks--tom .hierarki__note,
+.hierarki__boks--tom .hierarki__dato { color: var(--ink-faint); }
+
+/* --- U4 · Tre setninger ----------------------------------------- */
+
+.setninger__liste {
+  list-style: none;
+  margin: 2cqi 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.6cqi;
+  counter-reset: setning;
+}
+.setninger__liste li {
+  counter-increment: setning;
+  padding-left: 6cqi;
+  position: relative;
+}
+.setninger__liste li::before {
+  content: counter(setning);
+  position: absolute; left: 0; top: -0.2cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 3.4cqi; line-height: 1;
+  color: var(--spot);
+}
+.setninger__liste b {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 2.9cqi;
+  margin-bottom: 0.5cqi;
+}
+.setninger__liste span {
+  font-size: 1.5cqi; line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* --- U5 · Hvor mye er grønt? ------------------------------------ */
+
+.gront__flate {
+  display: grid;
+  grid-template-columns: 1fr 24cqi;
+  gap: 3cqi;
+  margin-top: 1.4cqi;
+  align-items: start;
+}
+.gront__ark {
+  padding: 2.4cqi 2.8cqi;
+  background: var(--paper-raised);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.gront__hode {
+  margin: 0 0 1.6cqi;
+  padding-bottom: 1.2cqi;
+  border-bottom: 1.5px solid var(--rule);
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 1.9cqi;
+}
+.gront__linjer { list-style: none; margin: 0; padding: 0; }
+.gront__linjer li {
+  padding: 0.75cqi 0;
+  border-bottom: 1.5px solid var(--rule);
+  font-size: 1.35cqi; line-height: 1.4;
+  color: var(--ink-soft);
+}
+.gront__linjer li:last-child { border-bottom: 0; }
+
+/* Markeringene sveiper inn fra venstre — samme grep som avisen,
+   så decket har ett språk for «dette lyser opp». */
+.gront__linjer em {
+  font-style: normal;
+  color: var(--ink);
+  background-image: linear-gradient(var(--yellow), var(--yellow));
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  padding: 0.1em 0;
+}
+.gront__linjer em[data-merk="2"] { background-image: linear-gradient(var(--spot-soft), var(--spot-soft)); }
+.gront[data-steg="1"] .gront__linjer em,
+.gront[data-steg="2"] .gront__linjer em { background-size: 100% 100%; }
+
+.gront__ok { color: var(--ink); font-weight: 600; }
+
+.gront__nokkel p {
+  display: flex; align-items: baseline; gap: 1cqi;
+  margin: 0 0 1.1cqi;
+  font-family: var(--font-mono); font-size: 1.05cqi;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.gront__prikk {
+  flex: none;
+  width: 1.4cqi; height: 1.4cqi;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--ink);
+}
+.gront__prikk--gul  { background: var(--yellow); }
+.gront__prikk--spot { background: var(--spot-soft); }
+.gront__prikk--ok   { background: transparent; }
+
+.gront__dom {
+  display: block !important;
+  margin-top: 2.4cqi !important;
+  padding-top: 1.8cqi;
+  border-top: var(--edge-w) solid var(--edge);
+  font-family: var(--font-body) !important;
+  font-size: 1.35cqi !important;
+  line-height: 1.45;
+  letter-spacing: 0 !important;
+  color: var(--ink-soft);
+  opacity: 0;
+}
+.gront__dom b { display: block; font-size: 2cqi; color: var(--ink); font-family: var(--font-display); font-weight: var(--display-weight); }
+.gront[data-steg="2"] .gront__dom { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .gront__linjer em { transition: background-size .6s cubic-bezier(.16,1,.3,1); }
+  .gront__dom       { transition: opacity .5s ease; }
+}
+
+/* --- U6 · Kapittel 6, null treff -------------------------------- */
+
+.kap6__flate {
+  display: grid;
+  grid-template-columns: 1fr 26cqi;
+  gap: 3.4cqi;
+  margin-top: 1.6cqi;
+  align-items: start;
+}
+.kap6__punkter {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 1.8cqi;
+}
+.kap6__punkter li {
+  padding-left: 4cqi;
+  position: relative;
+  font-size: 1.4cqi; line-height: 1.5;
+  color: var(--ink-soft);
+}
+.kap6__punkter li b {
+  position: absolute; left: 0; top: 0;
+  font-family: var(--font-mono); font-size: 1.4cqi;
+  color: var(--spot);
+}
+
+.kap6__sokover {
+  margin: 0 0 1.4cqi;
+  font-family: var(--font-mono); font-size: 0.95cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.kap6__sok ul { list-style: none; margin: 0; padding: 0; }
+.kap6__sok li {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1.4cqi;
+  padding: 1.1cqi 0;
+  border-bottom: 1.5px solid var(--rule);
+}
+.kap6__sok li span {
+  font-family: var(--font-body); font-size: 1.5cqi;
+  color: var(--ink);
+}
+.kap6__sok li b {
+  font-family: var(--font-mono); font-size: 1.25cqi;
+  letter-spacing: var(--tracking-mono);
+  color: var(--spot);
+  white-space: nowrap;
+}
+
+/* --- Midlertidig ----------------------------------------------- */
+
+.stub { color: var(--ink-faint); }
+.stub h2 { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3rem); margin: 0 0 .5rem; }
+
+/* --- U7 · Hva kreves på ekte ------------------------------------ */
+
+.setninger__liste i {
+  font-style: normal;
+  color: var(--spot);
+  white-space: nowrap;
+}
+
+/* --- U8 · Rekkefølgen ------------------------------------------- */
+
+.veier__rad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.4cqi;
+  margin-top: 2.2cqi;
+  align-items: end;
+}
+.veier__kort {
+  text-align: left;
+  padding: 2.4cqi 2.2cqi;
+  border: 1px solid var(--rule);
+  border-top-width: 0.5cqi;
+  border-radius: 1.2cqi;
+}
+.veier__kort--ja      { border-top-color: var(--second); }
+.veier__kort--kanskje { border-top-color: var(--yellow); }
+.veier__kort--nei     { border-top-color: var(--spot); }
+
+.veier__dom {
+  margin: 0 0 0.6cqi;
+  font-size: 1.15cqi;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.veier__kort--ja      .veier__dom { color: var(--second); }
+.veier__kort--kanskje .veier__dom { color: var(--yellow); }
+.veier__kort--nei     .veier__dom { color: var(--spot); }
+
+.veier__kort h3 {
+  margin: 0 0 0.9cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 2.4cqi;
+}
+.veier__kort p:last-child {
+  margin: 0;
+  font-size: 1.45cqi;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* Trinnene stiger mot høyre — det billigste ligger nederst og først. */
+.veier__kort--kanskje { margin-bottom: 2cqi; }
+.veier__kort--nei     { margin-bottom: 4cqi; }
+
+.veier__sp {
+  margin: 0 0 0.7cqi;
+  font-size: 1.45cqi;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.veier__advarsel {
+  display: block;
+  margin-top: 1.6cqi;
+  padding: 1.8cqi 2.2cqi;
+  border: 1px dashed var(--spot);
+  border-radius: 1.2cqi;
+  text-align: left;
+}
+.veier__advarsel b {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  font-size: 2cqi;
+  color: var(--spot);
+  margin-bottom: 0.4cqi;
+}
+.veier__advarsel span {
+  font-size: 1.45cqi;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.veier__advarsel i { font-style: italic; }
+
+</style>
+</head>
+<body>
+<!-- ══════════════════════════════════════════════════════════════
+     GENERERT av build-standalone.mjs. Rediger presentation.html,
+     ikke denne fila — den overskrives ved neste bygg.
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- ══ DECKETS EGNE IKONER ═════════════════════════════════════════
+     Tre symboler til temasiden for Utgangspunktet. Ligger i sitt EGET
+     <svg>, ikke i systemarkivet under — det fylles av sync-tusj.mjs og
+     ville overskrevet dem.
+
+     Tegnet etter Tusj sin ikon-idé: 48×48, kun strek, currentColor.
+     Brukes med .ico-mønsteret (to <use>: spøkelse i spotfarge først,
+     blekk over) så registerforskyvningen blir som resten av systemet.
+
+     Skal de bli permanente, hører de hjemme i designsystemet — samme
+     vei som .avis skal gå.
+     ════════════════════════════════════════════════════════════ -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <!-- Lovverket -->
+    <symbol id="i-hammer" viewBox="0 0 48 48">
+      <path d="M25 5 L43 23 L37 29 L19 11 Z"/>
+      <path d="M22 20 L10 34"/>
+      <path d="M6 42 L26 42"/>
+    </symbol>
+
+    <!-- Egne regler: institusjonen -->
+    <symbol id="i-emblem" viewBox="0 0 48 48">
+      <path d="M24 7 L42 17 L6 17 Z"/>
+      <path d="M13 17 L13 38"/>
+      <path d="M24 17 L24 38"/>
+      <path d="M35 17 L35 38"/>
+      <path d="M5 42 L43 42"/>
+    </symbol>
+
+    <!-- Tilgangene som ikke er åpnet ennå -->
+    <symbol id="i-maskin" viewBox="0 0 48 48">
+      <path d="M9 11 L39 11 L39 31 L9 31 Z"/>
+      <path d="M4 37 L44 37"/>
+      <path d="M20 22 L28 22 L28 28 L20 28 Z"/>
+      <path d="M22 22 L22 19 A2 2 0 0 1 26 19 L26 22"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ══ SVG-ARKIV ═══════════════════════════════════════════════════
+     Figuren og filtrene. Fylles av `node sync-tusj.mjs` fra
+     D:\Ensemble\Projects\Bottega\systems\tusj\robot.svg — rediger
+     aldri figuren her, den kommer fra designsystemet.
+     ════════════════════════════════════════════════════════════ -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+  <filter id="tusj-wobble-bot" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <g id="bot-src" class="bot">
+    <ellipse class="shadow" cx="50" cy="170" rx="32" ry="4.5"/>
+    <g class="rig">
+      <g class="arm-l">
+        <path d="M29 92 16 105 14 120"/>
+        <path d="M10 120v4a4 4 0 0 0 8 0v-4"/>
+      </g>
+      <g class="arm-r">
+        <path d="M71 92 84 105 86 120"/>
+        <path d="M82 120v4a4 4 0 0 0 8 0v-4"/>
+      </g>
+      <g class="leg-l">
+        <path d="M40 128 37 149 35 163"/>
+        <path d="M28 165.5h13"/>
+      </g>
+      <g class="leg-r">
+        <path d="M60 128 63 149 65 163"/>
+        <path d="M59 165.5h13"/>
+      </g>
+
+      <rect class="fill-pap" x="28" y="84" width="44" height="44" rx="7"/>
+      <ellipse class="fill-spot" cx="50" cy="106" rx="13" ry="12"/>
+      <path d="M50 76v8"/>
+
+      <g class="head">
+        <g class="ant-l"><path d="M37 30 29 12"/><circle class="fill-ink" cx="28.5" cy="10" r="4"/></g>
+        <g class="ant-r"><path d="M63 30 72 13"/><circle class="fill-ink" cx="72.5" cy="11.5" r="4"/></g>
+        <rect class="fill-pap" x="12" y="45" width="10" height="15" rx="3"/>
+        <rect class="fill-pap" x="78" y="45" width="10" height="15" rx="3"/>
+        <rect class="fill-pap" x="21" y="30" width="58" height="48" rx="13"/>
+
+        <g class="face">
+          <circle class="fill-pap" cx="38" cy="51" r="10"/>
+          <circle class="fill-pap" cx="61.5" cy="50" r="8.4"/>
+          <circle class="fill-ink pupil" cx="38.5" cy="52" r="4.4"/>
+          <circle class="fill-ink pupil" cx="61.5" cy="51" r="3.6"/>
+          <path class="mouth" d="M39 65.5c3.4 4.6 14.6 4.4 20-1"/>
+        </g>
+
+        <!-- Maskineriet. Ligger her hele tiden, bittelite. Kameraet gjor det
+             lesbart - ingenting byttes ut. -->
+        <g class="brain">
+          <text class="lbl" x="26" y="37">TOKENS</text>
+          <rect class="chip" x="26"   y="39" width="12" height="8" rx="1.5"/>
+          <rect class="chip" x="39.5" y="39" width="10" height="8" rx="1.5"/>
+          <rect class="chip" x="51"   y="39" width="13" height="8" rx="1.5"/>
+          <rect class="chip" x="65.5" y="39" width="9"  height="8" rx="1.5"/>
+          <g class="chip-txt" text-anchor="middle">
+            <text x="32"   y="44.9">Kat</text>
+            <text x="44.5" y="44.9">ten</text>
+            <text x="57.5" y="44.9">satt</text>
+            <text x="70"   y="44.9">på</text>
+          </g>
+
+          <text class="lbl" x="26" y="54">NESTE ORD?</text>
+
+          <g class="word" text-anchor="end">
+            <text x="40" y="59.9">matta</text>
+            <text x="40" y="66.4">taket</text>
+            <text x="40" y="72.9">månen</text>
+          </g>
+          <rect class="track" x="42" y="57"   width="26" height="3.2" rx="1"/>
+          <rect class="track" x="42" y="63.5" width="26" height="3.2" rx="1"/>
+          <rect class="track" x="42" y="70"   width="26" height="3.2" rx="1"/>
+          <rect class="fillbar" style="--i:0" x="42" y="57"   width="16.1" height="3.2" rx="1"/>
+          <rect class="fillbar" style="--i:1" x="42" y="63.5" width="6.2"  height="3.2" rx="1"/>
+          <rect class="fillbar" style="--i:2" x="42" y="70"   width="2.3"  height="3.2" rx="1"/>
+          <g class="num">
+            <text x="70" y="59.9">0.62</text>
+            <text x="70" y="66.4">0.24</text>
+            <text x="70" y="72.9">0.09</text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  </defs>
+</svg>
+
+<div class="deck">
+
+  <!-- ── 1 · Forside ──────────────────────────────────────────── -->
+  <section class="deck-slide forside" data-tittel="Forside">
+    <span class="fx-fade forside__over" style="--d:.1s">Innkjøp og KI</span>
+
+    <div class="forside__row">
+      <h1 class="fx-rise" style="--d:.3s">Kunstig <span class="offset" data-echo="intelligens">intelligens</span></h1>
+
+      <figure class="walker forside__figur">
+        <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot som spaserer inn">
+          <g class="cam"></g>
+        </svg>
+      </figure>
+    </div>
+
+    <p class="fx-rise forside__under" style="--d:.55s">Workshop september 2026</p>
+  </section>
+
+  <!-- ── 2 · Agenda ───────────────────────────────────────────
+       Teksten låst 2026-08-07, klokkeslettene inn 2026-08-07.
+       Ni kort fyller 3×3-rutenettet: åtte bolker og lunsjen, som
+       står nøyaktig der skjøtet mellom halvdelene går.
+
+       Klokkeslett, ikke minutter: mottakeren skal se
+       tidsperspektivet grovt, ikke regne. Alle tre pausene har eget
+       kort — rutenettet skal ikke tvinges til 3×3 når beholderne er
+       det som bærer. Siste kort spenner hele bredden: dagens
+       tyngdepunkt skal se ut som dagens tyngdepunkt.
+
+       Dings står igjen fra forsiden. Ingen .walker her: hun har
+       allerede spasert inn, hun er bare ikke gått. Formen er ekte
+       og matrisen kommer nedenfra — derfor ingen fx-innganger på
+       barna: den skal være ferdig tegnet mens den reiser.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide agenda" data-tittel="Agenda" data-inn="opp">
+    <p class="agenda__over">09:00 – 16:00</p>
+    <h2>I dag</h2>
+
+    <div class="agenda__rad">
+      <div class="agenda__matrise">
+        <div class="agenda__kort">
+          <span class="agenda__min">09:00–09:30</span>
+          <span class="agenda__hva">Hva en språkmodell faktisk gjør</span>
+        </div>
+        <div class="agenda__kort agenda__kort--dere">
+          <span class="agenda__min">09:30–09:45 · dere</span>
+          <span class="agenda__hva">Hva bruker dere allerede?</span>
+        </div>
+        <div class="agenda__kort">
+          <span class="agenda__min">09:45–10:45</span>
+          <span class="agenda__hva">Er det det samme hvem vi bruker?</span>
+        </div>
+        <div class="agenda__kort agenda__kort--pause">
+          <span class="agenda__min">10:45–11:00</span>
+          <span class="agenda__hva">Kaffe</span>
+        </div>
+        <div class="agenda__kort">
+          <span class="agenda__min">11:00–11:45</span>
+          <span class="agenda__hva">Glasskula — hvor er vi på vei?</span>
+        </div>
+        <div class="agenda__kort agenda__kort--pause">
+          <span class="agenda__min">11:45–12:15</span>
+          <span class="agenda__hva">Lunsj</span>
+        </div>
+        <div class="agenda__kort">
+          <span class="agenda__min">12:15–13:30</span>
+          <span class="agenda__hva">Utgangspunktet — hva har vi lov til?</span>
+        </div>
+        <div class="agenda__kort agenda__kort--dere">
+          <span class="agenda__min">13:30–14:00 · begge</span>
+          <span class="agenda__hva">To ting bygget hjemme</span>
+        </div>
+        <div class="agenda__kort agenda__kort--pause">
+          <span class="agenda__min">14:00–14:15</span>
+          <span class="agenda__hva">Kaffe</span>
+        </div>
+        <div class="agenda__kort agenda__kort--bred agenda__kort--dere">
+          <span class="agenda__min">14:15–16:00 · dere</span>
+          <span class="agenda__hva">Hva kan KI hjelpe oss med?</span>
+        </div>
+      </div>
+
+      <figure class="agenda__figur">
+        <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot som står ved siden av agendaen">
+          <g class="cam"></g>
+        </svg>
+      </figure>
+    </div>
+
+    <p class="agenda__fot">Halvparten av dagen er deres — den viktigste halvparten.</p>
+  </section>
+
+  <!-- ── 3 · Spørsmålet ───────────────────────────────────────
+       Reisen snur her: prompten kommer NED. Komposisjonen er
+       godkjent som bilde 1 i stillbilder.html.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide sporsmal" data-tittel="Spørsmålet" data-inn="ned">
+    <ol class="deck-reise">
+      <li><span class="na">Spørsmålet</span></li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li>Svaret</li>
+    </ol>
+
+    <div class="sporsmal__scene">
+      <div class="sporsmal__kort">
+        <span class="sporsmal__merke">Vi spør</span>
+        <!-- Hele spørsmålet står skrevet her. JS flytter det over i
+             .sporsmal__rest og skriver det inn igjen tegn for tegn —
+             da er teksten fortsatt komplett uten JS, og for den som
+             har slått av bevegelse. -->
+        <p class="sporsmal__tekst"><i class="sporsmal__skrevet">Hvor dyr kaffemaskin kan vi anskaffe?</i><b class="sporsmal__markor"></b><i class="sporsmal__rest"></i></p>
+        <p class="sporsmal__tall">37 tegn · 9 ordbiter</p>
+      </div>
+
+      <div class="sporsmal__pil" aria-hidden="true">
+        <svg viewBox="0 0 60 40">
+          <path d="M2 20c9-1.4 17 1.6 26 .6 8-.9 14-3.2 27-1.6"/>
+          <path d="M48 13.5 55.5 19 47.5 25"/>
+        </svg>
+      </div>
+
+      <figure class="sporsmal__figur">
+        <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot som får spørsmålet">
+          <g class="cam"></g>
+        </svg>
+      </figure>
+    </div>
+
+    <p class="deck-fot">Ett spørsmål. Vi følger det hele veien inn og hele veien ut igjen.</p>
+  </section>
+
+  <!-- ── 4 · Ordbiter ─────────────────────────────────────────
+       Zoomen fra slide 3 går inn i roboten og lander på rent
+       lerret. Setningen står hel når vi lander, og deler seg i
+       ordbiter etterpå.
+
+       Delingen er slik EN modell deler den — de deler litt ulikt.
+       «kaffemaskin» blir kaffe + maskin, og «anskaffe» blir
+       ans + kaffe. Det siste er ikke en spøk vi har lagt inn.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide bitene" data-tittel="Ordbiter" data-inn="zoom" data-maks-steg="2">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li><span data-na="0">Ordbiter</span></li>
+      <li><span data-na="1">Kontekst</span></li>
+      <li>Utregningen</li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li>Svaret</li>
+    </ol>
+
+    <!-- Buene tegnes av JS fra brikkenes faktiske posisjoner. Å legge
+         dem inn for hånd ville bundet dem til én skjermbredde. -->
+    <svg class="bitene__buer" aria-hidden="true"></svg>
+
+    <p class="bitene__setning">
+      <span class="bit" style="--k:0">Hvor</span><span class="bit" style="--k:1">dyr</span><span class="bit bit--to" style="--k:2">kaffe</span><span class="bit" style="--k:3;--m:0">maskin</span><span class="bit" style="--k:4">kan</span><span class="bit" style="--k:5">vi</span><span class="bit" style="--k:6">ans</span><span class="bit bit--to" style="--k:7;--m:0">kaffe</span><span class="bit" style="--k:8;--m:0">?</span>
+    </p>
+
+    <p class="bitene__tall">9 ordbiter</p>
+
+    <!-- Nabolagene. Samme ordbit lander to helt forskjellige steder,
+         og det er naboene som avgjør hvilket. Ingen etiketter: det
+         er dette Lars sier, ikke det sliden skriver. -->
+    <div class="ordsky ordsky--a" aria-hidden="true">
+      <span style="--x:15;--y:0;--k:0">koffein</span>
+      <span style="--x:9.3;--y:3.8;--k:1">kanne</span>
+      <span style="--x:4.6;--y:7.8;--k:2">bønner</span>
+      <span style="--x:-3.6;--y:6.1;--k:3">melk</span>
+      <span style="--x:-12.1;--y:4.8;--k:4">trakter</span>
+      <span style="--x:-11.5;--y:0;--k:5">kopp</span>
+      <span style="--x:-12.1;--y:-4.8;--k:6">morgen</span>
+      <span style="--x:-3.6;--y:-6.1;--k:7">pause</span>
+      <span style="--x:4.6;--y:-7.8;--k:8">espresso</span>
+      <span style="--x:9.3;--y:-3.8;--k:9">kantine</span>
+    </div>
+
+    <div class="ordsky ordsky--b" aria-hidden="true">
+      <span style="--x:15;--y:0;--k:0">tilbud</span>
+      <span style="--x:9.3;--y:3.8;--k:1">budsjett</span>
+      <span style="--x:4.6;--y:7.8;--k:2">kravspek</span>
+      <span style="--x:-3.6;--y:6.1;--k:3">frist</span>
+      <span style="--x:-12.1;--y:4.8;--k:4">leverandør</span>
+      <span style="--x:-11.5;--y:0;--k:5">innkjøp</span>
+      <span style="--x:-12.1;--y:-4.8;--k:6">rammeavtale</span>
+      <span style="--x:-3.6;--y:-6.1;--k:7">kontrakt</span>
+      <span style="--x:4.6;--y:-7.8;--k:8">terskelverdi</span>
+      <span style="--x:9.3;--y:-3.8;--k:9">konkurranse</span>
+    </div>
+  </section>
+
+  <!-- ── 5 · Tre kilder, ett svar ─────────────────────────────
+       Avslutningen på bolk 2. Tre baner møtes i ett punkt, og ut
+       kommer ett svar — som ser helt likt ut uansett hvilken av
+       de tre det kom fra. Det er hele risikoen i ett bilde.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide kilder" data-tittel="Tre kilder" data-inn="opp" data-maks-steg="2">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li><span class="na">Utregningen</span></li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li>Svaret</li>
+    </ol>
+
+    <svg class="kilder__baner" aria-hidden="true"></svg>
+
+    <div class="kilder__kort kilder__kort--lest" style="--x:18;--k:0">
+      <div class="kilder__bilde">
+        <i style="width:82%"></i><i style="width:94%"></i><i style="width:76%"></i>
+        <i style="width:90%"></i><i style="width:68%"></i>
+      </div>
+      <span class="kilder__nr">1 · Trening</span>
+      <p class="kilder__hva">Det den har lest</p>
+    </div>
+
+    <div class="kilder__kort" style="--x:50;--k:1">
+      <div class="kilder__bilde kilder__bilde--prompt">
+        <span>Hvor dyr kaffemaskin kan vi anskaffe?</span>
+      </div>
+      <span class="kilder__nr">2 · Prompten</span>
+      <p class="kilder__hva">Det du la på bordet</p>
+    </div>
+
+    <div class="kilder__kort" style="--x:82;--k:2">
+      <div class="kilder__bilde kilder__bilde--dok">
+        <i style="width:70%"></i><i style="width:88%"></i><i style="width:52%"></i>
+      </div>
+      <span class="kilder__nr">3 · Oppslag</span>
+      <p class="kilder__hva">Det den fikk slått opp</p>
+    </div>
+
+    <span class="kilder__punkt" aria-hidden="true"></span>
+
+    <p class="kilder__svar">Det kommer an på …</p>
+    <p class="kilder__sporsmal">Hvilken av de tre kom dette fra?</p>
+  </section>
+
+  <!-- ── 6 · Treningen ────────────────────────────────────────
+       Zoom inn i kortet «Det den har lest». Uten denne blir resten
+       for abstrakt: her ligger de to ordene om trening som ikke
+       kan hoppes over. Merk arbeidsdelingen — HER er det hva
+       trening ER; i bolk 5 brukes det samme som argument for at
+       det ikke er det samme hvem du bruker.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide trening" data-tittel="Treningen" data-inn="zoom"
+           data-zoom-fra=".kilder__kort--lest" data-maks-steg="2">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li><span class="na">Utregningen</span></li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li>Svaret</li>
+    </ol>
+
+    <p class="trening__over">Inne i «det den har lest»</p>
+
+    <div class="trening__rad">
+      <div class="trening__steg">
+        <span class="trening__nr">01 · Lesingen</span>
+        <p class="trening__hva">Milliarder av tekster</p>
+        <p class="trening__om">Lærer hvordan språk henger sammen. Kan fortsette en setning — men ikke svare på et spørsmål.</p>
+      </div>
+      <div class="trening__steg">
+        <span class="trening__nr">02 · Skolen <b>SFT</b></span>
+        <p class="trening__hva">Eksempler på gode svar</p>
+        <p class="trening__om">Mennesker skriver hvordan et svar skal se ut. Nå svarer den, i stedet for å fortsette.</p>
+      </div>
+      <div class="trening__steg">
+        <span class="trening__nr">03 · Smaken <b>RLHF</b></span>
+        <p class="trening__hva">«Hvilket svar likte du best?»</p>
+        <p class="trening__om">Mennesker — og etter hvert maskiner — peker på det beste av to. Nå svarer den slik folk liker.</p>
+      </div>
+    </div>
+
+    <p class="deck-fot">Alt dette skjedde før du åpnet den. Etterpå er den låst — for deg.</p>
+  </section>
+
+  <!-- ── 7 · Gjettingen ───────────────────────────────────────
+       Gaget først: den «tenker» med en teller som går, og Lars kan
+       si at nå tar det fem minutter. Så: neida. Ett klikk, og fasit
+       er en sannsynlighetsregning som tok millisekunder.
+
+       Sto tidligere som en tur inn i hodet på roboten — parkert i
+       `parkert/inni-hodet.html`, se kommentaren der.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide gjett" data-tittel="Gjettingen" data-inn="opp" data-maks-steg="1">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li><span class="na">Gjettingen</span></li>
+      <li>Runden</li>
+      <li>Svaret</li>
+    </ol>
+
+    <div class="gjett__tenker">
+      <span class="gjett__prikker" aria-hidden="true"><i></i><i></i><i></i></span>
+      <p class="gjett__ord">Tenker …</p>
+      <p class="gjett__tid">00:00</p>
+    </div>
+
+    <div class="gjett__fasit">
+      <p class="gjett__neida">Neida.</p>
+      <dl class="bars">
+        <div><dt>Det</dt><dd><i style="--v:58%"></i></dd><b>0.58</b></div>
+        <div><dt>Du</dt><dd><i style="--v:22%"></i></dd><b>0.22</b></div>
+        <div><dt>For</dt><dd><i style="--v:9%"></i></dd><b>0.09</b></div>
+      </dl>
+      <p class="gjett__fart">millisekunder</p>
+    </div>
+
+    <p class="deck-fot">Den grubler ikke over spørsmålet. Den regner ut hvilket ord som pleier å komme først.</p>
+  </section>
+
+  <!-- ── 8 · Runden ───────────────────────────────────────────
+       Radene bygges av seg selv, litt raskere enn behagelig — det
+       skal kjennes som en maskin, ikke som en punktliste.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide runden" data-tittel="Runden" data-inn="opp">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li>Gjettingen</li>
+      <li><span class="na">Runden</span></li>
+      <li>Svaret</li>
+    </ol>
+
+    <div class="runden__rader">
+      <div class="runden__rad fx-rise" style="--d:.35s">
+        <span class="runden__ctx">Det</span><span class="runden__pil">→</span><span class="runden__ny">kommer</span>
+      </div>
+      <div class="runden__rad fx-rise" style="--d:.85s">
+        <span class="runden__ctx">Det kommer</span><span class="runden__pil">→</span><span class="runden__ny">an</span>
+      </div>
+      <div class="runden__rad fx-rise" style="--d:1.35s">
+        <span class="runden__ctx">Det kommer an</span><span class="runden__pil">→</span><span class="runden__ny">på</span>
+      </div>
+      <div class="runden__rad fx-rise" style="--d:1.85s">
+        <span class="runden__ctx">Det kommer an på</span><span class="runden__pil">→</span><span class="runden__ny">terskelverdien</span>
+      </div>
+      <div class="runden__rad fx-rise" style="--d:2.35s">
+        <span class="runden__ctx">Det kommer an på terskelverdien</span><span class="runden__pil">→</span><span class="runden__ny runden__ny--stopp">…</span>
+      </div>
+    </div>
+
+    <p class="deck-fot">Hele regnestykket gjøres på nytt for hvert eneste ord. Et svar på 300 ord er 300 runder.</p>
+  </section>
+
+  <!-- ── 9 · Svaret ───────────────────────────────────────────
+       Svaret står som en påstand. Først på neste klikk kommer det
+       som gjør det til et poeng: ingen har sjekket det.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide svaret" data-tittel="Svaret" data-inn="opp" data-maks-steg="1">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li><span class="na">Svaret</span></li>
+    </ol>
+
+    <div class="svaret__kort">
+      <span class="svaret__merke">Den svarer</span>
+      <p class="svaret__tekst">Det kommer an på terskelverdien. Under den kan dere anskaffe direkte, men anskaffelsen skal fortsatt kunne dokumenteres.</p>
+    </div>
+
+    <p class="svaret__note">Ingen av setningene er sjekket mot regelverket. De er regnet fram.</p>
+  </section>
+
+  <!-- ── 10 · Runden rundt bordet (bolk 3) ────────────────────
+       Timens viktigste sju minutter. Sliden skal være stille:
+       en animasjon her ville konkurrert med den som snakker.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide bordet" data-tittel="Runden rundt bordet">
+    <p class="bordet__over">Rundt bordet</p>
+    <h2 class="bordet__sporsmal">Hvordan bruker <span class="offset" data-echo="dere">dere</span> KI i dag?</h2>
+  </section>
+
+  <!-- ── 11 · Er det det samme hvem? (bolk 5) ─────────────────
+       Tre ganger samme figur, tre ulike blekk. Fargene kommer fra
+       tokens — ingen ny hex — og settes på figur-wrapperen, så
+       .bot utleder sin egen --spot av dem.
+
+       MERK: bolk 4 (standardisert vs. personlig bruk) skal inn
+       mellom denne og runden over.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide tre" data-tittel="Er det det samme hvem?">
+    <h2 class="tre__sporsmal">Er det det samme <span class="offset" data-echo="hvem">hvem</span> du bruker?</h2>
+
+    <div class="tre__rad">
+      <figure class="tre__figur walker" style="--d:.5s">
+        <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot"><g class="cam"></g></svg>
+      </figure>
+      <figure class="tre__figur walker" style="--d:1.15s;--spot-raw:var(--second)">
+        <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot i blått blekk"><g class="cam"></g></svg>
+      </figure>
+      <figure class="tre__figur walker" style="--d:1.8s;--spot-raw:var(--yellow)">
+        <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot i gult blekk"><g class="cam"></g></svg>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ── 12 · Valgene tas nå (Gladstein) ──────────────────────
+       Hentet fra highborn-presentasjonen, bygget om i Tusj.
+       Innholdet er Lars' research og står som det sto — men det
+       er datert materiale og må sjekkes før september.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide valg" data-tittel="Valgene tas nå">
+    <div class="valg__venstre">
+      <p class="valg__over fx-fade" style="--d:.1s">2024–2026 · Infrastrukturvalg</p>
+      <h2 class="valg__tittel fx-rise" style="--d:.2s">Valgene tas nå —<br>for tiår fremover</h2>
+
+      <ul class="valg__punkter">
+        <li class="fx-rise" style="--d:.4s"><b>2024–2026:</b> infrastrukturvalgene som tas nå låser inn maktstrukturer i tiår</li>
+        <li class="fx-rise" style="--d:.5s">HRF lanserte <b>«AI for Individual Rights»</b> i 2025 — offensivt og defensivt</li>
+        <li class="fx-rise" style="--d:.6s"><b>Åpne modeller lokalt</b> = data forlater ikke enheten = ingen overvåkning</li>
+        <li class="fx-rise" style="--d:.7s">Desentralisering er ikke gitt — det krever <b>aktive valg</b></li>
+      </ul>
+
+      <blockquote class="valg__sitat fx-rise" style="--d:.9s">
+        <p>«The decentralization of intelligence creates a future that is fundamentally pro-democracy»</p>
+        <cite>Ramez Naam · HRF AI Summit, november 2025</cite>
+      </blockquote>
+    </div>
+
+    <figure class="valg__portrett fx-fade" style="--d:.35s">
+      <img src="gladstein.png" alt="Alex Gladstein">
+      <figcaption><b>Alex Gladstein</b><span>Chief Strategy Officer · Human Rights Foundation</span></figcaption>
+    </figure>
+
+    <p class="deck-kilde">hrf.org/latest · Frontier Media, juli 2025 · Stopp Verden-podkast m/ Gladstein</p>
+  </section>
+
+  <!-- ── 13 · Pentagate ───────────────────────────────────────
+       Avis-scrollen. Klikk flytter artikkelen til neste
+       markering — den er styrt, ikke tidsstyrt, så Lars kan
+       snakke mellom hvert punkt.
+
+       Denne komposisjonen skal løftes inn i Tusj som komponent.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide penta" data-tittel="Pentagate" data-maks-steg="3">
+    <div class="penta__venstre">
+      <p class="penta__over fx-fade" style="--d:.1s">USA · februar 2026</p>
+      <h2 class="penta__tittel fx-rise" style="--d:.2s">Penta<span class="offset" data-echo="gate">gate</span></h2>
+      <p class="penta__ingress fx-rise" style="--d:.35s">Anthropic nektet å la KI styre droner og overvåke sivile. Pentagon svarte med å erklære dem en nasjonal sikkerhetsrisiko — en betegnelse tidligere bare brukt om Kina og Russland.</p>
+
+      <ol class="penta__nokler">
+        <li data-na="1">Supply chain risk</li>
+        <li data-na="2">Autonome våpen</li>
+        <li data-na="3">OpenAI tok over</li>
+      </ol>
+    </div>
+
+    <div class="avis fx-fade" style="--d:.15s">
+      <div class="avis__chrome">
+        <span class="avis__prikk"></span><span class="avis__prikk"></span><span class="avis__prikk"></span>
+        <p class="avis__url">fortune.com/2026/03/03/the-pentagons-fight-with-anthropic</p>
+      </div>
+
+      <div class="avis__vindu">
+        <div class="avis__rull">
+          <p class="avis__kilde">Fortune</p>
+          <h3 class="avis__tittel">The Pentagon's fight with Anthropic was the first real test for how we will control powerful AI. The bad news: we all failed.</h3>
+          <p class="avis__byline">By Jeremy Kahn · March 3, 2026</p>
+
+          <p class="avis__avsnitt avis__avsnitt--matt">In February 2026, a simmering dispute between Anthropic and the U.S. Department of Defense suddenly boiled over into one of the most consequential confrontations between a tech company and the American government in recent memory.</p>
+
+          <p class="avis__avsnitt avis__avsnitt--matt">It began when reports emerged that Claude had been used through a contractor to help locate and capture Venezuelan President Nicolás Maduro — potentially without Anthropic's full knowledge or consent. The Pentagon, emboldened, demanded Anthropic remove all ethical guardrails from its military contracts.</p>
+
+          <p class="avis__avsnitt"><span class="avis__merk" data-merk="1">Secretary of War Pete Hegseth labeled Anthropic a <b>“supply chain risk to national security”</b> — a designation historically reserved for foreign adversaries like China and Russia, <b>never before applied to an American company</b>.</span></p>
+
+          <p class="avis__avsnitt avis__avsnitt--matt">The designation carried an immediate consequence: no contractor, supplier or partner doing business with the U.S. military could conduct any commercial activity with Anthropic.</p>
+
+          <p class="avis__avsnitt"><span class="avis__merk" data-merk="2"><b>“We do not believe that today's frontier AI models are reliable enough to be used in fully autonomous weapons,”</b> Anthropic stated. The company also refused to allow Claude to be used for <b>mass domestic surveillance of Americans</b>.</span></p>
+
+          <p class="avis__avsnitt avis__avsnitt--matt">A federal judge initially blocked the designation as unconstitutional. An appeals court reversed course in April, leaving Anthropic in legal limbo.</p>
+
+          <p class="avis__avsnitt"><span class="avis__merk" data-merk="3"><b>Hours after Anthropic was declared a security risk, OpenAI announced its own deal with the Department of War</b> — with far fewer guardrails. The Pentagon then signed agreements with eight major tech companies, pointedly leaving Anthropic out.</span></p>
+
+          <p class="avis__avsnitt avis__avsnitt--matt">The message to the industry could not have been clearer: ethical limits are a competitive liability.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="deck-kilde">CBS News · Fortune, 3. mars 2026 · The Guardian, 28. februar 2026</p>
+  </section>
+
+  <!-- ── 14 · Aktørene ────────────────────────────────────────
+       Tabellen fra highborn. Tallene er ferskvare — sjekk dem
+       mot kilden før september.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide aktor" data-tittel="Aktørene">
+    <div class="aktor__topp">
+      <h2>Aktørene — <span class="offset" data-echo="hvem er de?">hvem er de?</span></h2>
+      <p>Åpenhet, etikk og militærtilknytning blant de største KI-selskapene</p>
+    </div>
+
+    <table class="tab">
+      <thead>
+        <tr>
+          <th>Selskap</th><th>Åpen kildekode</th><th>Etiske retningslinjer</th><th>Militær tilknytning</th><th>Transparens</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="tab__uthev">
+          <td><b>Anthropic</b><span>Claude</span></td>
+          <td>Nei</td>
+          <td>Constitutional AI, RSP — transparenshub publisert</td>
+          <td>Saksøkte Pentagon da de krevde autonome våpen og masseovervåking</td>
+          <td><b>Høy</b><span>5. → 2. plass</span></td>
+        </tr>
+        <tr>
+          <td><b>Mistral</b><span>Le Chat</span></td>
+          <td>Delvis</td>
+          <td>Begrenset publisert</td>
+          <td>Testet av DoD, ingen kjent stor kontrakt</td>
+          <td>Svært lav<span>55 → 18</span></td>
+        </tr>
+        <tr>
+          <td><b>Meta</b><span>Llama</span></td>
+          <td>Ja (vekter)</td>
+          <td>Begrenset</td>
+          <td>Llama brukes aktivt av militær</td>
+          <td>Lav<span>1. → 5. plass</span></td>
+        </tr>
+        <tr>
+          <td><b>OpenAI</b><span>GPT</span></td>
+          <td>Nei</td>
+          <td>Ja — men svekket</td>
+          <td>200 mill. USD DoD-kontrakt</td>
+          <td>Lav<span>2. → 6. plass</span></td>
+        </tr>
+        <tr>
+          <td><b>Google</b><span>Gemini</span></td>
+          <td>Nei</td>
+          <td>Ja — begrenset</td>
+          <td>200 mill. USD DoD-kontrakt, IL6-klarering</td>
+          <td>Middels</td>
+        </tr>
+        <tr>
+          <td><b>xAI</b><span>Grok</span></td>
+          <td>Delvis</td>
+          <td>Minimalt</td>
+          <td>200 mill. USD DoD-kontrakt</td>
+          <td>Svært lav<span>ny i indeksen</span></td>
+        </tr>
+        <tr class="tab__advar">
+          <td><b>DeepSeek</b><span>R1</span></td>
+          <td>Ja (vekter)</td>
+          <td>Kinesisk regulering — ikke vestlig åpenhet</td>
+          <td>Kinesisk militærtilknytning antatt</td>
+          <td>Svært lav</td>
+        </tr>
+        <tr class="tab__advar">
+          <td><b>Alibaba</b><span>Qwen — den jeg kjører lokalt</span></td>
+          <td>Delvis</td>
+          <td>Kinesisk regulering</td>
+          <td>Kinesisk militærtilknytning antatt</td>
+          <td>Svært lav</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="deck-kilde">Stanford FMTI 2025 · Anthropic Transparency Hub · CNN, mai 2026 · tallene er ferskvare</p>
+  </section>
+
+  <!-- ── 15 · Din brukermakt ──────────────────────────────────
+       Konklusjonen i maktsporet, og den sterkeste: dette er
+       valg Lars faktisk har tatt selv.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide makt" data-tittel="Din brukermakt">
+    <div class="aktor__topp">
+      <h2>Din <span class="offset" data-echo="brukermakt.">brukermakt.</span></h2>
+      <p>Det finnes gode alternativer til de store plattformene — uten å gi opp funksjonalitet.</p>
+    </div>
+
+    <table class="tab tab--bytt">
+      <thead>
+        <tr><th>Funksjon</th><th>Bytt ut</th><th>Med dette</th><th>Hvorfor</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Nettleser</td><td class="tab__ut">Chrome / Edge</td><td class="tab__inn">Vivaldi <span>Firefox · Brave</span></td><td>Ingen datainnsamling. Vivaldi er laget i Bergen.</td></tr>
+        <tr><td>Søkemotor</td><td class="tab__ut">Google / Bing</td><td class="tab__inn">Startpage <span>DuckDuckGo · Kagi</span></td><td>Google-resultater uten sporing.</td></tr>
+        <tr><td>Meldinger</td><td class="tab__ut">WhatsApp / Messenger</td><td class="tab__inn">Signal</td><td>Ende-til-ende-kryptert, nonprofit, ingen reklame.</td></tr>
+        <tr><td>E-post</td><td class="tab__ut">Gmail / Outlook</td><td class="tab__inn">Proton Mail <span>Tuta</span></td><td>Kryptert. Gratisnivået holder for de fleste.</td></tr>
+        <tr><td>Skylagring</td><td class="tab__ut">Google Drive / OneDrive</td><td class="tab__inn">Proton Drive</td><td>Kryptert, ingen datahøsting.</td></tr>
+        <tr class="tab__uthev"><td>KI</td><td class="tab__ut">ChatGPT / Gemini</td><td class="tab__inn">Qwen via Ollama <span>lokalt hos meg</span></td><td>Kjører på din egen maskin. Ingenting forlater PC-en — og da betyr det mindre hvem som lagde modellen.</td></tr>
+        <tr><td>Passord</td><td class="tab__ut">Nettleserlagring</td><td class="tab__inn">Bitwarden</td><td>Åpen kildekode, gratis, langt sikrere.</td></tr>
+      </tbody>
+    </table>
+
+    <p class="deck-kilde">Bruker du de store LLM-ene, kan samtalene dine brukes til trening med mindre du skrur det av. Valget av verktøy har reell betydning.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       UTGANGSPUNKTET — kapittelet som setter rammen før deltakelsen.
+       Bygget 2026-08-07. Ligger til slutt fordi rekkefølgen i dagen
+       ikke er låst ennå; Lars flytter dem når strukturen er ryddet.
+
+       Jobben: ikke informere — SORTERE. Følelsen skal være lettelse,
+       ikke frykt. Reglene er færre og klarere enn folk tror.
+
+       Stegene styres av .deck-trinn: barna av .deck-trinn kommer inn
+       ett klikk om gangen, kumulativt, i DOM-rekkefølge.
+       ══════════════════════════════════════════════════════════ -->
+
+  <!-- ── U0 · Temaside: Utgangspunktet ────────────────────────
+       Forsiden til kapittelet. Tre symboler sier hva rammen består
+       av, i den rekkefølgen de er urokkelige: hammeren kan ingen
+       flytte, emblemet kan vi påvirke, maskinen er bare en
+       beslutning som ikke er tatt ennå.
+
+       Dings står ved tittelen og ser bort på de tre. Ingen .walker:
+       hun har spasert inn for lengst.
+
+       Erstattet «Åtte ting den allerede gjør», som er parkert i
+       parkert/atte-ting.html og lever videre som fysiske kort.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide tema" data-tittel="Utgangspunktet" data-inn="opp">
+    <div class="tema__venstre">
+      <p class="tema__over fx-fade" style="--d:.1s">Del 2</p>
+      <h2 class="tema__tittel fx-rise" style="--d:.2s">Utgangs<span class="offset" data-echo="punktet">punktet</span></h2>
+      <p class="tema__ingress fx-rise" style="--d:.4s">Hva har vi lov til — og hva er det vi ikke har fått ennå?</p>
+
+      <figure class="tema__figur fx-fade" style="--d:.8s">
+        <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot som ser bort på de tre symbolene">
+          <g class="cam"></g>
+        </svg>
+      </figure>
+    </div>
+
+    <ol class="tema__porter">
+      <li class="fx-rise" style="--d:.55s">
+        <svg viewBox="0 0 48 48" class="ico ico--lg" aria-hidden="true"><use href="#i-hammer"/><use href="#i-hammer"/></svg>
+        <div>
+          <h3>Lovverket</h3>
+          <p>GDPR, KI-forordningen, anskaffelsesregelverket, arkivplikt. Ingen i dette rommet kan flytte det.</p>
+        </div>
+      </li>
+      <li class="fx-rise" style="--d:.7s">
+        <svg viewBox="0 0 48 48" class="ico ico--lg" aria-hidden="true"><use href="#i-emblem"/><use href="#i-emblem"/></svg>
+        <div>
+          <h3>Våre egne regler</h3>
+          <p>Policy vedtatt 17.06.2025. Retningslinjer for innkjøp: finnes ikke — og policyen ber oss lage dem.</p>
+        </div>
+      </li>
+      <li class="fx-rise" style="--d:.85s">
+        <svg viewBox="0 0 48 48" class="ico ico--lg" aria-hidden="true"><use href="#i-maskin"/><use href="#i-maskin"/></svg>
+        <div>
+          <h3>Tilgangene</h3>
+          <p>Utviklingsmiljø er ikke åpnet. IT vil gjennomgå koden før vi implementerer KI-programmer — og det er ikke urimelig.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ── U2 · De fire lagene ──────────────────────────────────
+       Kapittelets viktigste innsikt, og den som gjør rommet
+       framoverlent: lagene har ULIKE eiere, og bare noen av dem
+       kan flyttes. To av fire kan det — og ett av dem er vårt.
+
+       Femte steg er det åpne feltet utenfor.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide lagene" data-tittel="De fire lagene" data-inn="opp" data-maks-steg="5">
+    <div class="aktor__topp">
+      <h2>Fire lag — og bare to av dem <span class="offset" data-echo="kan flyttes">kan flyttes</span></h2>
+      <p>Det er ikke ett regelverk. Det er fire, med hver sin eier.</p>
+    </div>
+
+    <table class="tab lagene__tab">
+      <thead>
+        <tr><th>Lag</th><th>Hva</th><th>Hvem eier det</th><th>Kan det endres?</th></tr>
+      </thead>
+      <tbody class="deck-trinn">
+        <tr>
+          <td><b>Lov og forordning</b><span>over oss alle</span></td>
+          <td>GDPR · KI-forordningen · anskaffelsesregelverket · arkivplikt · taushetsplikt</td>
+          <td>EU og Stortinget</td>
+          <td class="lagene__nei">Nei</td>
+        </tr>
+        <tr>
+          <td><b>USNs KI-policy</b><span>vedtatt 17.06.2025</span></td>
+          <td>Åtte kapitler. Kapittel 6 er vårt — og det er tre kulepunkter.</td>
+          <td>KI-rådet og styret</td>
+          <td class="lagene__ja">Ja — revideres hvert år</td>
+        </tr>
+        <tr class="tab__uthev">
+          <td><b>Retningslinjer for innkjøp</b><span>finnes ikke</span></td>
+          <td>Policyen ber enhetene lage sine egne. Ingen har gjort det ennå.</td>
+          <td><b>Oss</b></td>
+          <td class="lagene__ja"><b>Vi skriver dem</b></td>
+        </tr>
+        <tr>
+          <td><b>Maskinen vi får utlevert</b><span>slik den er satt opp</span></td>
+          <td>Ikke utviklingsmiljø · ikke egne agenter · ikke lokal modell. IT vil gjennomgå koden før KI-programmer implementeres.</td>
+          <td>IT-drift</td>
+          <td class="lagene__ja">Ja — en beslutning, ikke en regel</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="lagene__utenfor deck-trinn__ett">
+      <span>Utenfor:</span> alt annet. Der finnes det ingen vegger — og ingen som passer på deg heller.
+    </p>
+
+    <p class="deck-kilde">Policy for bruk av KI ved USN, vedtatt 17.06.2025 · innledningen og kapittel 6</p>
+  </section>
+
+  <!-- ── U3 · Hierarkiet og den tomme boksen ──────────────────
+       Dagens viktigste grafiske element. Alt annet fylles inn,
+       og så blir hullet synlig. Den tomme boksen kommer SIST i
+       avsløringen, men står nummer tre i rekka — flex order gjør
+       jobben, så DOM-rekkefølgen kan følge klikkene.
+
+       Kom tilbake hit ved dagens slutt.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide hierarki" data-tittel="Den tomme boksen" data-inn="ned" data-maks-steg="4">
+    <div class="aktor__topp">
+      <h2>Finnes det regler? <span class="offset" data-echo="Ja. Tre av dem.">Ja. Tre av dem.</span></h2>
+      <p>Og én som ikke finnes.</p>
+    </div>
+
+    <div class="hierarki__stabel deck-trinn">
+      <article class="hierarki__boks" style="order:1">
+        <p class="hierarki__niva">Overordnet</p>
+        <h3>Policy for bruk av KI ved USN</h3>
+        <p class="hierarki__note">Utarbeidet av KI-rådet, signert av rektor</p>
+        <b class="hierarki__dato">17.06.2025</b>
+      </article>
+
+      <article class="hierarki__boks" style="order:2">
+        <p class="hierarki__niva">Fagspesifikt</p>
+        <h3>Retningslinjer — eksamen og studentoppgaver</h3>
+        <p class="hierarki__note">Noen har gjort jobben for sitt område</p>
+        <b class="hierarki__dato">11.08.2025</b>
+      </article>
+
+      <article class="hierarki__boks" style="order:4">
+        <p class="hierarki__niva">Verktøy</p>
+        <h3>Sikt KI-chat · M365 Copilot</h3>
+        <p class="hierarki__note">Godkjente, med USN-pålogging</p>
+        <b class="hierarki__dato">22.09.2025</b>
+      </article>
+
+      <article class="hierarki__boks hierarki__boks--tom" style="order:3">
+        <p class="hierarki__niva">Fagspesifikt</p>
+        <h3>Retningslinjer — innkjøp og anskaffelser</h3>
+        <p class="hierarki__note">Ingen har skrevet dem</p>
+        <b class="hierarki__dato">—</b>
+      </article>
+    </div>
+
+    <p class="deck-kilde">La denne stå i fem sekunder uten å si noe. Den er hele overgangen til resten av dagen.</p>
+  </section>
+
+  <!-- ── U4 · Tre setninger ───────────────────────────────────
+       Ikke ni prinsipper. Leser du prinsipplista høyt, blir du
+       compliance-fyren og dagen er tapt i minutt 15.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide setninger" data-tittel="Tre setninger" data-inn="opp" data-maks-steg="3">
+    <div class="aktor__topp">
+      <h2>Hva reglene <span class="offset" data-echo="faktisk">faktisk</span> sier</h2>
+      <p>Tre setninger. Ikke ni prinsipper.</p>
+    </div>
+
+    <ol class="setninger__liste deck-trinn">
+      <li>
+        <b>Du velger selv hva du spør om.</b>
+        <span>Ingen standardiserer spørsmålene dine, og ingen sitter og ser på dem.</span>
+      </li>
+      <li>
+        <b>Regelverket styrer hva du limer inn.</b>
+        <span>Kun åpne data. Punktum.</span>
+      </li>
+      <li>
+        <b>Har KI bidratt til en beslutning, skal det opplyses om.</b>
+        <span>Policyen, kapittel 3 — «på en tydelig måte».</span>
+      </li>
+    </ol>
+
+    <p class="deck-kilde">Policy for bruk av KI ved USN, kapittel 3 · USNs veileder for sikker bruk av KI-verktøy</p>
+  </section>
+
+  <!-- ── U5 · Hvor mye av dette er grønt? ─────────────────────
+       Testen, og allerede deltakelse: la rommet svare. Svaret er
+       «nesten ingenting» — men det skal komme fra dem, ikke fra
+       scenen. Klikk 1 fargelegger, klikk 2 gir dommen.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide gront" data-tittel="Hvor mye er grønt?" data-inn="opp" data-maks-steg="2">
+    <div class="aktor__topp">
+      <h2>Hvor mye av dette er <span class="offset" data-echo="grønt?">grønt?</span></h2>
+      <p>Et helt vanlig tilbud. Ta det med rommet før du klikker.</p>
+    </div>
+
+    <div class="gront__flate">
+      <article class="gront__ark">
+        <p class="gront__hode">Tilbud · Rammeavtale kontorrekvisita 2026–2029</p>
+        <ul class="gront__linjer">
+          <li>Tilbyder: <em data-merk="1">Nordvest Kontor AS, org.nr. 998 xxx xxx</em></li>
+          <li>Kontaktperson: <em data-merk="2">Marte Lien, mobil og e-post</em></li>
+          <li>Nøkkelpersonell: <em data-merk="2">CV for tre navngitte konsulenter</em></li>
+          <li>Prisskjema: <em data-merk="1">enhetspriser og rabattmatrise</em></li>
+          <li>Referanser: <em data-merk="2">tre kunder med kontaktpersoner</em></li>
+          <li>Vedlegg 3: <em data-merk="1">avtale med underleverandør</em></li>
+          <li class="gront__ok">Leveringstid: 5 virkedager</li>
+          <li class="gront__ok">Miljøsertifisering: ISO 14001</li>
+        </ul>
+      </article>
+
+      <aside class="gront__nokkel">
+        <p><i class="gront__prikk gront__prikk--gul"></i> Forretningshemmelighet</p>
+        <p><i class="gront__prikk gront__prikk--spot"></i> Personopplysning</p>
+        <p><i class="gront__prikk gront__prikk--ok"></i> Åpne data — grønt</p>
+        <p class="gront__dom"><b>To linjer av åtte.</b> Resten kan ikke limes inn noe sted, heller ikke i Sikt KI-chat.</p>
+      </aside>
+    </div>
+
+    <p class="deck-kilde">Sjekk hva dokumentklassifiseringen faktisk heter hos oss før dette står på skjermen. «Grønn» er ordet i USNs veileder.</p>
+  </section>
+
+  <!-- ── U6 · Kapittel 6 — 0 treff ────────────────────────────
+       Lander den tomme boksen uten å argumentere for den: den
+       vises bare. De tre kulepunktene står fra start (Lars leser
+       dem), så kommer søkene ett klikk om gangen.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide kap6" data-tittel="Kapittel 6 — 0 treff" data-inn="opp" data-maks-steg="4">
+    <div class="aktor__topp">
+      <h2>Kapittel 6: <span class="offset" data-echo="administrasjon og drift">administrasjon og drift</span></h2>
+      <p>Hele innkjøpsseksjonens plass i policyen. Tre kulepunkter.</p>
+    </div>
+
+    <div class="kap6__flate">
+      <ol class="kap6__punkter">
+        <li><b>a)</b> KI kan effektivisere administrative prosesser — men beslutninger som påvirker ansatte og studenter skal ikke automatiseres uten menneskelig kontroll. All bruk skal dokumenteres.</li>
+        <li><b>b)</b> Grundige risikovurderinger før KI tas i bruk i høyrisiko bruksområder, i tråd med KI-forordningen.</li>
+        <li><b>c)</b> Ansatte som bruker KI i administrative prosesser skal ha kompetanse til å bruke det forsvarlig.</li>
+      </ol>
+
+      <aside class="kap6__sok">
+        <p class="kap6__sokover">Søk i hele policyen</p>
+        <ul class="deck-trinn">
+          <li><span>«anskaffelse»</span><b>0 treff</b></li>
+          <li><span>«tilbud»</span><b>0 treff</b></li>
+          <li><span>«leverandør»</span><b>0 treff</b></li>
+          <li><span>«evaluering»</span><b>0 treff</b></li>
+        </ul>
+      </aside>
+    </div>
+
+    <p class="deck-kilde">Ikke et hull noen har glemt — en jobb ingen har gjort. Policyens innledning ber enhetene om å gjøre den.</p>
+  </section>
+
+  <!-- ── U7 · Hva kreves når det skal brukes på ekte ───────────
+       Svaret på «kan vi ikke bare kjøpe et abonnement?». Fire
+       krav, ett klikk om gangen. Poenget som skal sitte: det er
+       ikke prisen som stopper oss, det er avtalen. Ta art. 22
+       sakte — den forklarer hvorfor policyens egen formulering
+       lyder som den gjør.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide krav" data-tittel="Hva kreves på ekte" data-inn="opp" data-maks-steg="4">
+    <div class="aktor__topp">
+      <h2>«Kan vi ikke bare <span class="offset" data-echo="kjøpe et abonnement?">kjøpe et abonnement?</span>»</h2>
+      <p>Jo. Men fire ting må være på plass først, og ingen av dem koster penger.</p>
+    </div>
+
+    <ol class="setninger__liste deck-trinn">
+      <li>
+        <b>Databehandleravtale.</b>
+        <span>Alle som behandler personopplysninger for oss må ha avtale. Uten den er
+              det ikke et prisspørsmål — det er ikke lov. <i>GDPR artikkel 28.</i></span>
+      </li>
+      <li>
+        <b>Mennesket bestemmer.</b>
+        <span>Ingen avgjørelse med rettsvirkning kan tas automatisk. «Verktøyet sorterer,
+              mennesket bestemmer» er et juridisk krav, ikke en replikk.
+              <i>GDPR artikkel 22.</i></span>
+      </li>
+      <li>
+        <b>Personvernkonsekvensvurdering.</b>
+        <span>Kreves ved sannsynlig høy risiko. Personvernombudet avgjør — og den blir
+              kort når svaret på «hvilke personopplysninger deles?» er «ingen».
+              <i>GDPR artikkel 35.</i></span>
+      </li>
+      <li>
+        <b>Abonnementet er selv en anskaffelse.</b>
+        <span>Under terskelverdi gir del I. Men det skal gjøres som en anskaffelse —
+              ikke på et privat kort.</span>
+      </li>
+    </ol>
+
+    <p class="deck-kilde">Kartet, ikke vurderingen. Personvernombudet eier avgjørelsen. Sjekk også USNs KI-policy for hvilke tjenester som er godkjent.</p>
+  </section>
+
+  <!-- ── U8 · Rekkefølgen ─────────────────────────────────────
+       Landingen i forutsetningskapittelet, og oppsettet til
+       demoen i bolk 6. Sier en REGEL, ikke en anbefaling om et
+       bestemt verktøy: dette gjelder alt vi måtte finne på å
+       systematisere. Trinnene stiger, og du går ikke opp før
+       trinnet under er uttømt.
+
+       Klikk 4 er advarselen, og den er slidens egentlige poeng.
+       Ta den rolig — se manus i prosjektnotatet.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide veier" data-tittel="Rekkefølgen" data-inn="opp" data-maks-steg="4">
+    <div class="aktor__topp">
+      <h2>Uansett hva vi bygger — <span class="offset" data-echo="rekkefølgen">rekkefølgen</span> er den samme</h2>
+      <p>Du går ikke opp et trinn før trinnet under er uttømt.</p>
+    </div>
+
+    <div class="veier__rad deck-trinn">
+      <article class="veier__kort veier__kort--ja">
+        <p class="veier__dom">Trinn 1</p>
+        <h3>Minimer</h3>
+        <p class="veier__sp">Kan oppgaven løses uten personopplysninger i det hele tatt?</p>
+        <p>Nesten alltid ja, hvis man ser etter. Da stopper du her. Ingen avtale, ingen
+           overføring, ingenting å vurdere.</p>
+      </article>
+
+      <article class="veier__kort veier__kort--kanskje">
+        <p class="veier__dom">Trinn 2</p>
+        <h3>Lukket, godkjent miljø</h3>
+        <p class="veier__sp">Må selve teksten leses?</p>
+        <p>Da leses den et sted som allerede er godkjent for det, og bare det nøytrale
+           resultatet går videre.</p>
+      </article>
+
+      <article class="veier__kort veier__kort--nei">
+        <p class="veier__dom">Trinn 3</p>
+        <h3>Under vår egen kontroll</h3>
+        <p class="veier__sp">Må alt behandles, og kan ingenting fjernes?</p>
+        <p>Da må det kjøre på maskiner virksomheten faktisk styrer — med tilgangsstyring,
+           backup og sletterutine.</p>
+      </article>
+    </div>
+
+    <aside class="veier__advarsel deck-trinn">
+      <b>Privat utstyr er ikke trinn 4.</b>
+      <span>En maskin under pulten er lukket i den forstand at ingen andre ser den. Men
+            virksomheten er fortsatt behandlingsansvarlig, og der finnes verken godkjent
+            tilgangsstyring, backup eller sletterutine. At det <i>føles</i> tryggere enn
+            skya er nettopp det som gjør det farlig.</span>
+    </aside>
+
+    <p class="deck-kilde">Det billigste personvernet er de opplysningene du aldri sendte. Det er også slik demoen etter pausen er bygget.</p>
+  </section>
+
+</div>
+
+<div class="deck-hint">← → eller scroll bytter slide · R spill av på nytt</div>
+<nav class="deck-nav" aria-label="Slidenavigasjon"><b id="nr">1</b> / <span id="av">2</span></nav>
+<nav class="deck-prikker" aria-label="Hvor i presentasjonen"></nav>
+
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.deck-slide')];
+  const nr = document.getElementById('nr');
+  const hint = document.querySelector('.deck-hint');
+  document.getElementById('av').textContent = slides.length;
+  let i = 0;
+
+  // Figuren klones inn i hver .cam. Aldri <use>: CSS-animasjonene
+  // når ikke inn i en shadow-tree.
+  const src = document.getElementById('bot-src');
+  for (const cam of document.querySelectorAll('.cam')) {
+    const bot = src.cloneNode(true);
+    bot.removeAttribute('id');
+    bot.classList.add('bot--main');
+    cam.append(bot);
+  }
+
+  // Hjernen på slide 4 fylles med VÅRT spørsmål. Tegningen røres ikke:
+  // vi setter tekst, og bredden på brikkene som bærer teksten. Endrer
+  // Tusj strukturen inne i .brain, skal dette feile stille og ikke
+  // rive ned sliden — derfor vakter i stedet for antakelser.
+  {
+    const hjerne = document.querySelector('.hode .brain');
+    if (hjerne) {
+      const lbl  = hjerne.querySelectorAll('.lbl');
+      const chip = hjerne.querySelectorAll('.chip');
+      const ctxt = hjerne.querySelectorAll('.chip-txt text');
+      const ord  = hjerne.querySelectorAll('.word text');
+      const bar  = hjerne.querySelectorAll('.fillbar');
+      const num  = hjerne.querySelectorAll('.num text');
+
+      if (lbl[0]) lbl[0].textContent = 'SLUTTEN AV SPØRSMÅLET';
+      if (lbl[1]) lbl[1].textContent = 'FØRSTE ORD I SVARET?';
+
+      // Brikkene får bredden av teksten de skal holde. «anskaffe» blir
+      // ans + kaffe hos de fleste modeller — det er ikke en spøk vi har
+      // lagt inn, det er sånn den faktisk deler ordet.
+      let x = 25;
+      for (const [k, [t, w]] of [['ans', 9], ['kaffe', 13.6], ['?', 5], ['', 0]].entries()) {
+        if (!chip[k] || !ctxt[k]) continue;
+        chip[k].setAttribute('x', x);
+        chip[k].setAttribute('width', w);
+        chip[k].style.display = w ? '' : 'none';   // færre biter enn brikker
+        ctxt[k].setAttribute('x', (x + w / 2).toFixed(1));
+        ctxt[k].textContent = t;
+        x += w + 1.5;
+      }
+
+      // Kandidatene er første ord i SVARET, ikke neste ord i spørsmålet.
+      // Det er der gjettingen faktisk skjer.
+      for (const [k, [t, p]] of [['Det', 0.58], ['Du', 0.22], ['For', 0.09]].entries()) {
+        if (ord[k]) ord[k].textContent = t;
+        if (num[k]) num[k].textContent = p.toFixed(2);
+        if (bar[k]) bar[k].setAttribute('width', (26 * p).toFixed(1));
+      }
+    }
+  }
+
+  // Prikkene til høyre bygges av slidene selv, så de aldri kommer i
+  // utakt med decket. stopPropagation: uten den ville klikket også
+  // truffet vindusklikket som blar videre.
+  const prikker = document.querySelector('.deck-prikker');
+  slides.forEach((s, k) => {
+    const p = document.createElement('b');
+    p.title = s.dataset.tittel || ('Slide ' + (k + 1));
+    p.addEventListener('click', e => { e.stopPropagation(); vis(k, k > i ? 1 : -1); });
+    prikker.append(p);
+  });
+
+  // Å spille av på nytt krever en reflow mellom av og på — ellers
+  // ser nettleseren aldri at klassen var borte.
+  const spill = el => { el.classList.remove('play'); void el.offsetWidth; el.classList.add('play'); };
+
+  // Skrivemaskinen på spørsmålssliden. Resten av setningen ligger
+  // usynlig og holder plassen sin, så kortet ikke vokser mens det
+  // skrives. setTimeout og setInterval, aldri requestAnimationFrame:
+  // en fane som ikke tegnes ville aldri startet skrivingen, og
+  // prompten blitt stående tom på projektoren.
+  const felt    = document.querySelector('.sporsmal__tekst');
+  const skrevet = felt?.querySelector('.sporsmal__skrevet');
+  const rest    = felt?.querySelector('.sporsmal__rest');
+  const markor  = felt?.querySelector('.sporsmal__markor');
+  const HELE    = skrevet?.textContent ?? '';
+  const rolig   = matchMedia('(prefers-reduced-motion: reduce)');
+  let venter, taster;
+
+  function skrivInn(slide) {
+    if (!felt) return;
+    clearTimeout(venter);
+    clearInterval(taster);
+
+    const ferdig = () => { skrevet.textContent = HELE; rest.textContent = ''; };
+
+    // Forlater vi sliden midt i skrivingen, skal den se ferdig ut på
+    // vei ut — ikke halvskrevet.
+    if (!slide.contains(felt) || rolig.matches) { ferdig(); return; }
+
+    skrevet.textContent = '';
+    rest.textContent = HELE;
+    markor.classList.remove('blinker');
+
+    venter = setTimeout(() => {
+      let k = 0;
+      taster = setInterval(() => {
+        skrevet.textContent = HELE.slice(0, ++k);
+        rest.textContent    = HELE.slice(k);
+        if (k >= HELE.length) { clearInterval(taster); markor.classList.add('blinker'); }
+      }, 32);
+    }, 620);   // sliden skal ha landet før noen begynner å skrive
+  }
+
+  // Ansiktet og maskineriet på hodesliden. Nullstilles UTEN overgang
+  // når sliden åpnes — ellers ville forrige gjennomspilling tonet
+  // bakover mens sliden kommer inn, og det ser ut som en feil.
+  let kameraet, kameraet2;
+  function kamera(slide) {
+    clearTimeout(kameraet);
+    clearTimeout(kameraet2);
+    if (!slide.classList.contains('hode')) return;
+
+    slide.classList.add('nullstill');
+    slide.dataset.shot = 'inn';
+    void slide.offsetWidth;
+    slide.classList.remove('nullstill');
+
+    if (rolig.matches) { slide.dataset.shot = 'tokens'; return; }
+
+    // Ansiktet forsvinner MENS vi er på vei inn, ikke etter at vi har
+    // landet: da leses det som at vi kommer nær nok til å se forbi
+    // det, ikke som at noe ble byttet ut. Siste skudd er det som får
+    // systemet til å fylle sannsynlighetsstolpene — de står på null
+    // til da.
+    kameraet  = setTimeout(() => { slide.dataset.shot = 'hode';   }, 380);
+    kameraet2 = setTimeout(() => { slide.dataset.shot = 'tokens'; }, 1500);
+  }
+
+  // Zoomen inn i roboten som står på forrige slide. Sliden vi går
+  // til settes ned i størrelsen og posisjonen hodet har akkurat nå,
+  // og reiser derfra til sin egen plass: vi går inn i roboten, og
+  // det som ligger inni blir flaten. Ett bilde, ikke to.
+  //
+  // Reflow mellom start og slutt, aldri requestAnimationFrame: den
+  // fyrer ikke i en fane som ikke tegnes, og da ville sliden blitt
+  // stående i utgangsstillingen på projektoren.
+  function zoomInn(fra, til) {
+    if (rolig.matches) return;
+    // Hva vi zoomer inn PÅ står på sliden vi går til. Uten det ville
+    // zoomen bare virket fra roboten.
+    const kilde = fra.querySelector(til.dataset.zoomFra || '.bot .head');
+    // Hele sliden er motivet med mindre noe annet er utpekt. Merk at
+    // formelen under forutsetter at motivet er det som skal treffe
+    // hodet — peker du ut et element som IKKE ligger i midten av sitt
+    // eget område, må forskyvningen regnes fra områdets sentrum.
+    const boks = til.querySelector('[data-zoom]') || til;
+    if (!kilde) return;
+
+    boks.style.transition = 'none';
+    boks.style.transform  = 'none';
+    void boks.offsetWidth;
+
+    const F = kilde.getBoundingClientRect();
+    const B = boks.getBoundingClientRect();
+    if (!F.width || !B.width) { boks.style.transition = ''; return; }
+
+    const s  = F.width / B.width;
+    const dx = (F.left + F.width / 2) - (B.left + B.width / 2);
+    const dy = (F.top + F.height / 2) - (B.top + B.height / 2);
+
+    boks.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${s.toFixed(4)})`;
+    void boks.offsetWidth;
+    boks.style.transition = 'transform 1.15s cubic-bezier(.42,.02,.22,1)';
+    boks.style.transform  = '';
+  }
+
+  // Setningen står hel når vi lander, og deler seg i ordbiter etter
+  // en pust. Rekkefølgen er poenget: først leser de setningen, så
+  // ser de hva den er laget av.
+  let deling;
+  function delOpp(slide) {
+    clearTimeout(deling);
+    const rad  = slide.querySelector('.bitene__setning');
+    const tall = slide.querySelector('.bitene__tall');
+    if (!rad) return;
+
+    const del = () => { rad.classList.add('delt'); if (tall) tall.classList.add('na'); };
+    if (rolig.matches) { del(); return; }
+
+    rad.classList.remove('delt');
+    if (tall) tall.classList.remove('na');
+    deling = setTimeout(del, 2050);   // zoomen lander på 1,15 s
+  }
+
+  // Deler setningen med én gang. Returnerer om den alt var delt, så
+  // den som venter på brikkene vet om de står stille eller er på vei.
+  function delNa(slide) {
+    const rad  = slide.querySelector('.bitene__setning');
+    const tall = slide.querySelector('.bitene__tall');
+    if (!rad) return true;
+    const alt = rad.classList.contains('delt');
+    clearTimeout(deling);
+    rad.classList.add('delt');
+    if (tall) tall.classList.add('na');
+    return alt;
+  }
+
+  // Hvem ser på hvem. Bare bakover: hver ordbit ser på dem som står
+  // FORAN den. Det er ikke en forenkling — en samtalemodell ser aldri
+  // framover, og det er derfor den ikke kan planlegge slutten før den
+  // har skrevet begynnelsen.
+  //   [den som ser, den den ser på, hvor mye]
+  const BUER = [
+    [1, 0, 0.45],   // dyr    → Hvor
+    [3, 2, 1.00],   // maskin → kaffe    (ordet henger sammen)
+    [3, 1, 0.65],   // maskin → dyr      (det er MASKINEN som er dyr)
+    [7, 6, 1.00],   // kaffe  → ans      (poenget)
+  ];
+
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  let buetid;
+
+  function tegnBuer(slide) {
+    const svg  = slide.querySelector('.bitene__buer');
+    const bits = [...slide.querySelectorAll('.bit')];
+    if (!svg || !bits.length) return;
+
+    // Buene regnes fra brikkenes faktiske posisjon, ikke fra faste
+    // tall: da tåler de at flaten bytter størrelse.
+    const S = slide.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${S.width} ${S.height}`);
+    svg.textContent = '';
+
+    BUER.forEach(([a, b, v], k) => {
+      if (!bits[a] || !bits[b]) return;
+      const A = bits[a].getBoundingClientRect();
+      const B = bits[b].getBoundingClientRect();
+      const xa = A.left + A.width / 2 - S.left;
+      const xb = B.left + B.width / 2 - S.left;
+      const y  = A.top - S.top + 1;
+      const h  = Math.min(130, Math.max(36, Math.abs(xa - xb) * 0.62));
+
+      const p = document.createElementNS(SVGNS, 'path');
+      p.setAttribute('d', `M${xa.toFixed(1)},${y.toFixed(1)} C${xa.toFixed(1)},${(y - h).toFixed(1)} ${xb.toFixed(1)},${(y - h).toFixed(1)} ${xb.toFixed(1)},${y.toFixed(1)}`);
+      p.setAttribute('stroke-width', (1.4 + v * 2).toFixed(2));
+      p.setAttribute('opacity', (0.2 + v * 0.42).toFixed(2));
+      svg.append(p);
+
+      // Prikken ligger på den biten som blir SETT PÅ — den lille
+      // forskjellen er alt som viser hvilken vei blikket går.
+      const d = document.createElementNS(SVGNS, 'circle');
+      d.setAttribute('cx', xb.toFixed(1));
+      d.setAttribute('cy', y.toFixed(1));
+      d.setAttribute('r', (2 + v * 1.6).toFixed(2));
+      d.setAttribute('fill', 'currentColor');
+      d.setAttribute('opacity', (0.2 + v * 0.42).toFixed(2));
+      svg.append(d);
+
+      if (rolig.matches) return;
+      const len = p.getTotalLength();
+      p.style.strokeDasharray  = len;
+      p.style.strokeDashoffset = len;
+      d.style.opacity = '0';
+      void p.getBoundingClientRect();
+      p.style.transition = `stroke-dashoffset .75s cubic-bezier(.3,.8,.35,1) ${k * 170}ms`;
+      d.style.transition = `opacity .3s ease ${k * 170 + 620}ms`;
+      p.style.strokeDashoffset = '0';
+      d.style.opacity = (0.2 + v * 0.42).toFixed(2);
+    });
+  }
+
+  function skjulBuer(slide) {
+    const svg = slide.querySelector('.bitene__buer');
+    if (svg) svg.textContent = '';
+  }
+
+  // Tre baner som møtes i ett punkt. Samme håndverk som buene:
+  // målt fra kortenes faktiske posisjon, tegnet med strek som
+  // vokser, aldri faste koordinater.
+  function tegnBaner(slide) {
+    const svg   = slide.querySelector('.kilder__baner');
+    const kort  = [...slide.querySelectorAll('.kilder__kort')];
+    const punkt = slide.querySelector('.kilder__punkt');
+    if (!svg || !punkt || !kort.length) return;
+
+    const S = slide.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${S.width} ${S.height}`);
+    svg.textContent = '';
+
+    const P = punkt.getBoundingClientRect();
+    const px = P.left + P.width / 2 - S.left;
+    const py = P.top + P.height / 2 - S.top;
+
+    kort.forEach((k, n) => {
+      const R = k.getBoundingClientRect();
+      const kx = R.left + R.width / 2 - S.left;
+      const ky = R.bottom - S.top;
+      const p = document.createElementNS(SVGNS, 'path');
+      p.setAttribute('d', `M${kx.toFixed(1)},${ky.toFixed(1)} C${kx.toFixed(1)},${(ky + (py - ky) * 0.55).toFixed(1)} ${px.toFixed(1)},${(py - (py - ky) * 0.45).toFixed(1)} ${px.toFixed(1)},${py.toFixed(1)}`);
+      svg.append(p);
+
+      if (rolig.matches) return;
+      const len = p.getTotalLength();
+      p.style.strokeDasharray  = len;
+      p.style.strokeDashoffset = len;
+      void p.getBoundingClientRect();
+      p.style.transition = `stroke-dashoffset .8s cubic-bezier(.3,.8,.35,1) ${n * 130}ms`;
+      p.style.strokeDashoffset = '0';
+    });
+  }
+
+  function tomBaner(slide) {
+    const svg = slide.querySelector('.kilder__baner');
+    if (svg) svg.textContent = '';
+  }
+
+  // Slides kan ha egne steg (data-maks-steg). Da blar piltasten
+  // gjennom stegene før den går videre til neste slide.
+  // Telleren på gjettingen. Den skal se ut som om den har tenkt å gå
+  // i fem minutter — det er hele gaget. setInterval og ikke
+  // requestAnimationFrame: den må gå også i en fane som ikke tegnes.
+  let tikk;
+  function tenk(slide, n) {
+    const felt = slide.querySelector('.gjett__tid');
+    if (!felt) return;
+    felt.textContent = '00:00';
+    if (n >= 1 || rolig.matches) return;   // fasit vises — telleren er ferdig
+    let s = 0;
+    tikk = setInterval(() => {
+      s++;
+      felt.textContent = String((s / 60) | 0).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    }, 1000);
+  }
+
+  // Avisen ruller til neste markering. Styrt av klikk og ikke av
+  // klokka: Lars skal kunne snakke ferdig mellom hvert punkt.
+  function rullAvis(slide, n) {
+    const rull  = slide.querySelector('.avis__rull');
+    const vindu = slide.querySelector('.avis__vindu');
+    if (!rull || !vindu) return;
+
+    for (const m of rull.querySelectorAll('.avis__merk')) {
+      m.classList.toggle('lys', +m.dataset.merk <= n);
+    }
+
+    const mal = n >= 1 && rull.querySelector(`.avis__merk[data-merk="${n}"]`);
+    if (!mal) { rull.style.transform = 'translateY(0)'; return; }
+
+    // Markeringen legges litt over midten av vinduet — da er det
+    // plass til å lese linja under den også.
+    const y = Math.max(0, mal.offsetTop - vindu.clientHeight * 0.36);
+    rull.style.transform = `translateY(${(-y).toFixed(1)}px)`;
+  }
+
+  function settSteg(slide, n) {
+    const maks = +(slide.dataset.maksSteg || 0);
+    n = Math.max(0, Math.min(maks, n));
+    slide.dataset.steg = n;
+
+    // Telleren stoppes uansett hvilken slide vi lander på — ellers
+    // tikker den videre i bakgrunnen resten av foredraget.
+    clearInterval(tikk);
+
+    for (const s of slide.querySelectorAll('[data-na]')) {
+      s.classList.toggle('na', +s.dataset.na === n);
+    }
+
+    if (slide.classList.contains('gjett')) { tenk(slide, n); return; }
+    if (slide.classList.contains('penta')) { rullAvis(slide, n); return; }
+
+    if (slide.classList.contains('kilder')) {
+      if (n === 0) tomBaner(slide);
+      else if (!slide.querySelector('.kilder__baner path')) tegnBaner(slide);
+      return;
+    }
+
+    if (!slide.classList.contains('bitene')) return;
+    clearTimeout(buetid);
+
+    if (n === 0) { skjulBuer(slide); flyttKaffe(slide, false); return; }
+
+    const stodStille = delNa(slide);
+    // Buene blir liggende når vi går videre til nabolagene — de tones
+    // bare bort. Da er de der igjen med én gang man blar tilbake.
+    if (!slide.querySelector('.bitene__buer path')) {
+      buetid = setTimeout(() => tegnBuer(slide), stodStille ? 20 : 640);
+    }
+    flyttKaffe(slide, n >= 2);
+  }
+
+  // De to kaffe-brikkene forlater linja og lander i hvert sitt
+  // nabolag. Målet er skyenes egne sentre, målt der og da — da
+  // slipper JS å vite hva en cqi er verdt akkurat nå.
+  function flyttKaffe(slide, på) {
+    const kaffer = [...slide.querySelectorAll('.bit--to')];
+    if (!kaffer.length) return;
+    if (!på) { for (const k of kaffer) k.style.transform = ''; return; }
+
+    const skyer = [...slide.querySelectorAll('.ordsky')];
+    kaffer.forEach((k, n) => {
+      const sky = skyer[n];
+      if (!sky) return;
+      const R = k.getBoundingClientRect();
+      const S = sky.getBoundingClientRect();
+      const dx = (S.left + S.width / 2) - (R.left + R.width / 2);
+      const dy = (S.top + S.height / 2) - (R.top + R.height / 2);
+      k.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(1.12)`;
+    });
+  }
+
+  function frem() {
+    const s = slides[i];
+    const n = +(s.dataset.steg || 0);
+    if (n < +(s.dataset.maksSteg || 0)) { settSteg(s, n + 1); return; }
+    vis(i + 1, 1);
+  }
+
+  function tilbake() {
+    const s = slides[i];
+    const n = +(s.dataset.steg || 0);
+    if (n > 0) { settSteg(s, n - 1); return; }
+    vis(i - 1, -1);
+  }
+
+  // Reisen: retningen bor på sliden vi går TIL (data-inn), speilvendes
+  // når man blar bakover, og skrives til data-vei — som er det CSS ser
+  // på. Da overlever den skrevne retningen at man blar fram og tilbake.
+  let reisen;
+  function vis(n, dir = 1) {
+    const fra = slides[i];
+    i = (n + slides.length) % slides.length;
+    const til = slides[i];
+
+    // Rydd etter en reise som ikke rakk å bli ferdig før neste tast.
+    clearTimeout(reisen);
+    for (const s of slides) { s.classList.remove('is-ut'); delete s.dataset.ut; }
+
+    const reise = fra !== til;
+    let vei = 'opp';
+    if (reise) {
+      vei = til.dataset.inn || 'opp';
+      // Bakover er en zoom ikke en zoom: da ruller vi som ellers.
+      if (dir < 0) vei = vei === 'ned' ? 'opp' : 'ned';
+      til.dataset.vei = vei;
+      fra.dataset.ut = vei;
+      fra.classList.add('is-ut');
+      reisen = setTimeout(() => { fra.classList.remove('is-ut'); delete fra.dataset.ut; }, 700);
+    }
+
+    slides.forEach((s, k) => s.classList.toggle('is-active', k === i));
+    til.classList.toggle('reis', reise && vei !== 'zoom');
+    nr.textContent = i + 1;
+    [...prikker.children].forEach((p, k) => p.classList.toggle('na', k === i));
+    // Ikke requestAnimationFrame: den fyrer aldri i en fane som ikke
+    // komposeres (bakgrunnsfane, skjerm som ikke er koblet til ennå),
+    // og da ville sliden blitt stående blank fordi inngangene starter
+    // på opacity 0. Reflowen inne i spill() holder.
+    spill(til);
+    skrivInn(til);
+    kamera(til);
+    delOpp(til);
+    settSteg(til, 0);
+    if (reise && vei === 'zoom') zoomInn(fra, til);
+  }
+
+  addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); frem(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); tilbake(); }
+    else if (e.key === 'r' || e.key === 'R') { spill(slides[i]); skrivInn(slides[i]); kamera(slides[i]); delOpp(slides[i]); settSteg(slides[i], 0); }
+    else if (e.key === 'f' || e.key === 'F') document.documentElement.requestFullscreen?.();
+  });
+
+  addEventListener('click', () => frem());
+
+  // Scroll og sveip. Ett hjuldrag på en styreflate fyrer dusinvis av
+  // wheel-hendelser — uten sperra hopper decket fem slides på ett drag.
+  let sperre = false;
+  addEventListener('wheel', e => {
+    if (sperre || Math.abs(e.deltaY) < 4) return;
+    sperre = true;
+    if (e.deltaY > 0) frem(); else tilbake();
+    setTimeout(() => { sperre = false; }, 900);
+  }, { passive: true });
+
+  let y0 = 0, x0 = 0;
+  addEventListener('touchstart', e => { y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchend', e => {
+    const dy = y0 - e.changedTouches[0].clientY, dx = x0 - e.changedTouches[0].clientX;
+    const d = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (Math.abs(d) > 40) { if (d > 0) frem(); else tilbake(); }
+  }, { passive: true });
+
+  // Hjelpelinja vises når musa rører seg, og trekker seg tilbake igjen.
+  let t;
+  addEventListener('mousemove', () => {
+    hint.classList.add('is-on');
+    clearTimeout(t);
+    t = setTimeout(() => hint.classList.remove('is-on'), 2000);
+  });
+
+  vis(0);
+})();
+</script>
+</body>
+</html>
