@@ -776,9 +776,28 @@ body {
 
 .deck { position: relative; height: 100vh; width: 100vw; }
 
+/* Scenen har et tak. Komposisjonene måles i cqi — altså i prosent av
+   slidens BREDDE — og på en bred skjerm vokser da typografi og luft videre
+   mens høyden står stille. Resultatet er at innholdet renner ut nedenfor:
+   på 2560×1080 rant 13 av 23 slides over, på ekte 16:9 ingen.
+
+   Derfor får sliden en maksbredde bundet til høyden. Blir skjermen bredere
+   enn formatet decket er komponert i, sentreres scenen og resten blir
+   marg — ikke en eneste komposisjon trenger å vite om det. Slidene er
+   gjennomsiktige og papiret kommer fra <body>
+<!-- ══════════════════════════════════════════════════════════════
+     GENERERT av build-standalone.mjs. Rediger presentation.html,
+     ikke denne fila — den overskrives ved neste bygg.
+     ══════════════════════════════════════════════════════════ -->, så margen er usynlig.
+
+   Smalere enn 16:9 (mobil, portrett, vanlig laptop) er taket høyere enn
+   bredden og regelen gjør ingenting. Skru på ett tall for å endre format. */
 .deck-slide {
+  --scene-format: 16 / 9;
   position: absolute;
   inset: 0;
+  max-width: calc(100vh * (var(--scene-format)));
+  margin-inline: auto;           /* inset 0 + auto = sentrert scene */
   container-type: inline-size;   /* komposisjonene måles i cqi, som i stillbildene */
   display: flex;
   flex-direction: column;
@@ -2579,10 +2598,6 @@ body {
 </style>
 </head>
 <body>
-<!-- ══════════════════════════════════════════════════════════════
-     GENERERT av build-standalone.mjs. Rediger presentation.html,
-     ikke denne fila — den overskrives ved neste bygg.
-     ══════════════════════════════════════════════════════════ -->
 
 <!-- ══ DECKETS EGNE IKONER ═════════════════════════════════════════
      Tre symboler til temasiden for Utgangspunktet. Ligger i sitt EGET

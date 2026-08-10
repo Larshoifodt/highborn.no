@@ -454,7 +454,7 @@
     root: {
       label: 'highborn.no /',
       items: [
-        { type: 'folder', id: 'presentasjoner', name: 'Presentasjoner', meta: '1 fil',  color: '#e8c87a', colorLight: '#f5d97e' },
+        { type: 'folder', id: 'presentasjoner', name: 'Presentasjoner', meta: '2 filer + 1 mappe', color: '#e8c87a', colorLight: '#f5d97e' },
         { type: 'folder', id: 'verktoy',        name: 'Prosjektverktøy', meta: '1 mappe', color: '#a8c8e8', colorLight: '#c2d9f0' },
         { type: 'folder', id: 'ressurser',      name: 'Ressurser',      meta: '1 fil',  color: '#b8d8b0', colorLight: '#cce8c4' },
         { type: 'folder', id: 'galleri',        name: 'Galleri',        meta: 'Tom',    color: '#f0b8a8', colorLight: '#f5ccc0' },
@@ -465,12 +465,28 @@
       items: [
         {
           type: 'file',
+          name: 'KI-workshop',
+          meta: 'Innkjøpsseksjonen, september 2026',
+          href: 'presentasjoner/ki-workshop/workshop.html',
+          badge: 'HTML',
+          badgeColor: '#c8622a'
+        },
+        {
+          type: 'file',
           name: 'KI-presentasjon',
           meta: 'Presentasjon',
           href: 'presentasjoner/ki-presentasjon/presentation.html',
           badge: 'HTML',
           badgeColor: '#c8622a'
         },
+        { type: 'folder', id: 'demoer', name: 'Demoer', meta: '2 filer', color: '#d8c0e0', colorLight: '#e8d4ee' },
+      ]
+    },
+    demoer: {
+      label: 'highborn.no / Presentasjoner / Demoer /',
+      items: [
+        { type: 'file', name: 'Sigill',            meta: 'Avtaleregister — demo',      href: 'presentasjoner/demoer/sigill.html',            badge: 'HTML', badgeColor: '#2a7a5a' },
+        { type: 'file', name: 'Avtaleforvaltning', meta: 'Avtalevask — workshopdemo',  href: 'presentasjoner/demoer/avtaleforvaltning.html', badge: 'HTML', badgeColor: '#2a7a5a' },
       ]
     },
     verktoy: {
