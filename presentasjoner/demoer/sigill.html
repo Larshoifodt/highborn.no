@@ -39,6 +39,12 @@
   --rolle-forvalter: #22685A;
   --rolle-adm:       #8A6A1D;
 
+  /* Periodefargene i gantten — status i TID, ikke roller: utgått periode,
+     pågående periode, kommende periode. Brukes kun på horisontens stolpe. */
+  --per-fortid: #A9A092;
+  --per-naa:    #7FA28E;
+  --per-rest:   #D6BE7F;
+
   /* ── Rom ──────────────────────────────────────────────────────────────
      Ikke lineær. Luft er hovedvirkemidlet på denne siden, og da må skalaen
      ha store hopp øverst — ellers blir «luftig» til «litt mindre tett». */
@@ -135,6 +141,9 @@
     --rolle-eier:      #E08B74;
     --rolle-forvalter: #79C7B2;
     --rolle-adm:       #D9B35E;
+    --per-fortid: #5C665F;
+    --per-naa:    #6D9A84;
+    --per-rest:   #B3A06A;
     --sg-lav:  0 1px 2px rgba(0, 0, 0, .22);
     --sg-loft: 0 2px 4px rgba(0, 0, 0, .26), 0 8px 24px rgba(0, 0, 0, .22);
   }
@@ -160,6 +169,9 @@
   --rolle-eier:      #E08B74;
   --rolle-forvalter: #79C7B2;
   --rolle-adm:       #D9B35E;
+  --per-fortid: #5C665F;
+  --per-naa:    #6D9A84;
+  --per-rest:   #B3A06A;
   --sg-lav:  0 1px 2px rgba(0, 0, 0, .22);
   --sg-loft: 0 2px 4px rgba(0, 0, 0, .26), 0 8px 24px rgba(0, 0, 0, .22);
 }
@@ -219,6 +231,93 @@ body {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* ── Om-vinduet ───────────────────────────────────────────────────────────
+   Presentasjonen: åpen ved første møte, alltid ett trykk unna i margen.
+   Samme flate og innkomst som personkortet — det ER et kort, bare større. */
+.om-bakteppe {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--f-blekk) 22%, transparent);
+  z-index: 60;
+  animation: bakteppe-inn 200ms ease both;
+}
+.om-bakteppe[hidden] { display: none; }
+.omkort {
+  position: relative;
+  width: min(680px, 94vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--f-ark);
+  border-radius: var(--rad-flate);
+  box-shadow: var(--sg-loft);
+  padding: var(--r-4) var(--r-5);
+  animation: personkort-inn 320ms cubic-bezier(.34, 1.56, .64, 1) both;
+  scrollbar-width: thin;
+  scrollbar-color: var(--f-hinne) transparent;
+}
+.omkort .pk-lukk { position: absolute; top: var(--r-3); right: var(--r-3); }
+.om-ordmerke { height: 36px; width: auto; color: var(--f-blekk); }
+.om-ingress { margin: var(--r-3) 0 0; font-size: var(--sk-brod); line-height: 1.55; max-width: 58ch; }
+.om-ingress b { font-weight: 600; }
+.om-note { margin: var(--r-2) 0 0; font-size: var(--sk-liten); color: var(--f-dempet); max-width: 58ch; }
+.om-deltittel { margin: var(--r-4) 0 0; }
+
+/* Stikkontaktene: Sigill til venstre, tre kontakter KLARE — men ikke
+   plugget i. Avstanden mellom plugg og kontakt er selve poenget. */
+.om-koblinger { width: 100%; height: auto; margin-top: var(--r-3); }
+.om-merke { color: var(--f-blekk); }
+.om-boks { fill: var(--f-bunn); stroke: var(--f-hinne); stroke-width: 1.4; }
+.om-ledning { fill: none; stroke: var(--f-dempet); stroke-width: 1.6; stroke-linecap: round; }
+.om-plugg rect { fill: var(--f-ark); stroke: var(--f-blekk); stroke-width: 1.6; }
+.om-plugg path { fill: none; stroke: var(--f-blekk); stroke-width: 1.6; stroke-linecap: round; }
+.om-stikk rect { fill: var(--f-bunn); stroke: var(--f-hinne); stroke-width: 1.4; }
+.om-stikk circle { fill: var(--f-dempet); }
+.om-stikk text {
+  fill: var(--f-dempet);
+  font: 10px var(--sk-data);
+  letter-spacing: .14em;
+  text-anchor: middle;
+}
+
+/* Profilvelgeren: tre stoler i en trekant med luft mellom. Valgt får
+   seglring; ved valg lander bildet i margen (avatar-lander under). */
+.om-profiler { position: relative; height: 190px; margin-top: var(--r-3); }
+.om-profil {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--r-1);
+  border: 0; padding: 0;
+  background: none;
+  font: var(--sk-mikro)/1.3 var(--sk-tekst);
+  color: var(--f-dempet);
+  cursor: pointer;
+  text-align: center;
+}
+.om-profil b { color: var(--f-blekk); font-size: var(--sk-liten); font-weight: 600; }
+.om-profil[data-plass="0"] { left: 50%; top: 0; }
+.om-profil[data-plass="1"] { left: 26%; top: 88px; }
+.om-profil[data-plass="2"] { left: 74%; top: 88px; }
+.om-avatar {
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border: 2px solid var(--f-hinne);
+  border-radius: var(--rad-pille);
+  overflow: hidden;
+  font: var(--sk-liten)/1 var(--sk-data);
+  color: var(--f-dempet);
+  transition: border-color var(--bv-rask), transform var(--bv-rask);
+}
+.om-profil:hover .om-avatar { transform: scale(1.06); }
+.om-profil[data-aktiv="true"] .om-avatar { border-color: var(--f-segl); }
+.om-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Landingen: valgt profil spretter inn i margen fra flaten. */
+@keyframes avatar-lander { from { opacity: 0; transform: translateX(120px) scale(1.8); } }
+.avatar[data-lander="true"] { animation: avatar-lander 520ms cubic-bezier(.34, 1.56, .64, 1) both; }
 
 /* ── Sidepanelet ──────────────────────────────────────────────────────────
    Kollapset til en smal stripe. Når det åpnes SKYVER det innholdet i stedet
@@ -653,6 +752,20 @@ body {
   color: var(--f-dempet);
 }
 
+/* Stien øverst til venstre: hvor du er. «Søk» og «Avansert søk» er dører
+   (klassisk grått søkepar), visningsnavnet ellers er bare et stedsnavn.
+   Aktivt ledd i blekk, resten hvisker. */
+.topp-sti { display: flex; gap: var(--r-4); align-items: baseline; }
+.sti-ledd {
+  border: 0; background: none; padding: 0;
+  font: var(--sk-liten)/1 var(--sk-tekst);
+  color: var(--f-dempet);
+  transition: color var(--bv-rask);
+}
+button.sti-ledd { cursor: pointer; }
+button.sti-ledd:hover { color: var(--f-blekk); }
+.sti-ledd[data-aktiv="true"] { color: var(--f-blekk); }
+
 /* ── Scenen: alt det tomme, med søkefeltet i midten ───────────────────────*/
 .scene {
   flex: 1 1 auto;
@@ -725,6 +838,18 @@ body {
 .ide:first-child { border-top: 0; }
 .ide b { color: var(--f-blekk); font-weight: 600; }
 .ide span { color: var(--f-dempet); }
+
+/* Tavlas utgave av utløpsoversikten: alle avtalene som merker på tolv
+   måneder — bildet som før lå nederst på søkesiden bor nå her. */
+.tavle-horisont {
+  grid-column: 1 / -1;
+  position: relative;
+  height: 56px;
+  margin-top: var(--r-2);
+  border-top: 1px solid var(--f-hinne);
+}
+.tavle-merker { position: absolute; inset: 0; }
+.tavle-maneder { position: absolute; inset: auto 0 0; height: 12px; }
 
 .sok-blokk {
   width: min(680px, 100%);
@@ -851,13 +976,22 @@ body {
   gap: var(--r-3);
   padding-top: var(--r-2);
 }
-.flate[data-modus="kart"] .sok-blokk { width: min(430px, 100%); }
+/* Blokka legger seg som en rad: «Ny avtale» flytter seg til VENSTRE for baren
+   (foten får order: -1), hintet er borte — i kartmodus er det galleriet som
+   forklarer hva søket gjør. */
+.flate[data-modus="kart"] .sok-blokk {
+  width: auto;
+  flex-direction: row;
+  align-items: center;
+}
 /* 76px høyre: plass til begge bryterne når de står sentrert i den lave baren. */
-.flate[data-modus="kart"] .sok-ramme { padding: var(--r-2) 76px var(--r-2) var(--r-4); }
+.flate[data-modus="kart"] .sok-ramme {
+  width: min(430px, 70vw);
+  padding: var(--r-2) 76px var(--r-2) var(--r-4);
+}
 .flate[data-modus="kart"] .sok-felt  { font-size: 17px; }
-/* Avansert søk skal også kunne registrere: hintet viker, «Ny avtale» blir.
-   visibility (ikke display) så fothøyden står stille under overgangen. */
-.flate[data-modus="kart"] .sok-hint { visibility: hidden; }
+.flate[data-modus="kart"] .sok-fot   { order: -1; }
+.flate[data-modus="kart"] .sok-hint  { display: none; }
 .flate[data-modus="kart"] .treff-boks { display: none; }
 
 /* ── Kartet ───────────────────────────────────────────────────────────────
@@ -974,7 +1108,7 @@ body {
 .galleri {
   width: min(680px, 100%);
   margin: 0 auto;
-  max-height: 176px;
+  max-height: 120px;
   overflow-y: auto;
   background: var(--f-ark);
   border-radius: var(--rad-flate);
@@ -993,7 +1127,7 @@ body {
   grid-template-columns: 96px 1fr auto;
   align-items: baseline;
   gap: var(--r-3);
-  padding: var(--r-3) var(--r-4);
+  padding: var(--r-2) var(--r-4);
   cursor: pointer;
   border-top: 1px solid var(--f-hinne);
   animation: galleri-inn 360ms cubic-bezier(.22, 1, .36, 1) both;
@@ -1011,17 +1145,301 @@ body {
    dashbord. */
 .avtale { width: min(920px, 100%); }
 .avtale[hidden] { display: none; }
-.scene[data-visning="avtale"] {
+.scene[data-visning="avtale"],
+.scene[data-visning="nyoppgave"],
+.scene[data-visning="meg"] {
   justify-content: flex-start;
-  padding-top: var(--r-4);
+  padding-top: var(--r-5);
   overflow-y: auto;
 }
 
+/* ── Min side — personen flytter ut på flaten ────────────────────────────
+   Trykk på en node i margen, og avataren «flytter» ut på canvas: den i
+   margen viker, den store stiger inn fra venstre. Alt som angår MEG bor
+   her — oppgavene mine og avtalene mine — med én dør videre til
+   organisasjonens side (Tavla). */
+.meg { width: min(920px, 100%); display: flex; flex-direction: column; gap: var(--r-4); }
+.meg[hidden] { display: none; }
+
+.meg-topp { display: flex; align-items: center; gap: var(--r-3); }
+.meg-topp .tilbake { margin-left: auto; }
+.meg-avatar {
+  flex: 0 0 56px;
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border: 1px solid var(--f-hinne);
+  border-radius: var(--rad-pille);
+  overflow: hidden;
+  font: var(--sk-liten)/1 var(--sk-data);
+  color: var(--f-dempet);
+  animation: meg-inn 480ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+.meg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+@keyframes meg-inn { from { opacity: 0; transform: translateX(-48px) scale(.5); } }
+
+/* Margens avatar og bane viker mens personen står på flaten. */
+.rail-bruker[data-flyttet="true"] .avatar { opacity: 0; transform: scale(.6); }
+.rail-bruker[data-flyttet="true"] .node { opacity: 0 !important; pointer-events: none; }
+.rail-bruker[data-flyttet="true"] .bane-tradar { opacity: 0; }
+.avatar { transition: opacity var(--bv-myk), transform var(--bv-myk); }
+
+/* Fanene: samme grep som Søk / Avansert søk — aktiv i blekk. */
+.meg-faner { display: flex; gap: var(--r-4); }
+.meg-fane {
+  border: 0; background: none; padding: 0;
+  font: var(--sk-brod)/1 var(--sk-tekst);
+  color: var(--f-dempet);
+  cursor: pointer;
+  transition: color var(--bv-rask);
+}
+.meg-fane:hover { color: var(--f-blekk); }
+.meg-fane[data-aktiv="true"] { color: var(--f-blekk); font-weight: 600; }
+
+/* Kartet på Min side: samme noder og streker som i avansert søk, men
+   tallet under enhetsnavnet er MINE avtaler. Enheter uten noen av mine
+   hvisker — de finnes, men angår ikke stolen min akkurat nå. */
+.meg-kart {
+  flex: 0 0 auto;
+  align-self: stretch;
+  /* SVG-en må eie høyden sin selv i en flex-kolonne — ellers kollapser den. */
+  aspect-ratio: 1200 / 258;
+  height: auto;
+}
+
+/* Samfunnshensyn-feltet: nedtrekket skal fylle sidekolonnen. */
+#feltEtisk .no-felt { align-self: stretch; }
+#feltEtisk .nedtrekk { width: 100%; }
+
+/* Org-ikonet som felt-tittel på Min side. */
+.felt-org { width: 18px; height: 18px; }
+.kart-tall { fill: var(--f-blekk); font: 600 10px var(--sk-tekst); text-anchor: middle; }
+.kart-node[data-stille="true"] rect { stroke: var(--f-hinne); }
+.kart-node[data-stille="true"] .kart-enhet { fill: var(--f-dempet); font-weight: 400; }
+
+.meg-liste { list-style: none; margin: 0; padding: 0; }
+.meg-rad {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: var(--r-3);
+  align-items: baseline;
+  padding: var(--r-3) var(--r-2);
+  border-top: 1px solid var(--f-hinne);
+  border-radius: var(--rad-liten);
+  font-size: var(--sk-liten);
+  cursor: pointer;
+  transition: background var(--bv-rask);
+}
+.meg-rad[data-slag="avtale"] { grid-template-columns: 96px 1fr auto; }
+.meg-rad:first-child { border-top: 0; }
+.meg-rad:hover { background: var(--f-ark); }
+.meg-rad .ikon { width: 16px; height: 16px; align-self: center; color: var(--f-dempet); }
+.meg-meta { font-size: var(--sk-mikro); color: var(--f-dempet); white-space: nowrap; }
+.meg-meta[data-haster="true"] { color: var(--f-segl); }
+.meg-under { display: block; font-size: var(--sk-mikro); color: var(--f-dempet); }
+.meg-tom { padding: var(--r-3) 0; font-size: var(--sk-liten); color: var(--f-dempet); }
+
+/* ── Ny oppgave — egen side, springer ut fra avtalen ─────────────────────
+   Typevelgeren øverst er fem «hjem» (Outlook-familien); skjemaet under
+   bytter felter etter valgt type. Alt er skjelett: Opprett legger oppgaven
+   i øktas minne, Graph-koblingen gjør handlingene ekte senere. */
+.nyoppgave { width: min(920px, 100%); }
+.nyoppgave[hidden] { display: none; }
+
+/* Valget uten flater: fem frittstående ikoner med navn, SPREDT i en litt
+   skjev sirkel i startbildet — Sigill grupperer med luft, ikke bokser.
+   Hver knapp har sin plass som prosent-koordinater (--x/--y) i samme
+   beholder; ved valg er flyttingen til linjeplassen ren transition på
+   left/top, mens beholderen krymper i høyde. */
+.no-typer {
+  position: relative;
+  height: 104px;
+  margin-top: var(--r-4);
+  transition: height var(--bv-myk);
+}
+.nyoppgave[data-valgt="ingen"] .no-typer { height: min(52vh, 440px); }
+.no-type {
+  position: absolute;
+  left: var(--x); top: var(--y);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 0;
+  padding: var(--r-2);
+  background: none;
+  color: var(--f-dempet);
+  font: var(--sk-liten)/1.3 var(--sk-tekst);
+  text-align: center;
+  cursor: pointer;
+  transition: left var(--bv-myk), top var(--bv-myk), color var(--bv-rask);
+}
+.no-type .ikon {
+  width: 22px; height: 22px;
+  transition: width var(--bv-myk), height var(--bv-myk), color var(--bv-rask);
+}
+.no-type b { color: var(--f-blekk); font-weight: 600; transition: font-size var(--bv-myk); }
+.no-type span { font-size: var(--sk-mikro); max-width: 22ch; }
+.no-type:hover, .no-type:hover .ikon { color: var(--f-blekk); }
+
+/* Linjeplassene (etter valg). */
+.no-type[data-plass="0"] { --x: 10%; --y: 46%; }
+.no-type[data-plass="1"] { --x: 30%; --y: 46%; }
+.no-type[data-plass="2"] { --x: 50%; --y: 46%; }
+.no-type[data-plass="3"] { --x: 70%; --y: 46%; }
+.no-type[data-plass="4"] { --x: 90%; --y: 46%; }
+
+/* Sirkelen i startbildet — asymmetrisk med vilje, som alt annet i huset. */
+.nyoppgave[data-valgt="ingen"] .no-type[data-plass="0"] { --x: 50%; --y: 12%; }
+.nyoppgave[data-valgt="ingen"] .no-type[data-plass="1"] { --x: 82%; --y: 36%; }
+.nyoppgave[data-valgt="ingen"] .no-type[data-plass="2"] { --x: 70%; --y: 82%; }
+.nyoppgave[data-valgt="ingen"] .no-type[data-plass="3"] { --x: 29%; --y: 85%; }
+.nyoppgave[data-valgt="ingen"] .no-type[data-plass="4"] { --x: 17%; --y: 34%; }
+.nyoppgave[data-valgt="ingen"] .no-type .ikon { width: 36px; height: 36px; }
+.nyoppgave[data-valgt="ingen"] .no-skjema { display: none; }
+
+/* Etter valg: det valgte er markert med seglet og står størst … */
+.no-type[aria-pressed="true"] { color: var(--f-blekk); }
+.no-type[aria-pressed="true"] .ikon { color: var(--f-segl); width: 28px; height: 28px; }
+/* … de andre krymper til bifigurer i sidesynet. */
+.nyoppgave:not([data-valgt="ingen"]) .no-type[aria-pressed="false"] .ikon { width: 15px; height: 15px; }
+.nyoppgave:not([data-valgt="ingen"]) .no-type[aria-pressed="false"] b {
+  font-size: var(--sk-mikro); font-weight: 400; color: var(--f-dempet);
+}
+.nyoppgave:not([data-valgt="ingen"]) .no-type[aria-pressed="false"] span { display: none; }
+
+.no-skjema {
+  margin-top: var(--r-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--r-4);
+  max-width: 560px;
+  /* Stiger inn like etter at kortene har landet på linjen sin. */
+  animation: stig 480ms cubic-bezier(.22, 1, .36, 1) 120ms both;
+}
+.no-felt { display: flex; flex-direction: column; gap: var(--r-1); flex: 1 1 auto; }
+.no-felt > span {
+  font: var(--sk-mikro)/1 var(--sk-data);
+  letter-spacing: var(--sp-label);
+  text-transform: uppercase;
+  color: var(--f-dempet);
+}
+.no-felt input, .no-felt textarea, .no-felt select {
+  border: 1px solid var(--f-hinne);
+  border-radius: var(--rad-stor);
+  background: var(--f-ark);
+  color: var(--f-blekk);
+  font: var(--sk-brod)/1.4 var(--sk-tekst);
+  padding: var(--r-2) var(--r-3);
+}
+.no-felt textarea { min-height: 96px; resize: vertical; }
+.no-rad { display: flex; gap: var(--r-3); }
+.no-kilde { margin: 0; font-size: var(--sk-mikro); color: var(--f-dempet); max-width: 52ch; }
+.no-handling { display: flex; align-items: baseline; gap: var(--r-4); }
+
+/* ── Nedtrekket — husets ene meny ────────────────────────────────────────
+   Nettleserens datalist, select og kalender er OS-chrome og ser ulike ut
+   på hver maskin. Sigill har ÉN meny: samme flate som trefflista (ark,
+   myk radius, løft), samme rader — enten den foreslår under et fritekstfelt
+   eller er et låst valg. Datovelgeren er fortsatt nettleserens egen; en
+   husets kalender er et eget bygg, notert til senere. */
+.nedtrekk { position: relative; }
+.nedtrekk > input { width: 100%; }
+.nedtrekk-laast { cursor: pointer; }
+.nedtrekk-pil {
+  position: absolute;
+  right: 12px; top: 50%;
+  width: 13px; height: 13px;
+  transform: translateY(-50%);
+  color: var(--f-dempet);
+  pointer-events: none;
+}
+.nedtrekk-liste {
+  position: absolute;
+  top: calc(100% + 4px); left: 0; right: 0;
+  z-index: 12;
+  list-style: none;
+  margin: 0; padding: 0;
+  background: var(--f-ark);
+  border-radius: var(--rad-stor);
+  box-shadow: var(--sg-loft);
+  max-height: 240px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--f-hinne) transparent;
+}
+.nedtrekk-rad {
+  display: flex;
+  align-items: baseline;
+  gap: var(--r-2);
+  padding: var(--r-2) var(--r-3);
+  font-size: var(--sk-liten);
+  cursor: pointer;
+}
+.nedtrekk-rad:hover,
+.nedtrekk-rad[aria-selected="true"] { background: var(--f-bunn); }
+.nedtrekk-detalj {
+  margin-left: auto;
+  font-size: var(--sk-mikro);
+  color: var(--f-dempet);
+  white-space: nowrap;
+}
+/* Rollefargene i detaljen arver ordklassene (eier-ord osv.). */
+.nedtrekk-skille {
+  padding: var(--r-2) var(--r-3) var(--r-1);
+  border-top: 1px solid var(--f-hinne);
+  font: var(--sk-mikro)/1 var(--sk-data);
+  letter-spacing: var(--sp-label);
+  text-transform: uppercase;
+  color: var(--f-dempet);
+}
+
+/* KI-forslagene: en hviskende rad med klikkbare gjøremål. Et forslag er en
+   snarvei inn i skjemaet — det velger type, tittel og frist i ett trykk. */
+.ki-rad {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--r-2) var(--r-3);
+  margin-top: var(--r-4);
+}
+.ki-merke {
+  font: var(--sk-mikro)/1 var(--sk-data);
+  letter-spacing: var(--sp-label);
+  text-transform: uppercase;
+  color: var(--f-dempet);
+}
+.ki-forslag { display: inline-flex; flex-wrap: wrap; gap: var(--r-2); }
+.ki-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--r-1);
+  border: 1px solid var(--f-hinne);
+  border-radius: var(--rad-pille);
+  background: none;
+  padding: var(--r-1) var(--r-2);
+  font: var(--sk-mikro)/1.4 var(--sk-tekst);
+  color: var(--f-dempet);
+  cursor: pointer;
+  transition: color var(--bv-rask), border-color var(--bv-rask);
+}
+.ki-chip:hover { color: var(--f-blekk); border-color: var(--f-dempet); }
+.ki-chip .ikon { width: 13px; height: 13px; flex: 0 0 auto; }
+
+/* Tittelen eier venstresiden — handlingene («← Til søket», Rediger) står
+   samlet til høyre, så saksnr, navn og leverandør får hele bredden. */
 .avtale-topp {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: start;
   gap: var(--r-4);
+}
+.avtale-tittelblokk { min-width: 0; }
+.avtale-handlinger {
+  display: flex;
+  align-items: center;
+  gap: var(--r-4);
+  margin-top: var(--r-2);
 }
 .tilbake {
   border: 0; background: none; padding: 0;
@@ -1029,7 +1447,6 @@ body {
   font: var(--sk-liten)/1 var(--sk-tekst);
   cursor: pointer;
   white-space: nowrap;
-  margin-top: 10px;              /* på linje med tittelens overkant */
   transition: color var(--bv-rask);
 }
 .tilbake:hover { color: var(--f-blekk); }
@@ -1047,11 +1464,84 @@ body {
 
 .avtale-grid {
   display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: var(--r-5);
-  margin-top: var(--r-3);
+  grid-template-columns: 260px 1fr;
+  gap: var(--r-5) var(--r-6);
+  margin-top: var(--r-4);
 }
 @media (max-width: 860px) { .avtale-grid { grid-template-columns: 1fr; } }
+
+/* Kolonnene puster: hvert felt er en egen gruppe, og LUFTA mellom dem er
+   skillet — ingen rammer, ingen flater. */
+.avtale-side, .avtale-hoved {
+  display: flex;
+  flex-direction: column;
+  gap: var(--r-5);
+  min-width: 0;
+}
+
+/* ── Kollapsbare felt ─────────────────────────────────────────────────────
+   Deltittelen er knappen. Kroppen glir igjen med samme grid-triks som
+   trefflista (0fr ↔ 1fr). Nøkkeltall starter lukket — tallene er først
+   interessante når noe nærmer seg en terskel, og DA står varselet som
+   chip i tittelen, utenfor kollapsen. */
+.felt { display: flex; flex-direction: column; gap: var(--r-3); align-items: flex-start; }
+.felt .avtale-deltittel { margin: 0; }
+.felt-h { align-self: stretch; }
+.felt-topp {
+  display: flex;
+  align-items: center;
+  gap: var(--r-2);
+  width: 100%;
+  border: 0; background: none; padding: 0;
+  font: inherit; color: inherit;
+  letter-spacing: inherit; text-transform: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.felt-pil {
+  width: 14px; height: 14px;
+  margin-left: auto;
+  color: var(--f-dempet);
+  transition: transform var(--bv-myk);
+}
+.felt[data-apen="false"] .felt-pil { transform: rotate(-90deg); }
+.felt-kropp {
+  align-self: stretch;
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--bv-myk);
+}
+.felt[data-apen="false"] .felt-kropp { grid-template-rows: 0fr; }
+.felt-indre {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--r-3);
+  align-items: flex-start;
+}
+.felt-indre .fakta { align-self: stretch; }
+
+/* Terskelvarslene — seglrøde chips i deltittelen, synlige også når feltet
+   er lukket. Samme farge som alt annet som haster. */
+.felt-varsler { display: inline-flex; gap: var(--r-1); flex-wrap: wrap; }
+.varsel {
+  padding: 2px var(--r-2);
+  border-radius: var(--rad-pille);
+  background: var(--f-segl-mild);
+  color: var(--f-segl);
+  font: 600 var(--sk-mikro)/1.4 var(--sk-tekst);
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* Små forklaringer under tallene. Alvor = seglrød. */
+.felt-note { margin: 0; font-size: var(--sk-mikro); color: var(--f-dempet); max-width: 34ch; }
+.felt-note[data-alvor="true"] { color: var(--f-segl); }
+
+/* Familie-lista i sidekolonnen er smal — referansen slipper fast bredde. */
+.avtale-side .familie-rad .treff-ref { flex: 0 0 auto; }
 
 .avtale-deltittel {
   margin: var(--r-4) 0 var(--r-2);
@@ -1067,7 +1557,7 @@ body {
 .rolle-liste { display: flex; flex-direction: column; gap: var(--r-1); }
 .rolle-rad {
   display: grid;
-  grid-template-columns: 10px 1fr auto;
+  grid-template-columns: 30px 1fr auto;
   align-items: center;
   gap: var(--r-2);
   border: 0; background: none; padding: var(--r-2);
@@ -1080,19 +1570,37 @@ body {
   transition: background var(--bv-rask);
 }
 .rolle-rad:hover { background: var(--f-bunn); }
-.rolle-prikk { width: 8px; height: 8px; border-radius: 50%; }
-.rolle-rad[data-rolle="eier"]          .rolle-prikk { background: var(--rolle-eier); }
-.rolle-rad[data-rolle="forvalter"]     .rolle-prikk { background: var(--rolle-forvalter); }
-.rolle-rad[data-rolle="administrator"] .rolle-prikk { background: var(--rolle-adm); }
+/* Initialene i en sirkel med rollefarget ring. Samme sirkel bytter innhold
+   til fotografiet fra Entra når M365-koblingen er på (Graph photo/$value) —
+   ringen beholder rollefargen. */
+.rolle-avatar {
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  border-radius: var(--rad-pille);
+  border: 1.5px solid var(--f-hinne);
+  font: 9px/1 var(--sk-data);
+  letter-spacing: .03em;
+  color: var(--f-dempet);
+}
+.rolle-rad[data-rolle="eier"]          .rolle-avatar { border-color: var(--rolle-eier); }
+.rolle-rad[data-rolle="forvalter"]     .rolle-avatar { border-color: var(--rolle-forvalter); }
+.rolle-rad[data-rolle="administrator"] .rolle-avatar { border-color: var(--rolle-adm); }
 .rolle-hva { font-size: var(--sk-mikro); color: var(--f-dempet); }
 
 .fakta { margin: 0; display: flex; flex-direction: column; gap: var(--r-1); }
 .fakta div { display: flex; justify-content: space-between; gap: var(--r-3); align-items: baseline; }
 .fakta dt { font-size: var(--sk-liten); color: var(--f-dempet); }
 .fakta dd { margin: 0; font-size: var(--sk-liten); color: var(--f-blekk); }
-.fakta dd.tall { font: var(--sk-liten)/1 var(--sk-data); }
+.fakta dd.tall { font: var(--sk-liten)/1.4 var(--sk-data); text-align: right; }
 .fakta dd[data-haster="true"] { color: var(--f-segl); font-weight: 600; }
-.avtale-side .knapp { margin-top: var(--r-3); }
+
+/* Inaktiv knapp (familie uten familie): den finnes, men trekker seg tilbake. */
+.knapp[disabled] {
+  border-color: var(--f-hinne);
+  color: var(--f-dempet);
+  cursor: default;
+}
+.knapp[disabled]:hover { background: none; color: var(--f-dempet); }
 
 .avtale-besk {
   margin: 0;
@@ -1101,22 +1609,145 @@ body {
   max-width: 58ch;
 }
 
-/* Oppgavene. Gjort = hake og hvisken; ugjort = frist, seglrød når den haster. */
-.oppgaver { list-style: none; margin: 0; padding: 0; }
+/* Handlingslinja over oppgavene: tittel til venstre, blikkfanget til høyre. */
+.oppgave-topp {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--r-3);
+}
+/* Fylt knapp — kortets ene blikkfang. Segl på hover: handlingen er valgt. */
+.knapp[data-stil="fylt"] {
+  background: var(--f-blekk);
+  color: var(--f-ark);
+  border-color: var(--f-blekk);
+}
+.knapp[data-stil="fylt"]:hover {
+  background: var(--f-segl);
+  border-color: var(--f-segl);
+  color: var(--f-ark);
+}
+
+/* Oppgavene. Gjort = hake og hvisken; ugjort = frist, seglrød når den haster.
+   data-lys settes når oppgavens merke på linja under pekes på — raden og
+   merket lyser alltid i takt. */
+.oppgaver { list-style: none; margin: 0; padding: 0; align-self: stretch; }
 .oppgave {
   display: grid;
   grid-template-columns: 20px 1fr auto;
   align-items: baseline;
   gap: var(--r-2);
-  padding: var(--r-2) 0;
+  padding: var(--r-3) 0;
+  border-radius: var(--rad-liten);
   border-top: 1px solid var(--f-hinne);
   font-size: var(--sk-liten);
+  transition: background var(--bv-rask), box-shadow var(--bv-rask);
+}
+/* Lyset er bakgrunn + en 8px halo i samme farge: skygger teller ikke med i
+   rullebredden, så raden kan gløde utenfor sin egen boks uten sidescroll. */
+.oppgave[data-lys="true"] {
+  background: var(--f-ark);
+  box-shadow: 0 0 0 8px var(--f-ark);
 }
 .oppgave:first-child { border-top: 0; }
 .oppgave-hake { color: var(--f-dempet); }
 .oppgave[data-gjort="true"] .oppgave-tekst { color: var(--f-dempet); text-decoration: line-through; }
 .oppgave-frist { font-size: var(--sk-mikro); color: var(--f-dempet); white-space: nowrap; }
 .oppgave-frist[data-haster="true"] { color: var(--f-segl); }
+
+/* Kjedeoppgaver: oppfølgeren et holdt møte føder («Protokollført?») står
+   med innrykk RETT under forelderen sin — ingen delelinje mellom dem, de
+   er samme hendelse i to ledd. */
+.oppgave[data-barn="true"] {
+  border-top: 0;
+  padding-top: 0;
+  padding-left: calc(var(--r-5) + var(--r-2));
+}
+
+/* Saksnummerfeltet: attesten til arkiv-API-et kommer. Enter = protokollført. */
+.saksnr-felt {
+  border: 0;
+  border-bottom: 1px solid var(--f-hinne);
+  background: none;
+  color: var(--f-blekk);
+  font: var(--sk-mikro)/1.4 var(--sk-data);
+  width: 13ch;
+  padding: 0 2px;
+}
+.saksnr-felt::placeholder { color: var(--f-dempet); opacity: .8; }
+.saksnr-felt:focus { outline: none; border-bottom-color: var(--f-segl); }
+.saksnr-vist { font: var(--sk-mikro)/1.4 var(--sk-data); color: var(--f-dempet); }
+
+/* ── Notatene på avtalekortet ─────────────────────────────────────────────
+   Skriv rett inn — Enter lagrer. «Egne» er standarden: et notat er en note
+   to self til det deles bevisst. Togglen filtrerer visningen. */
+.felt .segment { background: var(--f-ark); }
+.notat-skriv { align-self: stretch; }
+.notat-skriv input {
+  width: 100%;
+  border: 1px solid var(--f-hinne);
+  border-radius: var(--rad-stor);
+  background: var(--f-ark);
+  color: var(--f-blekk);
+  font: var(--sk-liten)/1.4 var(--sk-tekst);
+  padding: var(--r-2) var(--r-3);
+}
+.notat-skriv input::placeholder { color: var(--f-dempet); opacity: .75; }
+.notater { list-style: none; margin: 0; padding: 0; align-self: stretch; }
+.notat-rad {
+  display: flex;
+  gap: var(--r-3);
+  align-items: baseline;
+  padding: var(--r-2) 0;
+  border-top: 1px solid var(--f-hinne);
+  font-size: var(--sk-liten);
+}
+.notat-rad:first-child { border-top: 0; }
+.notat-tid { margin-left: auto; font-size: var(--sk-mikro); color: var(--f-dempet); white-space: nowrap; }
+.notat-tom { color: var(--f-dempet); font-size: var(--sk-mikro); }
+
+/* ── Oppgavelinja ─────────────────────────────────────────────────────────
+   Avtalens egen tidsserie fra start til slutt. Hver frist står som sitt
+   Outlook-hjem over aksen, med en tynn strek ned til datoen. To høyder,
+   annenhver, så frister som klumper seg mot slutten ikke tegner oppå
+   hverandre. Pek på et merke → raden i lista lyser, og motsatt. */
+.oppgave-linje {
+  position: relative;
+  align-self: stretch;
+  height: 88px;
+  margin-top: var(--r-2);
+  overflow: hidden;               /* endemerkelapper skal aldri gi sidescroll */
+}
+.oppgave-linje::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 17px;
+  border-top: 1px solid var(--f-hinne);
+}
+.ol-maneder { position: absolute; inset: auto 0 0; height: 12px; }
+.ol-merke {
+  position: absolute;
+  top: 0; bottom: 17px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--f-dempet);
+  transition: color var(--bv-rask);
+}
+.ol-merke[data-niva="1"] { top: 26px; }
+.ol-merke .ikon { width: 18px; height: 18px; flex: 0 0 auto; }
+.ol-strek {
+  flex: 1 1 auto;
+  width: 1px;
+  margin-top: 3px;
+  background: var(--f-hinne);
+  transition: background var(--bv-rask);
+}
+.ol-merke[data-gjort="true"] { opacity: .45; }
+.ol-merke[data-lys="true"] { color: var(--f-segl); }
+.ol-merke[data-lys="true"] .ol-strek { background: var(--f-segl); }
 
 .familie { list-style: none; margin: 0; padding: 0; }
 .familie-rad {
@@ -1296,7 +1927,9 @@ body {
   flex: 0 0 var(--horisont-h);
   position: relative;
   border-top: 1px solid var(--f-hinne);
-  margin: 0 calc(var(--r-5) * -1);       /* strekkes ut til vindusveggene */
+  /* Nesten ut til vindusveggene — men med en tanke luft igjen på hver
+     side, så linja aldri rører margen. */
+  margin: 0 calc(var(--r-4) * -1);
   padding: 0 var(--r-5);
 }
 
@@ -1312,17 +1945,106 @@ body {
   transition: opacity var(--bv-rask), height var(--bv-rask), background var(--bv-rask);
 }
 .merke[data-haster="true"] { background: var(--f-segl); opacity: .75; height: 11px; }
-.merke[data-valgt="true"]  { background: var(--f-segl); opacity: 1; height: 17px; }
 
-/* Etiketten som følger den valgte avtalen. */
-.merke-etikett {
+/* ── Gantten — én avtale over aksen ───────────────────────────────────────
+   I hvile er horisonten bare en rolig tolvmånedersakse. Pek på en avtale
+   (i trefflista eller galleriet), og aksen spoler seg om til akkurat dens
+   levetid: én stolpe fra start til slutt, delt i avtaleår («1+1»), med
+   «i dag» tegnet inn. Spolingen er transitions på left/width — samme
+   elementer, nye posisjoner, så neste avtale GLIR dit i stedet for å hoppe. */
+.gantt {
   position: absolute;
-  top: var(--r-3);
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--bv-rask);
+}
+.gantt[data-synlig="true"] { opacity: 1; }
+
+.gantt-stolpe {
+  position: absolute;
+  top: 18px; height: 10px;
+  /* Stolpen er den ene pekbare flaten i gantten: skivene under svarer på
+     hover, resten av laget slipper musen gjennom. */
+  pointer-events: auto;
+  transition: left var(--bv-myk), width var(--bv-myk);
+}
+/* Periodeskivene: hver periode er sin egen AVRUNDEDE strek, nesten klint
+   oppi naboen — glippen på et par piksler ER skillet, ingen deler trengs.
+   Utgått = grå skrå striper (brukt opp), pågående = dus grønn (dempet
+   seglrød når avtalen haster), kommende = dus gul (opsjonsår). */
+.gantt-per {
+  position: absolute;
+  top: 0; bottom: 0;
+  border-radius: var(--rad-pille);
+}
+.gantt-per[data-st="fortid"] {
+  background: repeating-linear-gradient(-45deg,
+    var(--per-fortid) 0 3px,
+    color-mix(in srgb, var(--per-fortid) 25%, transparent) 3px 7px);
+}
+.gantt-per[data-st="naa"]  { background: var(--per-naa); }
+.gantt-per[data-st="naa"][data-haster="true"] {
+  background: color-mix(in srgb, var(--f-segl) 62%, var(--f-bunn));
+}
+.gantt-per[data-st="rest"] { background: var(--per-rest); }
+
+/* «I dag» er en prikk som rir på stolpen, med en tynn ring av bunnfargen
+   rundt seg så den leses oppå alle periodefargene. */
+.gantt-idag {
+  position: absolute;
+  top: 19.5px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--f-segl);
+  box-shadow: 0 0 0 2px var(--f-bunn);
   transform: translateX(-50%);
-  font: var(--sk-mikro)/1.3 var(--sk-tekst);
+  transition: left var(--bv-myk);
+}
+.gantt-idag::after {
+  content: "i dag";
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  margin-top: 7px;
+  font: var(--sk-mikro)/1 var(--sk-data);
+  letter-spacing: var(--sp-label);
+  text-transform: uppercase;
   color: var(--f-segl);
+}
+
+/* Datoen under pekeren: en liten lapp som glir langs aksen når du sveiper
+   over horisonten med en avtale framme. */
+.gantt-dato {
+  position: absolute;
+  top: -4px;
+  transform: translate(-50%, -100%);
+  padding: 2px var(--r-2);
+  border-radius: var(--rad-liten);
+  background: var(--f-blekk);
+  color: var(--f-bunn);
+  font: var(--sk-mikro)/1.3 var(--sk-data);
   white-space: nowrap;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--bv-rask);
+}
+.gantt-dato[data-synlig="true"] { opacity: 1; }
+
+/* Peker du på en periodeskive, får den dypere farge — og etiketten under
+   bytter til periodens navn og datoer, i sterkere stemme. */
+.gantt-per { transition: filter var(--bv-rask); }
+.gantt-per:hover { filter: brightness(.9) saturate(1.3); }
+.gantt-etikett[data-lys="true"] { color: var(--f-blekk); font-weight: 600; }
+
+.gantt-etikett {
+  position: absolute;
+  top: 52px;
+  transform: translateX(-50%);
+  font: var(--sk-mikro)/1.3 var(--sk-tekst);
+  color: var(--f-dempet);
+  white-space: nowrap;
+  transition: left var(--bv-myk);
 }
 
 .horisont-maneder {
@@ -1330,16 +2052,24 @@ body {
   inset: auto 0 var(--r-3);
   padding: 0 var(--r-5);
 }
+/* --tx settes fra JS: -50 % i midten, men endene KLAMPES (0 % / -100 %) så
+   ingen merkelapp stikker ut i margen. Hver ny tidslinje toner inn med et
+   lite løft og stigende forsinkelse — det er spolingens fotnote. */
 .mnd {
   position: absolute;
-  transform: translateX(-50%);
+  transform: translateX(var(--tx, -50%));
   font: var(--sk-mikro)/1 var(--sk-data);
   letter-spacing: var(--sp-label);
   text-transform: uppercase;
   color: var(--f-dempet);
   opacity: .7;
+  animation: mnd-inn 300ms cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: var(--d, 0ms);
 }
 .mnd[data-arsskifte="true"] { color: var(--f-blekk); opacity: .9; }
+@keyframes mnd-inn {
+  from { opacity: 0; transform: translateX(var(--tx, -50%)) translateY(3px); }
+}
 
 /* ── Innkomst ─────────────────────────────────────────────────────────────
    Én koreografert sekvens ved lasting: horisonten tegnes, så løftes
@@ -1364,8 +2094,12 @@ body {
   }
   .flate { padding: var(--r-3) var(--r-4) 0; }
   .scene { padding-bottom: var(--r-5); }
+  .horisont { margin: 0 calc(var(--r-3) * -1); }
   .treff-rad { grid-template-columns: 1fr; gap: var(--r-1); }
   .kunde { display: none; }
+  /* Den lave horisonten har ikke høyde til etikett og «i dag»-lapp. */
+  .gantt-etikett { display: none; }
+  .gantt-idag::after { display: none; }
 }
 
 /* ── Redusert bevegelse ───────────────────────────────────────────────────*/
@@ -1391,6 +2125,127 @@ body {
   <article class="personkort" id="personkort" role="dialog" aria-modal="true"
            aria-labelledby="pkNavn"></article>
 </div>
+
+<!-- ── Om-vinduet ──────────────────────────────────────────────────────────
+     Det første som møter deg — presentasjonen. Åpnes igjen fra margen (Om).
+     Salgspitchen på kortest mulig språk, stikkontaktene som viser at Sigill
+     legger seg OPPÅ systemene, og profilvelgeren: tre stoler i en trekant.
+     Valgt profil lander i margen der avataren bor. -->
+<div class="om-bakteppe" id="omBakteppe">
+  <article class="omkort" role="dialog" aria-modal="true" aria-label="Om Sigill">
+    <button class="pk-lukk" id="omLukk" type="button" aria-label="Lukk">&times;</button>
+
+    <svg class="om-ordmerke" viewBox="0 0 167.4 94.7" aria-label="Sigill"><use href="#ordmerke-kurver"/></svg>
+
+    <p class="om-ingress">
+      Sigill legger seg <b>oppå</b> systemene dere allerede har — ikke ved
+      siden av, og aldri i stedet for. Folk og kalender fra Microsoft&nbsp;365,
+      avtalene fra KGV/KAV-et, forbruket fra ERP-en. Én kontakt per system:
+      dere eier dataene, Sigill gjør dem levende.
+    </p>
+
+    <svg class="om-koblinger" viewBox="0 0 680 208" role="img"
+         aria-label="Sigill med tre kontakter klare til å plugges i ERP, KAV/KGV og Microsoft 365">
+      <g class="om-merke">
+        <rect class="om-boks" x="28" y="72" width="128" height="64" rx="14"/>
+        <g transform="translate(54 84) scale(0.42)"><use href="#ordmerke-kurver"/></g>
+      </g>
+      <path class="om-ledning" d="M156 96Q250 90 320 62Q380 40 448 40"/>
+      <path class="om-ledning" d="M156 104Q280 106 448 104"/>
+      <path class="om-ledning" d="M156 112Q250 118 320 146Q380 168 448 168"/>
+      <g class="om-plugg" transform="translate(448 40) rotate(-2)">
+        <rect x="0" y="-8" width="22" height="16" rx="5"/>
+        <path d="M22 -4Q28 -4 34 -4M22 4Q28 4 34 4"/>
+      </g>
+      <g class="om-plugg" transform="translate(448 104) rotate(1.5)">
+        <rect x="0" y="-8" width="22" height="16" rx="5"/>
+        <path d="M22 -4Q28 -4 34 -4M22 4Q28 4 34 4"/>
+      </g>
+      <g class="om-plugg" transform="translate(448 168) rotate(-1.5)">
+        <rect x="0" y="-8" width="22" height="16" rx="5"/>
+        <path d="M22 -4Q28 -4 34 -4M22 4Q28 4 34 4"/>
+      </g>
+      <g class="om-stikk" transform="rotate(-1.6 542 40)">
+        <rect x="520" y="18" width="44" height="44" rx="10"/>
+        <circle cx="534" cy="40" r="2.4"/><circle cx="550" cy="40" r="2.4"/>
+        <text x="542" y="76">ERP</text>
+      </g>
+      <g class="om-stikk" transform="rotate(1.2 542 104)">
+        <rect x="520" y="82" width="44" height="44" rx="10"/>
+        <circle cx="534" cy="104" r="2.4"/><circle cx="550" cy="104" r="2.4"/>
+        <text x="542" y="140">KAV / KGV</text>
+      </g>
+      <g class="om-stikk" transform="rotate(-1.2 542 168)">
+        <rect x="520" y="146" width="44" height="44" rx="10"/>
+        <circle cx="534" cy="168" r="2.4"/><circle cx="550" cy="168" r="2.4"/>
+        <text x="542" y="204">MICROSOFT 365</text>
+      </g>
+    </svg>
+
+    <p class="om-note">
+      Kontaktene står klare — med vilje ikke plugget i: demoen står alene,
+      alt er ført manuelt, og virker likevel. Den dagen tillatelsene er på
+      plass, plugges systemene i. Ingenting må flyttes.
+    </p>
+
+    <h2 class="avtale-deltittel om-deltittel">Prøv som</h2>
+    <div class="om-profiler" id="omProfiler"></div>
+  </article>
+</div>
+
+<!-- ── Ikonkilden ──────────────────────────────────────────────────────────
+     Outlook-familien for oppgaver (e-post, møte, notat, Planner) og det
+     skjeve plusset for «Ny oppgave». Logoene er tegnet PÅ SKRÅ med husets
+     strek — 24-rutenett, runde ender, litt skjevt, som tavla-ikonet: de
+     skal kjennes igjen, ikke kopieres. Dokumentert i designsystem.html.
+     Refereres med <use href="#ikon-…"> fra oppgavelinja i avtalekortet. -->
+<svg class="ordmerke-kilde" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+  <!-- Konvolutten, ren og rett på: e-post som sendes NÅ trenger ingen
+       tilbehør. Flappen er V-en fra hjørnene mot midten. -->
+  <g id="ikon-epost" transform="rotate(-2.4 12 12)">
+    <path d="M3.6 7.3Q3.5 5.9 5 5.8Q12 5.6 19 5.8Q20.5 5.9 20.4 7.3Q20.6 12 20.4 16.7Q20.5 18.1 19 18.2Q12 18.4 5 18.2Q3.5 18.1 3.6 16.7Q3.4 12 3.6 7.3Z"/>
+    <path d="M4.3 6.9Q8.2 10.4 12 12.1Q15.9 10.3 19.8 6.8"/>
+  </g>
+  <!-- Møtet: to hoder over hvert sitt lente legeme, bordet med ett bein
+       mellom dem. Hodene er ulike i størrelse og vinkel — som logoens øyne. -->
+  <g id="ikon-mote" transform="rotate(-2.2 12 12)">
+    <ellipse cx="6" cy="6.1" rx="2.5" ry="2.4" transform="rotate(-8 6 6.1)"/>
+    <ellipse cx="18" cy="6.3" rx="2.3" ry="2.4" transform="rotate(7 18 6.3)"/>
+    <path d="M3 16.4Q3.4 11.6 7 11.7Q9.3 11.8 10.4 13.6"/>
+    <path d="M21 16.6Q20.7 11.7 17.1 11.8Q14.8 11.9 13.7 13.7"/>
+    <path d="M7.4 14.6Q12 14.3 16.7 14.5"/>
+    <path d="M12 14.6Q11.9 17.4 12 20.2"/>
+  </g>
+  <g id="ikon-notat" transform="rotate(1.8 12 12)">
+    <path d="M6.6 3.6Q5.1 3.7 5.2 5.2Q5 12 5.2 18.8Q5.1 20.3 6.6 20.4Q11 20.6 15.4 20.4Q16.9 20.3 16.9 18.8L17 9.3L11.9 3.5Q9.2 3.4 6.6 3.6Z"/>
+    <path d="M11.9 3.6Q12 9.2 16.9 9.3"/>
+    <path d="M8.2 13Q10.7 12.8 13.4 13"/>
+    <path d="M8.2 16.4Q10 16.2 12 16.4"/>
+  </g>
+  <!-- Plan-logoen (Lars' egen), tegnet litt skjevere: den store flisen med
+       to mindre som kaskaderer over høyrekant og bunn — delekantene er åpne
+       baner så overlappen ikke tegnes dobbelt. -->
+  <g id="ikon-planner" transform="rotate(-3 12 12)">
+    <path d="M4.1 5.3Q4 3.7 5.6 3.6Q9.4 3.4 13.2 3.6Q14.8 3.7 14.7 5.3Q14.9 8.9 14.7 12.5Q14.8 14.1 13.2 14.2Q9.4 14.4 5.6 14.2Q4 14.1 4.1 12.5Q3.9 8.9 4.1 5.3Z"/>
+    <path d="M14.8 6.9Q17 6.8 19 6.9Q20.4 7 20.3 8.4Q20.5 11.5 20.3 14.6Q20.4 16 19 16.1Q16.9 16.2 14.9 16.1"/>
+    <path d="M8.9 14.3Q8.8 16.5 8.9 18.6Q9 20 10.4 20.1Q13.4 20.2 16.4 20.1Q17.8 20 17.7 18.6Q17.8 17.3 17.7 16.1"/>
+  </g>
+  <!-- Det skjeve plusset: armene krysser ikke på midten — asymmetrien er
+       blikkfanget, rotasjonen er slektskapet med resten av familien. -->
+  <g id="ikon-ny-oppgave" transform="rotate(-7 12 12)">
+    <path d="M12.3 4.6Q11.9 11.8 12.1 19.6"/>
+    <path d="M4.6 12.3Q11.6 11.9 19.5 12.1"/>
+  </g>
+  <!-- Utsatt e-post: samme konvolutt, med klokka i bunnen — meldingen
+       venter på triggeren sin. Konvoluttbanen stopper der klokka overlapper,
+       så badgen får luft rundt seg i stedet for kryssende streker. -->
+  <g id="ikon-utsatt" transform="rotate(-2.4 12 12)">
+    <path d="M13.7 18Q9.4 18.2 5 18Q3.5 17.9 3.6 16.5Q3.4 11.9 3.6 7.1Q3.5 5.7 5 5.6Q12 5.4 19 5.6Q20.5 5.7 20.4 7.1Q20.5 9.8 20.5 12.4"/>
+    <path d="M4.3 6.7Q8.2 10.2 12 11.9Q15.9 10.1 19.8 6.6"/>
+    <ellipse cx="17.6" cy="16.6" rx="3.5" ry="3.3" transform="rotate(-8 17.6 16.6)"/>
+    <path d="M17.5 14.7Q17.4 15.9 17.5 16.7Q18.4 17.2 19.2 17.6"/>
+  </g>
+</defs></svg>
 
 <!-- ══ Sidepanel ══════════════════════════════════════════════════════════ -->
 <nav class="rail" id="rail" data-apen="false" aria-label="Hovedmeny">
@@ -1470,7 +2325,7 @@ body {
         <path d="M7 48Q32 63 48 75"/>
       </svg>
 
-      <button class="node" data-plass="opp" data-kommer="Mine avtaler kommer i S2.2">
+      <button class="node" data-plass="opp" data-fane="avtaler">
         <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true">
           <g transform="rotate(-1.6 12 12)"><path d="M7.3 6.3Q7.1 3.2 10.3 3.1Q15.2 2.9 18.1 3.1Q21 3.2 21 6.2Q21.2 11 21 14.1Q20.9 17 17.9 17.1Q13.5 17.3 10.2 17.1Q7.2 17 7.2 14Q7 10 7.3 6.3Z"/><path d="M17.2 21.1Q11.8 21.3 6.4 21Q3.1 20.8 3.1 17.6Q2.9 12.4 3.2 7.1"/></g>
         </svg>
@@ -1478,7 +2333,7 @@ body {
         <span class="node-tekst" id="tekstAvtaler">Mine avtaler</span>
       </button>
 
-      <button class="node" data-plass="ned" data-kommer="Mine oppgaver kommer i S2.3">
+      <button class="node" data-plass="ned" data-fane="oppgaver">
         <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true">
           <g transform="rotate(1.2 12 12)"><path d="M3.4 6.8Q4.6 7.9 5.6 9.1Q7.1 7.3 8.7 5.6"/><path d="M11.9 7Q16.2 6.8 20.6 7"/><path d="M3.5 15.8Q4.7 16.9 5.6 18.1Q7.2 16.3 8.6 14.6"/><path d="M12 15.9Q16.1 15.7 20.5 16"/></g>
         </svg>
@@ -1556,6 +2411,15 @@ body {
        det er en visning av registeret, ikke et eget sted i menyen. -->
 
   <div class="rail-bunn">
+    <!-- Om-vinduet: presentasjonen som møtte deg først, alltid ett trykk unna. -->
+    <a class="rail-lenke" href="#" id="lenkeOm" title="Om Sigill">
+      <span class="rail-ikon" aria-hidden="true">
+        <svg class="ikon" viewBox="0 0 24 24">
+          <g transform="rotate(-2.5 12 12)"><ellipse cx="12" cy="12" rx="8.6" ry="8.2" transform="rotate(-8 12 12)"/><path d="M11.9 10.9Q11.9 13.4 12 16.1"/><path d="M11.9 7.9Q12 8 12 8.2"/></g>
+        </svg>
+      </span>
+      <span class="rail-tekst">Om</span>
+    </a>
     <a class="rail-lenke" href="#" id="lenkeInnstillinger" data-visning="innstillinger">
       <span class="rail-ikon" aria-hidden="true">
         <!-- Spakene i stedet for et tannhjul: samme form som segmentvelgeren
@@ -1579,6 +2443,14 @@ body {
       <svg class="ordmerke-kilde" width="0" height="0" aria-hidden="true" focusable="false"><defs>
         <path id="ordmerke-kurver" fill="currentColor" d="M15.3 77.9Q13.5 77.4 12.4 77.05Q11.3 76.7 11.3 76.7Q11.5 76.2 11.15 75.8Q10.8 75.4 9.7 75.3Q8.2 74.3 6.7 72.65Q5.2 71 4.15 69.3Q3.1 67.6 2.7 66.7Q2 65.2 2.55 64.85Q3.1 64.5 4.2 64Q5.3 63.2 6.3 63.05Q7.3 62.9 8.1 64.6Q9.4 66.9 12.3 68.35Q15.2 69.8 18.9 69.95Q22.6 70.1 26.2 68.6Q29 67.4 29.45 65.55Q29.9 63.7 28.2 61.1Q27.9 60.3 27.4 59.8Q26.9 59.3 25.9 58.5Q24.9 57.7 23 55.9Q21.5 55.2 20.25 54.6Q19 54 17.6 53.3Q16 52.5 13.95 51Q11.9 49.5 10.1 47.7Q8.3 45.9 7.4 44.3Q5.8 42.8 5.25 40.15Q4.7 37.5 5.15 34.5Q5.6 31.5 6.9 29.1Q7.5 27.7 9.05 25.5Q10.6 23.3 12.5 21Q14.4 18.7 16.2 16.85Q18 15 19.1 14.3Q19.9 13.5 20.8 12.65Q21.7 11.8 21.7 11.8Q21.8 11.3 22.05 11.3Q22.3 11.3 22.3 11.3Q22.8 11 24.5 10.3Q26.2 9.6 28.2 7.7Q34.9 4.5 39.45 3.25Q44 2 46.7 2L46.7 2L46.7 2Q49.2 2.1 51.5 3.25Q53.8 4.4 55.4 6.25Q57 8.1 57.3 10.5Q58 12.9 56.75 16.2Q55.5 19.5 53.2 22.35Q50.9 25.2 48.4 26.6Q45.6 27.8 44 27.15Q42.4 26.5 42.5 24.6Q42.5 23.8 43.05 22.7Q43.6 21.6 46.1 18.8Q49.3 14.1 49.65 11.85Q50 9.6 48 9.3Q47.4 9.1 45.75 9.35Q44.1 9.6 42.2 10.05Q40.3 10.5 38.9 10.95Q37.5 11.4 37.5 11.6Q37.5 11.6 37.5 11.9Q37.5 12.2 37.1 12.1Q36.9 12.1 35.6 12.75Q34.3 13.4 32.55 14.55Q30.8 15.7 29.05 16.8Q27.3 17.9 26.1 18.8Q24.9 19.7 24.8 19.8Q24.6 20.9 22.5 21.8Q20.5 23 18.95 25.25Q17.4 27.5 15.4 30.9Q13.7 33.2 13 35.85Q12.3 38.5 13 40.1Q13.5 41.7 15.85 43.55Q18.2 45.4 22.1 47.7Q25.5 49.6 28.4 51.65Q31.3 53.7 33.3 55.55Q35.3 57.4 35.9 58.7Q37.1 60.4 37.45 62.45Q37.8 64.5 37.65 66.4Q37.5 68.3 37.1 69.6Q36.4 71.2 34.85 72.95Q33.3 74.7 32.1 74.6Q31 74.9 30.45 75.3Q29.9 75.7 29.2 76Q28.5 76.4 26 76.9Q23.5 77.4 20.55 77.7Q17.6 78 15.3 77.9ZM48.9 69.7Q48.1 68.9 47.75 67.45Q47.4 66 47.5 64.55Q47.6 63.1 48 62.3Q48 61.5 48.25 61.05Q48.5 60.6 48.4 60.2Q48.3 59.8 48.6 58.8Q48.9 57.8 49.2 56.9Q49.9 55.3 50.75 52.85Q51.6 50.4 52.45 47.9Q53.3 45.4 53.85 43.55Q54.4 41.7 54.5 41.3Q54.5 40.1 56.1 40Q57.3 39.6 58.65 40.65Q60 41.7 61 43.3Q61.8 44.1 61.6 45.5Q61.4 46.9 60.3 49.3Q59.9 50.1 59.35 51.85Q58.8 53.6 58.6 54.8Q58.2 55.6 57.65 57.05Q57.1 58.5 56.7 59.8Q56.5 60.3 56.3 61.5Q56.1 62.7 55.8 64Q55.5 65.3 55 66.1Q54.1 70.2 52.35 70.9Q50.6 71.6 48.9 69.7ZM59.3 29.4Q58.4 28.7 57.9 27.65Q57.4 26.6 57.35 25.7Q57.3 24.8 57.5 24.7Q58.4 23.9 59.3 22.15Q60.2 20.4 60.7 19Q60.8 18.7 61.15 18.2Q61.5 17.7 61.9 17.6Q63.1 16.8 64.9 17.6Q66.7 18.4 67.7 20Q68.6 21.9 68.25 23.65Q67.9 25.4 66.1 27.6Q64.6 29.6 62.65 30.05Q60.7 30.5 59.3 29.4ZM78.7 91.6Q75.9 92.7 72.85 91.25Q69.8 89.8 67.6 86.7Q67.2 86.1 66.5 84.65Q65.8 83.2 65.15 81.55Q64.5 79.9 64.2 78.7Q63.9 77.5 64.2 77.3Q64.6 76.5 65.75 76.4Q66.9 76.3 68.05 76.65Q69.2 77 69.4 77.6Q69.7 78.3 70.15 79.2Q70.6 80.1 71.15 80.8Q71.7 81.5 72.1 81.9Q73.5 83.3 74.65 83.7Q75.8 84.1 76.5 83.6Q78.2 82.3 79.15 80.45Q80.1 78.6 81.5 74.2Q82.6 70.5 83.5 67.3Q84.4 64.1 85.3 61.8Q85.6 60.6 86.05 59.75Q86.5 58.9 86.9 58.5L87.5 58.5Q85.3 59.9 83.75 61.45Q82.2 63 79.6 64.1Q79 64.8 76.65 64.95Q74.3 65.1 72.1 64.4Q70.7 63.6 69.9 62.9Q69.1 62.2 68.6 61.25Q68.1 60.3 67.5 58.8Q66.8 57.3 67.3 53.9Q67.8 50.5 69.1 47.1Q70.3 44.6 72.6 41.7Q74.9 38.8 77.5 36.45Q80.1 34.1 82.2 33.5Q83 33.1 84.65 32.65Q86.3 32.2 88.1 32.7Q89.8 32.9 90.7 33.45Q91.6 34 93.6 35.7Q94.9 37 96.45 38.8Q98 40.6 98.5 42Q99.2 43.5 98.9 45.1Q98.6 46.7 97.6 48Q96.7 49.3 95.7 50.6Q94.7 51.9 94.2 54.2Q93.7 57.2 92.4 60.95Q91.1 64.7 90.3 67.9L88.7 74.1Q86.2 82.6 83.45 86.55Q80.7 90.5 78.7 91.6ZM76.1 58Q78.1 57.9 79.65 57.45Q81.2 57 82.65 55.6Q84.1 54.2 85.8 51.6Q87.5 49.2 88.2 47Q88.9 44.8 88.7 42.3Q88.6 40.7 87.95 40.2Q87.3 39.7 86 39.9Q84.1 40.2 82.3 41.6Q80.5 43 78.5 45.6Q77 47.6 76 50.4Q75 53.4 75.05 55.5Q75.1 57.6 76.1 58ZM104.3 69.7Q103.5 68.9 103.15 67.45Q102.8 66 102.9 64.55Q103 63.1 103.4 62.3Q103.4 61.5 103.65 61.05Q103.9 60.6 103.8 60.2Q103.7 59.8 104 58.8Q104.3 57.8 104.6 56.9Q105.3 55.3 106.15 52.85Q107 50.4 107.85 47.9Q108.7 45.4 109.25 43.55Q109.8 41.7 109.9 41.3Q109.9 40.1 111.5 40Q112.7 39.6 114.05 40.65Q115.4 41.7 116.4 43.3Q117.2 44.1 117 45.5Q116.8 46.9 115.7 49.3Q115.3 50.1 114.75 51.85Q114.2 53.6 114 54.8Q113.6 55.6 113.05 57.05Q112.5 58.5 112.1 59.8Q111.9 60.3 111.7 61.5Q111.5 62.7 111.2 64Q110.9 65.3 110.4 66.1Q109.5 70.2 107.75 70.9Q106 71.6 104.3 69.7ZM114.7 29.4Q113.8 28.7 113.3 27.65Q112.8 26.6 112.75 25.7Q112.7 24.8 112.9 24.7Q113.8 23.9 114.7 22.15Q115.6 20.4 116.1 19Q116.2 18.7 116.55 18.2Q116.9 17.7 117.3 17.6Q118.5 16.8 120.3 17.6Q122.1 18.4 123.1 20Q124 21.9 123.65 23.65Q123.3 25.4 121.5 27.6Q120 29.6 118.05 30.05Q116.1 30.5 114.7 29.4ZM126.8 72.6Q124.9 73.1 123.5 71.65Q122.1 70.2 121.65 67.3Q121.2 64.4 122 60.7Q122.5 59.5 122.8 58.35Q123.1 57.2 123.1 56.5Q123.3 55.5 123.9 53.55Q124.5 51.6 125.2 49.5Q125.9 47.4 126.55 45.75Q127.2 44.1 127.4 43.7Q127.8 43.7 128.1 43Q128.4 42.3 128.4 41.6Q128.4 40.8 128.75 39.8Q129.1 38.8 129.5 38.4Q129.5 37.9 129.75 37.25Q130 36.6 130 36.2Q130 35.8 130.25 35.4Q130.5 35 130.5 34.6Q131.2 33.3 132.35 30.45Q133.5 27.6 134.85 24.1Q136.2 20.6 137.4 17.2Q138.6 13.8 139.35 11.45Q140.1 9.1 140.1 8.6Q140.1 7.8 140.65 7.2Q141.2 6.6 142 6.6Q142.3 6.3 143.15 6.15Q144 6 144.4 6Q144.4 6 144.8 6.4Q145.2 6.8 146 7.6Q146.8 8.3 147.35 9.2Q147.9 10.1 147.9 11.3Q147.9 12.6 147.6 13.75Q147.3 14.9 146.4 16.9Q145.5 18.9 143.6 22.9Q142.8 24.9 141.9 26.65Q141 28.4 141 28.8Q141 29.2 140.65 30Q140.3 30.8 139.9 32Q139.5 32.8 138.8 34.35Q138.1 35.9 137.35 37.65Q136.6 39.4 136.1 40.65Q135.6 41.9 135.6 42.1Q135.6 42.5 135.55 42.9Q135.5 43.3 135.1 43.7Q134.7 43.7 134.65 44.25Q134.6 44.8 134.6 44.8Q134.6 45.8 133 50.1Q131.4 55.6 130.05 60.2Q128.7 64.8 128.7 67.6Q128.7 70 128.15 71.1Q127.6 72.2 126.8 72.6ZM144.3 72.6Q142.4 73.1 141 71.65Q139.6 70.2 139.15 67.3Q138.7 64.4 139.5 60.7Q140 59.5 140.3 58.35Q140.6 57.2 140.6 56.5Q140.8 55.5 141.4 53.55Q142 51.6 142.7 49.5Q143.4 47.4 144.05 45.75Q144.7 44.1 144.9 43.7Q145.3 43.7 145.6 43Q145.9 42.3 145.9 41.6Q145.9 40.8 146.25 39.8Q146.6 38.8 147 38.4Q147 37.9 147.25 37.25Q147.5 36.6 147.5 36.2Q147.5 35.8 147.75 35.4Q148 35 148 34.6Q148.7 33.3 149.85 30.45Q151 27.6 152.35 24.1Q153.7 20.6 154.9 17.2Q156.1 13.8 156.85 11.45Q157.6 9.1 157.6 8.6Q157.6 7.8 158.15 7.2Q158.7 6.6 159.5 6.6Q159.8 6.3 160.65 6.15Q161.5 6 161.9 6Q161.9 6 162.3 6.4Q162.7 6.8 163.5 7.6Q164.3 8.3 164.85 9.2Q165.4 10.1 165.4 11.3Q165.4 12.6 165.1 13.75Q164.8 14.9 163.9 16.9Q163 18.9 161.1 22.9Q160.3 24.9 159.4 26.65Q158.5 28.4 158.5 28.8Q158.5 29.2 158.15 30Q157.8 30.8 157.4 32Q157 32.8 156.3 34.35Q155.6 35.9 154.85 37.65Q154.1 39.4 153.6 40.65Q153.1 41.9 153.1 42.1Q153.1 42.5 153.05 42.9Q153 43.3 152.6 43.7Q152.2 43.7 152.15 44.25Q152.1 44.8 152.1 44.8Q152.1 45.8 150.5 50.1Q148.9 55.6 147.55 60.2Q146.2 64.8 146.2 67.6Q146.2 70 145.65 71.1Q145.1 72.2 144.3 72.6Z"/>
       </defs></svg>
+    <!-- Stien: på søkesiden er den søkeparet (Søk / Avansert søk), ellers
+         navnet på skjermen du står i — «Avtale» nå, «Avtale \ Oppgaver» når
+         oppgavene kommer i S2.3. Kunden står til høyre. -->
+    <nav class="topp-sti" aria-label="Hvor du er">
+      <button class="sti-ledd" id="stiSok" type="button" data-aktiv="true">Søk</button>
+      <button class="sti-ledd" id="stiAvansert" type="button">Avansert søk</button>
+      <span class="sti-ledd" id="stiVisning" data-aktiv="true" hidden></span>
+    </nav>
     <span class="kunde" id="kundeNavn">—</span>
   </header>
 
@@ -1655,55 +2527,385 @@ body {
          Rediger/prolonger/nye oppgaver er dører som sier når de åpner. -->
     <section class="avtale" id="visAvtale" hidden aria-label="Avtale">
       <header class="avtale-topp">
-        <button class="tilbake" id="avtaleTilbake" type="button">&larr; Til søket</button>
         <div class="avtale-tittelblokk">
           <span class="treff-ref" id="avRef"></span>
           <h1 class="avtale-navn" id="avNavn"></h1>
           <p class="avtale-under" id="avUnder"></p>
         </div>
-        <button class="knapp" type="button" data-kommer="Redigering kommer i S2.6">Rediger</button>
+        <div class="avtale-handlinger">
+          <button class="tilbake" id="avtaleTilbake" type="button">&larr; Til søket</button>
+          <button class="knapp" type="button" data-kommer="Redigering kommer i S2.6">Rediger</button>
+        </div>
       </header>
       <p class="sok-hint avtale-hint" id="avtaleHint"></p>
 
       <div class="avtale-grid">
         <aside class="avtale-side">
-          <h2 class="avtale-deltittel">Roller</h2>
-          <div class="rolle-liste" id="avRoller"></div>
+          <section class="felt">
+            <h2 class="avtale-deltittel">Roller</h2>
+            <div class="rolle-liste" id="avRoller"></div>
+          </section>
 
-          <h2 class="avtale-deltittel">Nøkkeltall</h2>
-          <dl class="fakta">
-            <div><dt>Verdi (eks. mva)</dt><dd class="tall" id="avVerdi"></dd></div>
-            <div><dt>Start</dt><dd id="avStart"></dd></div>
-            <div><dt>Slutt</dt><dd id="avSlutt"></dd></div>
-            <div><dt>Gjenstår</dt><dd id="avDager"></dd></div>
-          </dl>
-          <!-- Prolonger finnes bare når Sigill EIER registeret: med et kilde-
-               system tilkoblet skjer prolongering der. Klokka er samme ikon
-               som «ta med utgåtte» — begge handler om avtalens tid. -->
-          <button class="knapp knapp-ikon" type="button" id="avProlonger"
-                  data-kommer="Prolongering kommer i S2.6">
-            <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true">
-              <g transform="rotate(-6 12 12)"><ellipse cx="12" cy="12" rx="8.6" ry="8.2"/><path d="M12 6.6Q12 10.9 12.1 12.3Q14.3 13.5 16.2 14.6"/></g>
-            </svg>
-            Prolonger
-          </button>
+          <!-- Nøkkeltall starter LUKKET: forbruket er først interessant når
+               det nærmer seg avtalt verdi. Krysses en terskel (80 % brukt,
+               kjøp etter utløp) står varselet som chip her i tittelen. -->
+          <section class="felt" id="feltNokkel" data-apen="false">
+            <h2 class="avtale-deltittel felt-h">
+              <button class="felt-topp" type="button" aria-expanded="false" aria-controls="nokkelKropp">
+                Nøkkeltall
+                <span class="felt-varsler" id="avVarsler"></span>
+                <svg class="ikon felt-pil" viewBox="0 0 24 24" aria-hidden="true">
+                  <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+                </svg>
+              </button>
+            </h2>
+            <div class="felt-kropp" id="nokkelKropp">
+              <div class="felt-indre">
+                <dl class="fakta">
+                  <div><dt>Brukt</dt><dd class="tall" id="avBrukt"></dd></div>
+                  <div><dt>Start</dt><dd id="avStart"></dd></div>
+                  <div><dt>Slutt</dt><dd id="avSlutt"></dd></div>
+                  <div><dt>Gjenstår</dt><dd id="avDager"></dd></div>
+                </dl>
+                <p class="felt-note" id="avForbrukNote" hidden></p>
+                <!-- «Forleng» (systemdesignets ord) finnes bare når Sigill EIER
+                     registeret: med et kildesystem tilkoblet forlenges avtalen
+                     der. Klokka er samme ikon som «ta med utgåtte» — begge
+                     handler om avtalens tid. -->
+                <button class="knapp knapp-ikon" type="button" id="avForleng"
+                        data-kommer="Forlengelse kommer i S2.6">
+                  <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true">
+                    <g transform="rotate(-6 12 12)"><ellipse cx="12" cy="12" rx="8.6" ry="8.2"/><path d="M12 6.6Q12 10.9 12.1 12.3Q14.3 13.5 16.2 14.6"/></g>
+                  </svg>
+                  Forleng
+                </button>
+              </div>
+            </div>
+          </section>
 
-          <h2 class="avtale-deltittel">Leverandør</h2>
-          <dl class="fakta" id="avLev"></dl>
+          <section class="felt" id="feltLev" data-apen="true">
+            <h2 class="avtale-deltittel felt-h">
+              <button class="felt-topp" type="button" aria-expanded="true" aria-controls="levKropp">
+                Leverandør
+                <svg class="ikon felt-pil" viewBox="0 0 24 24" aria-hidden="true">
+                  <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+                </svg>
+              </button>
+            </h2>
+            <div class="felt-kropp" id="levKropp">
+              <div class="felt-indre">
+                <dl class="fakta" id="avLev"></dl>
+                <!-- Familien: rammeavtaler har avrop under seg, avrop har
+                     søsken. Uten familie er knappen inaktiv og sier hvorfor. -->
+                <button class="knapp" type="button" id="avFamilieKnapp"
+                        aria-expanded="false" aria-controls="avFamilie">Familie</button>
+                <p class="felt-note" id="avFamilieTom" hidden>
+                  Ingen andre avtaler med denne leverandøren.
+                </p>
+                <ul class="familie" id="avFamilie" hidden></ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Samfunnshensyn — finnes bare når Etisk fokus er på
+               (Innstillinger). Risikoen er egenvurdert: Sigill spør,
+               institusjonen svarer. Egenerklæringen opprettes som utsatt
+               e-post med arkiveringsspørsmål i kjeden når den lukkes. -->
+          <section class="felt" id="feltEtisk" data-apen="true">
+            <h2 class="avtale-deltittel felt-h">
+              <button class="felt-topp" type="button" aria-expanded="true" aria-controls="etiskKropp">
+                Samfunnshensyn
+                <span class="felt-varsler" id="avEtiskVarsel"></span>
+                <svg class="ikon felt-pil" viewBox="0 0 24 24" aria-hidden="true">
+                  <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+                </svg>
+              </button>
+            </h2>
+            <div class="felt-kropp" id="etiskKropp">
+              <div class="felt-indre">
+                <label class="no-felt">
+                  <span>Produksjonsrisiko</span>
+                  <div class="nedtrekk">
+                    <input id="avRisiko" class="nedtrekk-laast" type="text" readonly>
+                    <svg class="ikon nedtrekk-pil" viewBox="0 0 24 24" aria-hidden="true">
+                      <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+                    </svg>
+                    <ul class="nedtrekk-liste" hidden></ul>
+                  </div>
+                </label>
+                <button class="knapp" type="button" id="avEgenerklaering">+ Egenerklæring</button>
+                <p class="felt-note">
+                  Egenvurdert mot DFØs høyrisikoliste. Egenerklæringen legger
+                  seg som utsatt e-post i oppgavelista, med arkiveringsspørsmål
+                  når den lukkes.
+                </p>
+              </div>
+            </div>
+          </section>
         </aside>
 
+        <!-- Oppgavene ØVERST: kortet skal være et sted man handler, ikke bare
+             leser. Beskrivelsen kan kollapses under. -->
         <div class="avtale-hoved">
-          <h2 class="avtale-deltittel">Beskrivelse</h2>
-          <p class="avtale-besk" id="avBesk"></p>
+          <section class="felt">
+            <div class="oppgave-topp">
+              <h2 class="avtale-deltittel">Oppgaver</h2>
+              <!-- Blikkfanget: fylt knapp med det skjeve plusset. Handlingen
+                   står ØVER lista — kortet er et sted man gjør ting. -->
+              <button class="knapp knapp-ikon" data-stil="fylt" type="button" id="nyOppgaveKnapp">
+                <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ikon-ny-oppgave"/></svg>
+                Ny oppgave
+              </button>
+            </div>
+            <ul class="oppgaver" id="avOppgaver"></ul>
+            <!-- Oppgavelinja: fristene fra avtalens start til slutt, hver med
+                 sitt Outlook-hjem over aksen. Bygges i JS per avtale. -->
+            <div class="oppgave-linje" id="avOppgaveLinje" aria-hidden="true"></div>
+          </section>
 
-          <h2 class="avtale-deltittel">Oppgaver</h2>
-          <ul class="oppgaver" id="avOppgaver"></ul>
-          <button class="sok-ny" type="button" data-kommer="Nye oppgaver kommer i S2.6">+ Ny oppgave</button>
+          <!-- Notatene: skriv rett her — ett klikk mindre enn Ny oppgave.
+               Egne (standard) / Felles er synligheten; private notater går
+               aldri inn i rapporter. Se «Gjennomført» i prosjektnotatet. -->
+          <section class="felt" id="feltNotater" data-apen="true">
+            <h2 class="avtale-deltittel felt-h">
+              <button class="felt-topp" type="button" aria-expanded="true" aria-controls="notatKropp">
+                Notater
+                <svg class="ikon felt-pil" viewBox="0 0 24 24" aria-hidden="true">
+                  <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+                </svg>
+              </button>
+            </h2>
+            <div class="felt-kropp" id="notatKropp">
+              <div class="felt-indre">
+                <div class="segment" id="notatSynlighet" role="group" aria-label="Hvem ser notatene">
+                  <button type="button" data-syn="egne" aria-pressed="true">Egne</button>
+                  <button type="button" data-syn="felles" aria-pressed="false">Felles</button>
+                </div>
+                <div class="notat-skriv">
+                  <input id="notatFelt" type="text" autocomplete="off"
+                         placeholder="Skriv rett her — Enter lagrer notatet på avtalen">
+                </div>
+                <ul class="notater" id="avNotater"></ul>
+              </div>
+            </div>
+          </section>
 
-          <h2 class="avtale-deltittel">Samme leverandør</h2>
-          <ul class="familie" id="avFamilie"></ul>
+          <section class="felt" id="feltBesk" data-apen="true">
+            <h2 class="avtale-deltittel felt-h">
+              <button class="felt-topp" type="button" aria-expanded="true" aria-controls="beskKropp">
+                Beskrivelse
+                <svg class="ikon felt-pil" viewBox="0 0 24 24" aria-hidden="true">
+                  <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+                </svg>
+              </button>
+            </h2>
+            <div class="felt-kropp" id="beskKropp">
+              <div class="felt-indre">
+                <p class="avtale-besk" id="avBesk"></p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
+    </section>
+
+    <!-- ── Ny oppgave (S2.6, skjelett) ──────────────────────────────────────
+         Egen side som springer ut fra avtalen. Typevelgeren er fem «hjem»:
+         notat (Sigill), e-post og møte (Outlook via Graph), Planner, og
+         utsatt e-post (trigger). Skjemaet er mock — Opprett legger oppgaven
+         i øktas minne så den vises i lista og på oppgavelinja. -->
+    <section class="nyoppgave" id="visNyOppgave" hidden data-valgt="ingen" aria-label="Ny oppgave">
+      <header class="avtale-topp">
+        <div class="avtale-tittelblokk">
+          <span class="treff-ref" id="noRef"></span>
+          <h1 class="avtale-navn">Ny oppgave</h1>
+          <p class="avtale-under" id="noAvtale"></p>
+        </div>
+        <div class="avtale-handlinger">
+          <button class="tilbake" id="noTilbake" type="button">&larr; Til avtalen</button>
+        </div>
+      </header>
+
+      <div class="no-typer" role="group" aria-label="Hvor oppgaven bor">
+        <button class="no-type" type="button" data-type="notat" data-plass="0" aria-pressed="false">
+          <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ikon-notat"/></svg>
+          <b>Notat</b><span>påminnelse til deg selv</span>
+        </button>
+        <button class="no-type" type="button" data-type="epost" data-plass="1" aria-pressed="false">
+          <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ikon-epost"/></svg>
+          <b>E-post</b><span>sendes nå, fra din Outlook</span>
+        </button>
+        <button class="no-type" type="button" data-type="mote" data-plass="2" aria-pressed="false">
+          <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ikon-mote"/></svg>
+          <b>Møte</b><span>innkalling i kalenderen</span>
+        </button>
+        <button class="no-type" type="button" data-type="planner" data-plass="3" aria-pressed="false">
+          <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ikon-planner"/></svg>
+          <b>Planner</b><span>inn i plan og bucket</span>
+        </button>
+        <button class="no-type" type="button" data-type="utsatt" data-plass="4" aria-pressed="false">
+          <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ikon-utsatt"/></svg>
+          <b>Utsatt e-post</b><span>sendes når triggeren slår til</span>
+        </button>
+      </div>
+
+      <!-- KI-kroken (skisse): leser avtaleteksten og foreslår gjøremålene
+           som betyr noe. Premisset er LUKKET kjøring: modellen bor i kundens
+           egen tenant (Azure OpenAI) eller lokalt, dokumentet hentes fra
+           arkivet ved behov og lagres aldri i Sigill. Se prosjektnotatet. -->
+      <div class="ki-rad">
+        <span class="ki-merke">KI · fra avtaleteksten (skisse)</span>
+        <span class="ki-forslag" id="kiForslagRot"></span>
+      </div>
+
+      <form class="no-skjema" id="noSkjema">
+        <div class="no-rad">
+          <label class="no-felt">
+            <span>Tittel</span>
+            <!-- Forslagene er vanlige oppfølgingsaktiviteter for valgt type —
+                 men feltet er fritekst; forslag er en snarvei, ikke en meny. -->
+            <div class="nedtrekk">
+              <input id="noTittel" type="text" placeholder="Hva skal gjøres?" autocomplete="off">
+              <ul class="nedtrekk-liste" hidden></ul>
+            </div>
+          </label>
+          <label class="no-felt" data-for="notat epost planner utsatt">
+            <span>Frist</span>
+            <input id="noFrist" type="date">
+          </label>
+          <label class="no-felt" data-for="mote" hidden>
+            <span>Tidspunkt</span>
+            <input id="noTid" type="datetime-local">
+          </label>
+        </div>
+
+        <label class="no-felt" data-for="epost mote utsatt" hidden>
+          <span>Til</span>
+          <!-- Rollehaverne og eieren først; skriv eller trykk pil ned, og
+               resten av organisasjonen kommer med. -->
+          <div class="nedtrekk">
+            <input id="noMottakere" type="text" autocomplete="off"
+                   placeholder="Navn eller e-post — rollehaverne først">
+            <ul class="nedtrekk-liste" hidden></ul>
+          </div>
+        </label>
+
+        <label class="no-felt" data-for="epost utsatt" hidden>
+          <span>Emne</span>
+          <input id="noEmne" type="text" autocomplete="off">
+        </label>
+
+        <label class="no-felt" data-for="epost mote utsatt" hidden>
+          <span>Melding</span>
+          <textarea id="noMelding" placeholder="Avtalens referanse følger med automatisk."></textarea>
+        </label>
+
+        <div class="no-rad" data-for="planner" hidden>
+          <label class="no-felt">
+            <span>Plan</span>
+            <div class="nedtrekk">
+              <input id="noPlan" class="nedtrekk-laast" type="text" readonly>
+              <svg class="ikon nedtrekk-pil" viewBox="0 0 24 24" aria-hidden="true">
+                <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+              </svg>
+              <ul class="nedtrekk-liste" hidden></ul>
+            </div>
+          </label>
+          <label class="no-felt">
+            <span>Bucket</span>
+            <div class="nedtrekk">
+              <input id="noBucket" class="nedtrekk-laast" type="text" readonly>
+              <svg class="ikon nedtrekk-pil" viewBox="0 0 24 24" aria-hidden="true">
+                <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+              </svg>
+              <ul class="nedtrekk-liste" hidden></ul>
+            </div>
+          </label>
+        </div>
+        <label class="no-felt" data-for="planner" hidden>
+          <span>Tildel</span>
+          <div class="nedtrekk">
+            <input id="noTildel" type="text" autocomplete="off"
+                   placeholder="Hvem får oppgaven — rollehaverne først">
+            <ul class="nedtrekk-liste" hidden></ul>
+          </div>
+        </label>
+        <p class="no-kilde" data-for="planner" hidden>
+          Planer, buckets og tildeling hentes fra Graph (/planner) når
+          M365-koblingen er på — nye kan opprettes rett herfra, uten omveien
+          om Power Apps.
+        </p>
+
+        <label class="no-felt" data-for="utsatt" hidden>
+          <span>Send når</span>
+          <div class="nedtrekk">
+            <input id="noTrigger" class="nedtrekk-laast" type="text" readonly>
+            <svg class="ikon nedtrekk-pil" viewBox="0 0 24 24" aria-hidden="true">
+              <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+            </svg>
+            <ul class="nedtrekk-liste" hidden></ul>
+          </div>
+        </label>
+
+        <div class="no-handling">
+          <button class="knapp knapp-ikon" data-stil="fylt" type="submit">
+            <svg class="ikon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ikon-ny-oppgave"/></svg>
+            Opprett
+          </button>
+          <p class="no-kilde">
+            Demo: oppgaven lagres i denne økta og legger seg i lista og på
+            oppgavelinja. Graph-koblingen gjør handlingene ekte.
+          </p>
+        </div>
+      </form>
+    </section>
+
+    <!-- ── Min side (S2.3, første steg) ─────────────────────────────────────
+         Nodene i margen er dørene hit; hvilken du trykket bestemmer åpen
+         fane. Alt som angår den påloggede: oppgavene og avtalene — som et
+         FILTER på registeret, aldri en silo. Én dør videre til Tavla. -->
+    <section class="meg" id="visMeg" hidden aria-label="Min side">
+      <header class="meg-topp">
+        <span class="meg-avatar" id="megAvatar" aria-hidden="true"></span>
+        <div>
+          <h1 class="avtale-navn" id="megNavn"></h1>
+          <p class="avtale-under" id="megUnder"></p>
+        </div>
+        <button class="tilbake" id="megTilTavla" type="button">Organisasjonen &rarr; Tavla</button>
+      </header>
+
+      <nav class="meg-faner" aria-label="Mine faner">
+        <button class="meg-fane" type="button" data-fane="oppgaver">Mine oppgaver</button>
+        <button class="meg-fane" type="button" data-fane="avtaler">Mine avtaler</button>
+      </nav>
+
+      <!-- Innkjøperens oversikt: organisasjonskartet fra avansert søk,
+           gjenbrukt med MINE avtaler talt per enhet — hvor mange jeg følger
+           opp, og hvor de bor. Klikk på en enhet filtrerer lista under.
+           Kollapsbart med husets chevron, som feltene på avtalekortet. -->
+      <section class="felt" id="feltMegKart" data-apen="true">
+        <h2 class="avtale-deltittel felt-h">
+          <!-- Symbolet, ikke ordet: org-kart-ikonet ER tittelen, chevronen
+               er bryteren — samme animasjon som feltene på avtalekortet. -->
+          <button class="felt-topp" type="button" aria-expanded="true" aria-controls="megKartKropp">
+            <svg class="ikon felt-org" viewBox="0 0 24 24" aria-hidden="true">
+              <g transform="rotate(-1.4 12 12)"><ellipse cx="12" cy="4.4" rx="2.7" ry="2.4" transform="rotate(-9 12 4.4)"/><ellipse cx="4.9" cy="19.6" rx="2.4" ry="2.6"/><ellipse cx="19.1" cy="19.4" rx="2.6" ry="2.3" transform="rotate(7 19.1 19.4)"/><path d="M12 6.9Q12.1 9 12 11M4.9 17Q4.8 13.9 5 10.9Q12 10.7 19 10.9Q19.2 14 19.1 17"/></g>
+            </svg>
+            <span class="kun-skjermleser">Organisasjonskartet</span>
+            <svg class="ikon felt-pil" viewBox="0 0 24 24" aria-hidden="true">
+              <g transform="rotate(-2 12 12)"><path d="M7.5 10Q11.8 13.9 12 14Q12.3 13.8 16.5 10.1"/></g>
+            </svg>
+          </button>
+        </h2>
+        <div class="felt-kropp" id="megKartKropp">
+          <div class="felt-indre">
+            <svg class="kart-svg meg-kart" id="megKartSvg" viewBox="0 0 1200 258"
+                 role="img" aria-label="Mine avtaler i organisasjonen"></svg>
+          </div>
+        </div>
+      </section>
+
+      <ul class="meg-liste" id="megListe"></ul>
     </section>
 
     <!-- Innstillinger. Viser HVOR kildene kobles på og hva de gir — ingen
@@ -1746,6 +2948,25 @@ body {
         </p>
       </article>
 
+      <!-- Etisk fokus: PÅ som standard. Ordet er valgt med vilje — etisk
+           handel har ikke monopol på definisjonen; fokuset er hensynene
+           institusjonen selv setter. -->
+      <article class="kobling">
+        <h2 class="kobling-navn">Etisk fokus</h2>
+        <div class="kobling-hoyre">
+          <div class="segment" id="etiskVelger" role="group" aria-label="Etisk fokus">
+            <button type="button" data-etisk="pa" aria-pressed="true">På</button>
+            <button type="button" data-etisk="av" aria-pressed="false">Av</button>
+          </div>
+        </div>
+        <p class="kobling-tekst">
+          Sigill spør om produksjonsrisiko på avtalene, foreslår kjerneoppgaver
+          som egenerklæring — med automatisk arkiveringsspørsmål når de lukkes —
+          og samler dokumentasjonen til redegjørelsen (åpenhetsloven §5, CSRD).
+          Kartleggingen av produksjonsland vises på Tavla.
+        </p>
+      </article>
+
       <div class="koblinger" id="koblinger"></div>
     </section>
 
@@ -1770,6 +2991,35 @@ body {
         <div class="kpi"><span class="kpi-tall" id="kpi90">–</span><span class="kpi-navn">Utløper neste 90 dager</span></div>
         <div class="kpi"><span class="kpi-tall">3</span><span class="kpi-navn">Over 80 % av avtaleverdi (skisse)</span></div>
       </div>
+
+      <!-- Utløpsoversikten som før lå på søkesiden: hvert merke er et utløp
+           de neste tolv månedene, seglrødt betyr under 90 dager. -->
+      <article class="kobling">
+        <h2 class="kobling-navn">Utløpshorisonten</h2>
+        <p class="kobling-tekst">
+          Alle løpende avtaler de neste tolv månedene — hvert merke er et
+          utløp, seglrødt betyr under 90 dager igjen.
+        </p>
+        <div class="tavle-horisont">
+          <div class="tavle-merker" id="tavleMerker"></div>
+          <div class="tavle-maneder" id="tavleManeder"></div>
+        </div>
+      </article>
+
+      <!-- Produksjonsland — følger Etisk fokus-togglen i Innstillinger.
+           Ærlig skisse: kartet skal vise hva institusjonen VET, og hva den
+           ennå ikke vet skal også synes. -->
+      <article class="kobling" id="tavleEtisk">
+        <h2 class="kobling-navn">Produksjonsland</h2>
+        <div class="kobling-hoyre"><span class="status">Skisse · Etisk fokus</span></div>
+        <p class="kobling-tekst">
+          Egenrapportert kartlegging av hvor det som kjøpes faktisk produseres —
+          visualisert som verdenskart her når feltene tas i bruk. Ærlig
+          merkelapp: tall langt ned i leverandørkjeden er ofte vasket eller
+          underrapportert, så kartet skiller «vet» fra «vet ikke» i stedet for
+          å late som alt er kartlagt. Underlaget samles til redegjørelsen.
+        </p>
+      </article>
 
       <article class="kobling">
         <h2 class="kobling-navn">Avtalevask</h2>
@@ -1861,9 +3111,17 @@ body {
     </section>
   </main>
 
-  <!-- Signaturen. Se docs/02-systemdesign.md#nettverksvisningen for veien videre. -->
-  <section class="horisont" aria-label="Avtaler som utløper de neste tolv månedene">
-    <div class="horisont-merker" id="merker"></div>
+  <!-- Signaturen. I hvile en tolvmånedersakse; pek på en avtale, og den blir
+       avtalens egen gantt. Oversikten over ALLE utløpene bor på Tavla. -->
+  <section class="horisont" aria-label="Tidslinje for avtalen du peker på">
+    <div class="horisont-merker" id="merker">
+      <div class="gantt" id="gantt" data-synlig="false" aria-hidden="true">
+        <span class="gantt-stolpe" id="ganttStolpe"></span>
+        <span class="gantt-idag" id="ganttIdag"></span>
+        <span class="gantt-etikett" id="ganttEtikett"></span>
+        <span class="gantt-dato" id="ganttDato" data-synlig="false"></span>
+      </div>
+    </div>
     <div class="horisont-maneder" id="maneder"></div>
   </section>
 
@@ -1899,6 +3157,16 @@ const KUNDE = {
      hvor mye plass ansiktet fyller, ikke hvor mye av personen som er med. */
   bilde: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCACAAIADASIAAhEBAxEB/8QAGwAAAQUBAQAAAAAAAAAAAAAABgIDBAUHAQD/xAA3EAACAQMCBAQFAAoCAwAAAAABAgMABBEFIQYSMUEiUWFxExQjMoEHFSQzQlKRscHRQ+Gh8PH/xAAZAQADAQEBAAAAAAAAAAAAAAACAwQBAAX/xAAgEQACAgIDAQEBAQAAAAAAAAAAAQIRAyESIjEEE0FR/9oADAMBAAIRAxEAPwC8ApYFcApwCsAPAV0Cu16uOo9iuHAGTVfqOr2+noTK45vLNCV5xbPK5EOFHYkULkkEothnc30FqvNLIqDzJqtHE9kSVDMw88UBXOoSzsJJJCxboSabi1HDYB8I9KBzYaxo0McR2KgZc5NSIdesZek6/k0GWTW94QpUB/WnLnTDETgEZ3DLXc2b+aNAiljmQNGwYelOctZ7p91d2E4MUhI6lD0PtRvp+ox38WR4ZB9ymijNMXKFErlpJWnsVwrRgkcrSStPldqQy7VpghaWKSKWKEI9mqDiHiKLSYCqspmI6HtVveziC1kk/lWsX1q8kv8AVJDIx5VOW9KCUq0HGNjt1qlxqNwZZJDysdie9cKOuGzkDqM0iztGumDbgD7fSiS04dik8ZLZ96S5pFMMbfhSTIXtYym5GxHrn/VQSzREDk/Jo7XhoJ9nQ9jSJuDzOhIIG3SsWVB/hIE7O/5JBlyDntWg6NLHqVoIpCC38LCs61HR5dLuSr55SdmFFXCkrJKiMcA9fL3Fa3/gDi16EE+jAkr0YHcj+4p2zt57OYMw8Q7/AMwokWLnWORh6HHnTnycboIyPF1T18xQgsbjIeMMO9KI9KXBFiIjG6nBr2Kqg7RPJUxkrvSGWnyPSmytECyMvSlZpsGlZrDip4jnWDRrhicZWsZ5/mLnkH8bZP8AitN46uvh6VLHnqprK9GPxdSJP821Klux0F4GtjCsaqAOgoosACB5UPWqkkYz60R6cDyDao5s9DGi8jVeQZqXFEDHuKiRxkqvkKnwbjBP4pQ4odc4fjvoH8ODihzQbX4c8ti+0yeKI9Nx2/pWorCrREUB8R236t1WK9jGOVgc06Eq0JyQtBhos63liyMPGnhcd6nxqXgx/wAke49xVHodxHFqiOu8N2mR79f90SyR/CuUYdG2PvTSR+kW3ZXmdgPDIOYDyPQimnXlcin2C290qdAWJFeuE8YPnTsTEZERCKQVp8ikEU4WVSnal52ppTS84U0Jxnv6QJiYZFHlQJw7bytdPKEPKvQ42zRjxZcFr3ICnfGGGRXobMjT1S3RQwGQANqn5aZXGPg9bfBiiz8w0co7uNjVlpuuGO4EVyFw32yIcig6SPV4H+LzlnH2j+EfjvTlqt2tvI1yoaQjmHID170LxpocsjT8NhsZlmhUd8bVKgKx7sRnvQLwndXM4P7YQR9qOoP+qsNUvLuJ5Fa7tjnJwUZRnyzk70jiUKerDxbm0EY+vHzeWaoOJbWHULF1UgtjIoFtuJrW2mWK5jgEsjYBCsc/1FaHY3EF7pkbyW4+GyeCRMEfgjaulFrdGRkm6sFeHr15dJeMn9ospcj2rSo5lvNPSVTuMEVkkM66TxvJbO30rgYPkc1ofD11yRzWjnLR7b+n/wBpiZNkjTJWsMYzDKPP/FSJD8SGOQdCKa1jElrGO4Ncs2+JpURPYY/xR4pdhGRdTjCm2FOmkEVYTlEppbH6be1MKadzlCPSgNMt4nJE7N5Gr/Sxz/DfGzAGqHiocrvt3qx0u7aJIyuCpUHBqN+F+P0v7+zikhLcgDefnQbcCcXjopIUDGBtnO2P71eavrzRQFIl+pj3xULQbWW7u0aVuYNg71kbSsdNKToKtI0gW/DxnSMrKg5wQN8inbqwa80aL6TMw2kZgVJbufyaMbe2iTT44guVKENiqx7yG2tVF0GHK3IxPb1PvS22hvFMze44Xa5dFkY4jOUz1H5FFvC5l0qF7OR8wMcqOoX/ANO9WyWUEsvNEQytuCKtItMiQcwXxetEs0qAeGFmS8SQyw6la307AuZMZQEA7470b6ReYvoJc/vY+V/cVT/pBslYWxUY+psK9pkpEseD0f8AuKHnasGcKdB3dSmQwJ/MAae00Y00jyJFVyyc0lpnrirWwUrYuD5k0eJ9kS5F1OEUginMUg16JGDCGnlO1RUNSFNAaZ5xfDgyHG2SKZ0MfMiJM7FB/qrfjCHmhkI86H+EpsOgPVJCv9d6kkvS7E/BWpSxWl+befw858LHoatNAaa1vkMY54z0A7VF4itFvHc8uSrZHpVrw9DptzBGt6JrOdckzRnwt5V2uI5Xys0awu7mW3SNYiANyT0rmpWZurd1mRW5lwcCmtMswtpFINfQgrkhgD296h6nqOoRKIbGSK8uWxgCPCjzyc+VL4sZyT8KTS7m40/UmspnIUHwE9xRyl59AZx06+dAsttqN9qqQ3EcSzRkMWjzgCiP9yuXbCRr4iaVPQxbQPcU3KXOopEcfSQtg9yf+v71D0hS06r2Jqhkun1fW57xd4mfljPpn/r/AM0X8PWw+aDOOgzWPqqFN3svHPJqNrF3UVfWo5bV/eheKY3PELP/AAqwAopj8MHL507ArmS5tREGuEV2uGvSIQQQ0+hqIjVIQ0BpTcT2vxrQBRkt1oWtdFudIPzWMxPhhitElgWdOVhkVIit4/lxC6hlxjBHalPHbY6OTikBCQfM8zDqWzVxp2nALylSM9cUm6086Zd4UEwOfAfL0NXelyxq6gkVPK46PRwtNckT7LS4jbqjDIHpVvDZw2yYjQA+fenFkhVF5AMmuPcxpsCCaCTaQblJ+kCO1CXUswXxPt+KF+OLx7fSZbW2yZJSEJHr2omub8Qrhd3bvVBdWXzgzIM4bmJPakXuzX4C/D+lfBiQH7U3J8zRjZD5Wzmmxuw5V9qp4riG4u1s7Mj4cZ+o4Per6KP5qIKowi7D2rptrbErekM6NAfmVYjfGTRQegqt0235WaTGBnarI1d8kOvJkX0yuVHKSaVSTVhMBSGn0NQ0apCNQGkxDUlDUJG716S+SHYeJvSuujask31zbW1lJLd8vwlG4bvQfpupSS3vImApJ5M9h5VJ4hNxqWkzKmSw3VR3xVHo0ii/ty+wY1NllZX86cQ4/Wt1Hyq6eEHBOe1ES28b2ySKxbmGaqHs8xHlYMCMipWhXJksXt2+6JiPxUcnZckx82PPIGbem9UtR8hJGnh5huatAVROZyBjzqJcwXeokRWtu7q3VzsoHvQJNvR0ml6Z7o8BsrgwMwWNzzO56tvsBWk2WmOtqq8hHN1OOgqVpnCdnp8i32olJbhfsGNl9h/mrWa8Ep5UXlQdBT/x5O2SSypaiVbwmIhEQY96QwwMnIqcwJqPJGWqmMnFUiaSTIpYeYrmfKkvaO52p6LTDgEsc0xZX/UBwP/Z'
 };
+
+/* Presentasjonens tre stoler — velges i Om-vinduet, og hele appen ser
+   registeret fra den valgte stolen. Bildene for de to siste kommer;
+   initialer til da. */
+const PROFILER = [
+  { navn: 'Marit Aasen',     rolle: 'Avtaleforvalter',           enhet: 'Økonomiavdelingen',  bilde: KUNDE.bilde },
+  { navn: 'Ingrid Salvesen', rolle: 'Innkjøper · administrator', enhet: 'Økonomiavdelingen',  bilde: null },
+  { navn: 'Nora Falkberg',   rolle: 'Avtaleeier',                enhet: 'Eiendomsavdelingen', bilde: null },
+];
+let aktivProfil = PROFILER[0];
 
 /* Forvalterne. Marit er brukeren; de tre andre finnes for at kartet skal ha
    noe å vise: en avtale EIES av enheten som bruker den, men FORVALTES ofte
@@ -1966,6 +3234,18 @@ const MOCK = [
   ['2024/1276', 'Språkvask og oversettelse',            'Amesto Translations',   '2027-05-15', 'Fellesadministrasjonen'],
   ['2022/0299', 'Grafisk design og profil',             'Tibe',                  '2026-09-01', 'Fellesadministrasjonen'],
   ['2025/0067', 'Medisinsk forbruksmateriell',          'OneMed',                '2027-06-15', 'Fakultet for helse'],
+  /* Lange avtaler med egen startdato (sjette felt): her er vi IKKE inne i
+     siste periode ennå, så gantten får vist utgåtte år (grå striper),
+     pågående år (grønt) og kommende opsjonsår (gult) samtidig. */
+  ['2025/0489', 'Rammeavtale konsulenttjenester',       'Sopra Steria',          '2029-06-30', 'IT-avdelingen',          '2025-07-01'],
+  ['2026/0031', 'Multifunksjonsskrivere med service',   'Canon Norge',           '2030-01-31', 'Fellesadministrasjonen', '2026-02-01'],
+  ['2024/0977', 'Energioppfølging og EOS-system',       'Kiona',                 '2028-12-31', 'Eiendomsavdelingen',     '2024-01-01'],
+  ['2026/0088', 'Læringsplattform LMS',                 'Instructure',           '2029-07-31', 'Universitetsbiblioteket','2026-08-01'],
+  /* Avtalefamilie: rammeavtalen 2025/0312 (Atea) har to avrop. Det høye
+     forbruket på 2025/0313 (sjuende felt = brukt-prosent) forklares av
+     føring på tvers av familien — det er Spend-tommelfingerregelen i demo. */
+  ['2025/0313', 'Avrop lagringsløsning og backup',      'Atea',                  '2027-08-31', 'IT-avdelingen',          '2025-09-01', 88],
+  ['2025/0314', 'Avrop AV-utstyr møterom',              'Atea',                  '2027-08-31', 'IT-avdelingen',          '2026-01-15', 46],
   /* Utgåtte. De ligger i registeret fordi de fortsatt kan bli spurt om — hva
      kjøpte vi i fjor, hvem leverte, hva sto det i avtalen. De vises bare når
      brukeren ber om dem. */
@@ -1973,7 +3253,7 @@ const MOCK = [
   ['2021/0114', 'Lisens Zoom',                          'Zoom Video',            '2026-03-31', 'IT-avdelingen'],
   ['2019/0902', 'Vaktmestertjenester campus',           'Coor',                  '2026-06-30', 'Eiendomsavdelingen'],
   ['2020/0388', 'Kopipapir og rekvisita',               'Staples Norge',         '2026-07-31', 'Fellesadministrasjonen'],
-].map(([ref, navn, leverandor, slutt, enhet], i) => ({
+].map(([ref, navn, leverandor, slutt, enhet, start, bruktPct], i) => ({
   id: 'a' + (i + 1), ref, navn, leverandor, enhet,
   slutt: new Date(slutt + 'T00:00:00'),
   /* Hvem forvalter hva. Deterministisk i demoen, kommer fra Rolle-tabellen i
@@ -1982,10 +3262,18 @@ const MOCK = [
   forvalter: FORVALTERE[i % 3 === 0 ? 0 : 1 + (Math.floor(i / 3) % 3)],
   eier: { navn: EIERE[enhet], enhet },
   administrator: ADMINISTRATORER[i % 2],
-  /* Deterministisk demoverdi og -start; fra registeret i produksjon. */
+  /* Deterministisk demoverdi; fra registeret i produksjon. Start kan settes
+     eksplisitt (sjette felt) — ellers regnes 2–4 år bakover fra slutt. */
   verdi: 240000 + (i * 137549) % 4600000,
-  start: new Date(new Date(slutt + 'T00:00:00').setFullYear(
-         new Date(slutt).getFullYear() - 2 - (i % 3)))
+  start: start ? new Date(start + 'T00:00:00')
+       : new Date(new Date(slutt + 'T00:00:00').setFullYear(
+         new Date(slutt).getFullYear() - 2 - (i % 3))),
+  /* Forbruk mot verdi (fra økonomisystemet i produksjon). Sjuende felt
+     overstyrer; ellers deterministisk 35–96 % — noen avtaler har dermed
+     krysset 80-prosentterskelen. Kjøp etter utløp: et par av de utgåtte. */
+  brukt: Math.round((240000 + (i * 137549) % 4600000) *
+         ((bruktPct ?? (35 + (i * 29) % 62)) / 100)),
+  kjopEtterUtlop: i % 2 === 0 && new Date(slutt + 'T00:00:00') < new Date()
 }));
 
 /* ── Organisasjonen ───────────────────────────────────────────────────────
@@ -2060,11 +3348,11 @@ const Data = {
   hentAvtaler() { return Promise.resolve(MOCK); },
   hentKoblinger() { return Promise.resolve(KOBLINGER); },
 
-  /* Tallene bak brukerens bane. Avtaler er de jeg forvalter; oppgaver er de av
-     dem som krever noe innen fire måneder — altså regnet ut, ikke funnet på. */
+  /* Tallene bak brukerens bane. Avtaler er de den AKTIVE profilen har rolle
+     i; oppgaver er de som krever noe innen fire måneder — regnet ut. */
   hentMineTall() {
     const naa = new Date();
-    const mine = MOCK.filter(a => a.minAvtale && a.slutt >= naa);
+    const mine = personRoller(aktivProfil.navn).avtaler.filter(a => a.slutt >= naa);
     const grense = new Date();
     grense.setMonth(grense.getMonth() + 4);
     return Promise.resolve({
@@ -2084,18 +3372,15 @@ const Data = {
     return Promise.resolve(k);
   },
 
-  /* Hvem er pålogget. I demoen er dette mock-data som alltid finnes; i
-     produksjon kommer navn, rolle og avdeling fra Entra ID, og bildet fra
-     Graph (/users/{id}/photo/$value). */
+  /* Hvem er pålogget: den aktive profilen fra Om-vinduet. I produksjon
+     kommer navn, rolle og avdeling fra Entra ID, og bildet fra Graph
+     (/users/{id}/photo/$value); null bilde faller pent tilbake på initialer. */
   hentPaloggetBruker() {
     return Promise.resolve({
-      navn: KUNDE.bruker,
-      rolle: KUNDE.rolle,
-      enhet: KUNDE.enhet,
-      /* I produksjon: GET /users/{id}/photo/$value → blob → objectURL.
-         I demoen: KUNDE.bilde. Er den null, faller visningen tilbake på
-         initialer — og det skal skje pent, ikke som en tom sirkel. */
-      bildeUrl: KUNDE.bilde
+      navn: aktivProfil.navn,
+      rolle: aktivProfil.rolle,
+      enhet: aktivProfil.enhet,
+      bildeUrl: aktivProfil.bilde
     });
   },
 
@@ -2164,7 +3449,6 @@ const IDAG = new Date();
 const VINDU_MND = 12;                    /* horisonten dekker tolv måneder fram */
 const HASTER_DAGER = 90;                 /* under tre måneder igjen = seglrødt */
 
-let valgtId = null;                      /* avtalen som lyser på horisonten */
 let aktivRad = -1;                        /* tastaturvalg i trefflista */
 
 const dagerTil  = d => Math.round((d - IDAG) / 86400000);
@@ -2383,8 +3667,13 @@ function visVisning(navn) {
   document.querySelector('.scene').dataset.visning = navn;
   el('visInnstillinger').hidden = navn !== 'innstillinger';
   el('visAvtale').hidden = navn !== 'avtale';
+  el('visNyOppgave').hidden = navn !== 'nyoppgave';
+  el('visMeg').hidden = navn !== 'meg';
   el('visTavle').hidden = navn !== 'tavle';
   el('visSam').hidden = navn !== 'sam';
+
+  /* Personen står på flaten når Min side er åpen — margen viker. */
+  el('railBruker').dataset.flyttet = String(navn === 'meg');
   document.querySelector('.sok-blokk').hidden = navn !== 'hjem';
   /* Kartet følger søkesiden — går du til Innstillinger, venter det på deg. */
   el('kart').hidden = navn !== 'hjem' || !kartModus;
@@ -2395,7 +3684,34 @@ function visVisning(navn) {
     else l.removeAttribute('aria-current');
   });
 
+  /* Gantten på horisonten tilhører avtalekortet (og Ny oppgave-siden, som
+     springer ut fra det) pluss hover — andre skjermbytter nullstiller den. */
+  if (navn !== 'avtale' && navn !== 'nyoppgave') visGantt(null);
+
+  /* Horisonten finnes der én avtale kan være i fokus: søket (begge moduser),
+     avtalekortet, Ny oppgave — og Min side, der hover på radene spoler den.
+     Oversiktene har sin egen utgave på Tavla. */
+  document.querySelector('.horisont').hidden =
+    !['hjem', 'avtale', 'nyoppgave', 'meg'].includes(navn);
+
+  oppdaterSti();
   if (navn === 'hjem') el('sok').focus();
+}
+
+/* Stien i topplinja. På søkesiden: søkeparet, med aktiv modus i blekk.
+   Ellers: navnet på skjermen du står i. */
+const STI_NAVN = { avtale: 'Avtale', nyoppgave: 'Avtale \\ Ny oppgave', meg: 'Min side',
+                   tavle: 'Tavla', innstillinger: 'Innstillinger', sam: 'SAM' };
+
+function oppdaterSti() {
+  const visning = document.querySelector('.scene').dataset.visning;
+  const paSok = visning === 'hjem';
+  el('stiSok').hidden = !paSok;
+  el('stiAvansert').hidden = !paSok;
+  el('stiSok').dataset.aktiv = String(paSok && !kartModus);
+  el('stiAvansert').dataset.aktiv = String(paSok && kartModus);
+  el('stiVisning').hidden = paSok;
+  el('stiVisning').textContent = STI_NAVN[visning] || '';
 }
 
 /* ── Koblingene (innstillinger) ───────────────────────────────────────────*/
@@ -2698,11 +4014,13 @@ function tegnGalleri() {
       valgtKortId = a.id;
       lysRoller(a);
       settKartStatus(liste.length);
+      visGantt(a);
     });
     rad.addEventListener('mouseleave', () => {
       valgtKortId = null;
       lysRoller(null);
       settKartStatus(liste.length);
+      visGantt(null);
     });
     rad.addEventListener('click', () => visAvtaleKort(a));
     galleri.appendChild(rad);
@@ -2758,6 +4076,7 @@ function vekselKart() {
   } else {
     kjorSok();
   }
+  oppdaterSti();
 }
 
 /* ── Avtalekortet ─────────────────────────────────────────────────────────
@@ -2765,17 +4084,95 @@ function vekselKart() {
    ærlige plassholdere til kilden er koblet på — de SIER at de er det. */
 let apenAvtale = null;
 
-const norskKr = v => v.toLocaleString('nb-NO') + ' kr';
-
 function oppgaverFor(a) {
   /* Deterministisk demoliste forankret i sluttdatoen — samme logikk som en
-     ekte oppfølgingsplan: møte, protokoll, prolongeringsvurdering. */
+     ekte oppfølgingsplan: varsel, møte, protokoll, forlengelsesvurdering.
+     `type` er oppgavens Outlook-hjem og bestemmer ikonet på oppgavelinja. */
   const fristDato = dagerFor => new Date(a.slutt - dagerFor * 86400000);
   return [
-    { tekst: 'Kalle inn til leverandørmøte',           frist: fristDato(170) },
-    { tekst: 'Skrive protokoll og arkivere i P360',    frist: fristDato(150) },
-    { tekst: 'Vurdere prolongering eller ny utlysning', frist: fristDato(90) },
+    { tekst: 'Varsle eier om utløpet',                  type: 'epost',   frist: fristDato(200) },
+    { tekst: 'Kalle inn til leverandørmøte',            type: 'mote',    frist: fristDato(170) },
+    { tekst: 'Skrive protokoll og arkivere i P360',     type: 'notat',   frist: fristDato(150) },
+    { tekst: 'Vurdere forlengelse eller ny utlysning',  type: 'planner', frist: fristDato(90) },
   ].map(o => ({ ...o, gjort: o.frist < IDAG }));
+}
+
+/* Ikonet for hver oppgavetype — Outlook-familien i ikonkilden øverst. */
+const OPPGAVE_IKON = { epost: 'ikon-epost', mote: 'ikon-mote', notat: 'ikon-notat',
+                       planner: 'ikon-planner', utsatt: 'ikon-utsatt' };
+
+/* Et lite <svg><use> mot ikonkilden — samme håndgrep overalt. */
+function ikonSvg(id) {
+  const svg = document.createElementNS(SVGNS, 'svg');
+  svg.setAttribute('class', 'ikon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  const bruk = document.createElementNS(SVGNS, 'use');
+  bruk.setAttribute('href', '#' + id);
+  svg.appendChild(bruk);
+  return svg;
+}
+
+/* Oppgaver brukeren oppretter i økta, per avtale-id. Demo-hukommelse: i
+   produksjon bor dette i registeret (og handlingene går via Graph). */
+const EKSTRA_OPPGAVER = {};
+
+/* Saksnummeret som attesterte protokollen, per avtale-id. Manuell attest
+   til arkivet får API (P360) — da byttes feltet mot et oppslag. */
+const PROTOKOLL = {};
+
+/* Notatene på avtalekortet, per avtale-id: {tekst, syn, tid}. Et notat er
+   GJORT idet det er lagret — teksten er leveransen (se prosjektnotatet). */
+const NOTATER = {};
+let notatSyn = 'egne';
+
+/* Etisk fokus (Innstillinger, PÅ som standard): produksjonsrisiko per
+   avtale, foreslåtte kjerneoppgaver som egenerklæring, kartlegging på
+   Tavla. Risikoen er egenvurdert — Sigill spør, institusjonen svarer. */
+let etiskFokus = true;
+const RISIKO = {};                       /* per avtale-id: valgt risikonivå */
+const RISIKO_VALG = ['Ikke vurdert', 'Lav', 'Forhøyet', 'Høy (DFØs høyrisikoliste)'];
+
+/* Lyser en oppgave i BEGGE visninger samtidig: raden i lista og merket på
+   oppgavelinja deler data-oppgave-nummer, så én spørring treffer begge. */
+function lysOppgave(k, paa) {
+  document.querySelectorAll(`[data-oppgave="${k}"]`)
+    .forEach(e => { e.dataset.lys = String(paa); });
+}
+
+/* Oppgavelinja: avtalens egen tidsserie fra start til slutt. Aksen deles
+   dynamisk etter lengden (samme månedslogikk som horisonten), og hver frist
+   står som sitt Outlook-hjem med en tynn strek ned til datoen. */
+function tegnOppgaveLinje(a, oppgaver) {
+  const rot = el('avOppgaveLinje');
+  rot.innerHTML = '';
+  const lengde = a.slutt - a.start;
+  const vindu = { start: a.start.getTime() - lengde * .03,
+                  slutt: a.slutt.getTime() + lengde * .05 };
+
+  const maneder = document.createElement('div');
+  maneder.className = 'ol-maneder';
+  rot.appendChild(maneder);
+  tegnManeder(vindu, maneder);
+
+  oppgaver.forEach((o, k) => {
+    if (o.barn) return;      /* kjedebarn er et ledd i lista, ikke en frist */
+    const andel = klem(vinduAndel(o.frist.getTime(), vindu), 0, 1);
+    const merke = document.createElement('span');
+    merke.className = 'ol-merke';
+    merke.dataset.oppgave = k;
+    merke.dataset.niva = String(k % 2);
+    if (o.gjort) merke.dataset.gjort = 'true';
+    merke.style.left = `${(andel * 100).toFixed(2)}%`;
+    merke.title = `${o.tekst} · ${norskDato(o.frist)}`;
+
+    const strek = document.createElement('span');
+    strek.className = 'ol-strek';
+    merke.append(ikonSvg(OPPGAVE_IKON[o.type]), strek);
+
+    merke.addEventListener('mouseenter', () => lysOppgave(k, true));
+    merke.addEventListener('mouseleave', () => lysOppgave(k, false));
+    rot.appendChild(merke);
+  });
 }
 
 function visAvtaleKort(a) {
@@ -2783,7 +4180,6 @@ function visAvtaleKort(a) {
   el('avRef').textContent = a.ref;
   el('avNavn').textContent = a.navn;
   el('avUnder').textContent = `${a.leverandor} · ${a.enhet}`;
-  el('avVerdi').textContent = norskKr(a.verdi);
   el('avStart').textContent = norskDato(a.start);
   el('avSlutt').textContent = norskDato(a.slutt);
 
@@ -2791,6 +4187,44 @@ function visAvtaleKort(a) {
   const avDager = el('avDager');
   avDager.textContent = dager < 0 ? 'Utløpt' : `${dager} dager`;
   avDager.dataset.haster = String(dager >= 0 && dager <= HASTER_DAGER);
+
+  /* ── Nøkkeltall: terskler før tall ──────────────────────────────────────
+     Forbruket vises som «brukt av verdi». Krysses en terskel, står varselet
+     som chip i tittelen — utenfor kollapsen. Forklaringen følger Spend-
+     arbeidets tommelfingerregel: finnes andre avtaler med samme leverandør,
+     kan føringen ligge der; finnes ingen, må forbruket reelt sjekkes. */
+  const soster = MOCK.filter(x => x.leverandor === a.leverandor && x.id !== a.id);
+  const andelBrukt = a.brukt / a.verdi;
+  el('avBrukt').textContent =
+    `${a.brukt.toLocaleString('nb-NO')} av ${a.verdi.toLocaleString('nb-NO')} kr`;
+
+  const varsler = [];
+  if (andelBrukt >= 0.8) varsler.push(`! ${Math.round(andelBrukt * 100)} % brukt`);
+  if (a.kjopEtterUtlop) varsler.push('! kjøp etter utløp');
+  el('avVarsler').replaceChildren(...varsler.map(tekst => {
+    const chip = document.createElement('span');
+    chip.className = 'varsel';
+    chip.textContent = tekst;
+    return chip;
+  }));
+
+  const note = el('avForbrukNote');
+  note.hidden = andelBrukt < 0.8;
+  if (!note.hidden) {
+    if (soster.length) {
+      note.dataset.alvor = 'false';
+      note.textContent = `Høyt forbruk kan skyldes føring på tvers av ` +
+                         `${soster.length + 1} avtaler med ${a.leverandor}.`;
+    } else {
+      note.dataset.alvor = 'true';
+      note.textContent = 'Ingen andre avtaler med leverandøren — forbruket bør sjekkes reelt.';
+    }
+  }
+
+  /* Kollapsene nullstilles per kort: nøkkeltall lukket, resten åpne. */
+  settFelt('feltNokkel', false);
+  settFelt('feltLev', true);
+  settFelt('feltBesk', true);
 
   /* Rollene: person, rolle, fargeprikk — og hele raden er en dør. */
   const roller = el('avRoller');
@@ -2801,10 +4235,14 @@ function visAvtaleKort(a) {
     rad.type = 'button';
     rad.className = 'rolle-rad';
     rad.dataset.rolle = rolle;
-    const prikk = document.createElement('span'); prikk.className = 'rolle-prikk';
+    /* Initialer i ring nå; fotografiet fra Entra tar samme plass senere. */
+    const avatar = document.createElement('span');
+    avatar.className = 'rolle-avatar';
+    const ledd = navn.split(/\s+/);
+    avatar.textContent = (ledd[0][0] + ledd[ledd.length - 1][0]).toUpperCase();
     const hvem = document.createElement('span'); hvem.textContent = navn;
     const hva = document.createElement('span'); hva.className = 'rolle-hva'; hva.textContent = tittel;
-    rad.append(prikk, hvem, hva);
+    rad.append(avatar, hvem, hva);
     rad.addEventListener('click', () => apnePersonkort(navn));
     roller.appendChild(rad);
   });
@@ -2827,9 +4265,23 @@ function visAvtaleKort(a) {
     `${a.navn} med ${a.leverandor} for ${a.enhet}. Beskrivelsen hentes fra ` +
     `kildesystemet når koblingen er på — dette er plassen dens.`;
 
-  const oppgaver = el('avOppgaver');
-  oppgaver.innerHTML = '';
-  oppgaverFor(a).forEach(o => {
+  const oppgaveRot = el('avOppgaver');
+  oppgaveRot.innerHTML = '';
+  /* Grunnplanen + det brukeren selv har opprettet i økta, i fristrekkefølge.
+     Kjeden: et holdt møte føder «Protokollført?» med innrykk rett under seg
+     — den bærer saksnummerfeltet som attest til arkiv-API-et kommer. */
+  const oppgaver = [];
+  [...oppgaverFor(a), ...(EKSTRA_OPPGAVER[a.id] || [])]
+    .sort((x, y) => x.frist - y.frist)
+    .forEach(o => {
+      oppgaver.push(o);
+      if (o.type === 'mote' && o.gjort) {
+        oppgaver.push({ barn: true, tekst: 'Protokollført?', type: 'notat',
+                        frist: o.frist, gjort: !!PROTOKOLL[a.id] });
+      }
+    });
+
+  oppgaver.forEach((o, k) => {
     const li = document.createElement('li');
     li.className = 'oppgave';
     li.dataset.gjort = String(o.gjort);
@@ -2839,26 +4291,60 @@ function visAvtaleKort(a) {
     const tekst = document.createElement('span');
     tekst.className = 'oppgave-tekst';
     tekst.textContent = o.tekst;
-    const frist = document.createElement('span');
-    frist.className = 'oppgave-frist';
-    frist.textContent = o.gjort ? 'gjort' : 'frist ' + norskDato(o.frist);
-    if (!o.gjort && dagerTil(o.frist) <= 30) frist.dataset.haster = 'true';
-    li.append(hake, tekst, frist);
-    oppgaver.appendChild(li);
-  });
+    li.append(hake, tekst);
 
-  /* «Samme leverandør» er avtalefamilien i praksis for et register uten
-     hierarkifelt: den svarer på spørsmålet folk faktisk stiller. */
+    if (o.barn) {
+      /* Protokolloppgaven: saksnr. inn = attestert; vises deretter. */
+      li.dataset.barn = 'true';
+      if (o.gjort) {
+        const vist = document.createElement('span');
+        vist.className = 'saksnr-vist';
+        vist.textContent = 'arkivert · ' + PROTOKOLL[a.id];
+        li.appendChild(vist);
+      } else {
+        const felt = document.createElement('input');
+        felt.className = 'saksnr-felt';
+        felt.placeholder = 'saksnr. i P360';
+        felt.setAttribute('aria-label', 'Saksnummer som protokollfører møtet');
+        felt.addEventListener('keydown', ev => {
+          if (ev.key === 'Enter' && ev.target.value.trim()) {
+            PROTOKOLL[a.id] = ev.target.value.trim();
+            visAvtaleKort(a);
+          }
+        });
+        li.appendChild(felt);
+      }
+    } else {
+      const frist = document.createElement('span');
+      frist.className = 'oppgave-frist';
+      /* Møtet auto-lukkes av kalenderen: det er «holdt», ikke «gjort». */
+      frist.textContent = o.gjort ? (o.type === 'mote' ? 'holdt' : 'gjort')
+                                  : 'frist ' + norskDato(o.frist);
+      if (!o.gjort && dagerTil(o.frist) <= 30) frist.dataset.haster = 'true';
+      li.appendChild(frist);
+      li.dataset.oppgave = k;
+      /* Raden og merket på linja lyser i takt — begge veier. */
+      li.addEventListener('mouseenter', () => lysOppgave(k, true));
+      li.addEventListener('mouseleave', () => lysOppgave(k, false));
+    }
+    oppgaveRot.appendChild(li);
+  });
+  tegnOppgaveLinje(a, oppgaver);
+  tegnNotater();
+  settFelt('feltNotater', true);
+
+  /* Familien bor under Leverandør: i dag er den «andre avtaler med samme
+     leverandør». Når datamodellen får ramme/avrop-hierarkiet, blir dette
+     barna til en rammeavtale og søsknene til en avropsavtale — knappen og
+     lista er de samme. Uten familie er knappen inaktiv og sier hvorfor. */
+  const famKnapp = el('avFamilieKnapp');
   const familie = el('avFamilie');
   familie.innerHTML = '';
-  const soster = MOCK.filter(x => x.leverandor === a.leverandor && x.id !== a.id);
-  if (!soster.length) {
-    const tom = document.createElement('li');
-    tom.className = 'familie-rad';
-    tom.style.cursor = 'default';
-    tom.textContent = 'Ingen andre avtaler med denne leverandøren.';
-    familie.appendChild(tom);
-  }
+  familie.hidden = true;
+  famKnapp.setAttribute('aria-expanded', 'false');
+  famKnapp.disabled = !soster.length;
+  famKnapp.textContent = soster.length ? `Familie · ${soster.length}` : 'Familie';
+  el('avFamilieTom').hidden = !!soster.length;
   soster.forEach(x => {
     const li = document.createElement('li');
     li.className = 'familie-rad';
@@ -2869,10 +4355,26 @@ function visAvtaleKort(a) {
     familie.appendChild(li);
   });
 
+  /* Samfunnshensyn — finnes bare når Etisk fokus er på. Høy risiko står
+     som chip i tittelen, utenfor kollapsen, som de andre tersklene. */
+  el('feltEtisk').hidden = !etiskFokus;
+  if (etiskFokus) {
+    el('avRisiko').value = RISIKO[a.id] || RISIKO_VALG[0];
+    const varselRot = el('avEtiskVarsel');
+    varselRot.replaceChildren();
+    if ((RISIKO[a.id] || '').startsWith('Høy')) {
+      const chip = document.createElement('span');
+      chip.className = 'varsel';
+      chip.textContent = '! høy risiko';
+      varselRot.appendChild(chip);
+    }
+    settFelt('feltEtisk', true);
+  }
+
   el('avtaleHint').textContent = '';
-  velg(a);                       /* horisonten husker hvor du var */
   tegnTreff([], '');             /* trefflista skal ikke ligge over kortet */
   visVisning('avtale');
+  visGantt(a);                   /* horisonten viser avtalens hele levetid */
 }
 
 /* ── Personkortet ─────────────────────────────────────────────────────────
@@ -2974,74 +4476,377 @@ function vekslePanel() {
      containeren, så de følger bredden av seg selv når flata skyves. */
 }
 
-/* ── Horisonten ───────────────────────────────────────────────────────────
-   Plasserer hver avtale langs tolv måneder. Avtaler som ligger utenfor
-   vinduet tegnes ikke — horisonten er en kommende-oversikt, ikke et arkiv. */
-function andelAvVinduet(dato) {
-  const start = IDAG.getTime();
-  const slutt = new Date(IDAG.getFullYear(), IDAG.getMonth() + VINDU_MND, IDAG.getDate()).getTime();
-  return (dato.getTime() - start) / (slutt - start);
+/* ── Horisonten / gantten ─────────────────────────────────────────────────
+   I hvile: en rolig tolvmånedersakse uten merker — vidden, ikke dataene.
+   Pek på en avtale i trefflista eller galleriet, og aksen spoler seg om til
+   akkurat dens levetid: vinduet strekker seg bakover til avtalens start,
+   stolpen deles i avtaleår, og «i dag» tegnes inn. Fordi stolpen er SAMME
+   element hele tiden, glir den til neste avtale i stedet for å hoppe.
+   Oversikten over alle utløpene bor på Tavla (tegnTavleHorisont). */
+function standardVindu() {
+  return {
+    start: IDAG.getTime(),
+    slutt: new Date(IDAG.getFullYear(), IDAG.getMonth() + VINDU_MND, IDAG.getDate()).getTime()
+  };
+}
+const vinduAndel = (t, vindu) => (t - vindu.start) / (vindu.slutt - vindu.start);
+
+let ganttAvtale = null;                  /* avtalen aksen viser, null = hvile */
+
+/* Vinduet rundt én avtale: hele levetiden pluss litt luft i endene. Løper
+   avtalen fortsatt, strekkes vinduet fram til i dag, så nålinja alltid er
+   med i bildet. */
+function ganttVindu(a) {
+  const fra = Math.min(a.start.getTime(), IDAG.getTime());
+  const til = Math.max(a.slutt.getTime(), IDAG.getTime());
+  const lengde = til - fra;
+  return { start: fra - lengde * 0.06, slutt: til + lengde * 0.10 };
+}
+
+/* Månedsmerkelappene for et vilkårlig vindu. Tettheten tilpasser seg —
+   rundt sju merkelapper enten vinduet er tolv måneder eller fire år — og
+   januar er ankeret: årsskiftet vinner alltid over naboene sine. */
+function tegnManeder(vindu, rot) {
+  rot.innerHTML = '';
+  const start = new Date(vindu.start);
+  const antallMnd = Math.ceil((vindu.slutt - vindu.start) / (30.44 * 86400000));
+  const steg = Math.max(1, Math.round(antallMnd / 7));
+
+  const idx = new Set();
+  for (let i = 0; i <= antallMnd; i += steg) idx.add(i);
+  for (let i = 0; i <= antallMnd; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
+    if (d.getMonth() !== 0) continue;
+    idx.add(i);
+    [...idx].forEach(j => {
+      const dj = new Date(start.getFullYear(), start.getMonth() + j, 1);
+      if (dj.getMonth() !== 0 && Math.abs(j - i) < steg) idx.delete(j);
+    });
+  }
+
+  [...idx].sort((a, b) => a - b).forEach((i, k) => {
+    /* i = 0 plasseres på vinduets første dag, ikke den 1. i måneden, slik at
+       aksen begynner i venstre kant i stedet for utenfor den. */
+    const d = i === 0 ? new Date(vindu.start)
+                      : new Date(start.getFullYear(), start.getMonth() + i, 1);
+    const andel = vinduAndel(d.getTime(), vindu);
+    if (andel < 0 || andel > 1) return;
+    const span = document.createElement('span');
+    span.className = 'mnd';
+    span.style.left = `${(andel * 100).toFixed(2)}%`;
+    /* Endene klampes så teksten aldri stikker ut i margen, og hver lapp
+       toner inn med litt forsinkelse — spolingens lille fotnote. */
+    span.style.setProperty('--tx', andel < .015 ? '0%' : andel > .985 ? '-100%' : '-50%');
+    span.style.setProperty('--d', `${k * 22}ms`);
+    span.textContent = d.toLocaleDateString('nb-NO', { month: 'short' }).replace('.', '');
+    if (d.getMonth() === 0 && i !== 0) {
+      span.dataset.arsskifte = 'true';
+      span.textContent = String(d.getFullYear());
+    }
+    rot.appendChild(span);
+  });
 }
 
 function tegnHorisont() {
-  Data.hentAvtaler().then(avtaler => {
-    const merker = el('merker');
-    const maneder = el('maneder');
-    merker.innerHTML = '';
-    maneder.innerHTML = '';
+  const vindu = ganttAvtale ? ganttVindu(ganttAvtale) : standardVindu();
+  tegnManeder(vindu, el('maneder'));
 
-    /* Månedsmerkelapper — annenhver, ellers blir bunnlinja støy.
-       Årsskiftet er unntaket: det er det eneste ankeret øyet virkelig trenger
-       på en tidsakse, så januar skal ALLTID med. Havner januar på en oddetalls-
-       posisjon, bytter vi ut naboen i stedet for å legge til — da beholder vi
-       avstanden mellom merkelappene. */
-    const steg = new Set();
-    for (let i = 0; i <= VINDU_MND; i += 2) steg.add(i);
+  const g = el('gantt');
+  g.dataset.synlig = String(!!ganttAvtale);
+  if (!ganttAvtale) return;
 
-    let januar = -1;
-    for (let i = 0; i <= VINDU_MND; i++) {
-      if (new Date(IDAG.getFullYear(), IDAG.getMonth() + i, 1).getMonth() === 0) { januar = i; break; }
+  const a = ganttAvtale;
+
+  const fra = vinduAndel(a.start.getTime(), vindu);
+  const til = vinduAndel(a.slutt.getTime(), vindu);
+  const stolpe = el('ganttStolpe');
+  stolpe.style.left  = `${(fra * 100).toFixed(2)}%`;
+  stolpe.style.width = `${((til - fra) * 100).toFixed(2)}%`;
+
+  /* Avtaleårene («1+1»): stolpen skjæres i årsskiver fra startdatoen, og
+     hver skive farges etter hvor den står i tid — utgått, pågående eller
+     kommende. Skivene trekkes 1 px inn i hver ende, så de blir avrundede
+     streker nesten klint oppi hverandre — glippen er selve skillet. */
+  /* Etiketten i hvile er avtalen; peker du på en skive, bytter den til
+     periodens navn og datoer i sterkere stemme — og tilbake ved slipp. */
+  const etikett = el('ganttEtikett');
+  const basisEtikett = () => {
+    etikett.textContent = `${a.navn} · ${norskDato(a.start)} – ${norskDato(a.slutt)}`;
+    delete etikett.dataset.lys;
+  };
+  basisEtikett();
+  etikett.style.left = `${(klem((fra + til) / 2, 0.12, 0.88) * 100).toFixed(2)}%`;
+
+  stolpe.innerHTML = '';
+  const varighet = a.slutt - a.start;
+  let fraDato = new Date(a.start);
+  for (let k = 1; fraDato < a.slutt && k < 50; k++) {
+    let tilDato = new Date(a.start);
+    tilDato.setFullYear(tilDato.getFullYear() + k);
+    if (tilDato > a.slutt) tilDato = a.slutt;
+
+    const seg = document.createElement('span');
+    seg.className = 'gantt-per';
+    seg.dataset.st = tilDato <= IDAG ? 'fortid'
+                   : fraDato > IDAG  ? 'rest'
+                   : 'naa';
+    if (seg.dataset.st === 'naa' && dagerTil(a.slutt) >= 0 && haster(a)) {
+      seg.dataset.haster = 'true';
     }
-    if (januar >= 0 && !steg.has(januar)) {
-      steg.delete(januar - 1);
-      steg.add(januar);
-    }
+    seg.style.left  = `calc(${((fraDato - a.start) / varighet * 100).toFixed(2)}% + 1px)`;
+    seg.style.width = `calc(${((tilDato - fraDato) / varighet * 100).toFixed(2)}% - 2px)`;
 
-    [...steg].sort((a, b) => a - b).forEach(i => {
-      /* i = 0 plasseres på dagens dato, ikke den 1., slik at aksen begynner
-         i venstre kant i stedet for utenfor den. */
-      const d = i === 0 ? IDAG : new Date(IDAG.getFullYear(), IDAG.getMonth() + i, 1);
-      const andel = andelAvVinduet(d);
-      if (andel < 0 || andel > 1) return;
-      const span = document.createElement('span');
-      span.className = 'mnd';
-      span.style.left = `${(andel * 100).toFixed(2)}%`;
-      span.textContent = d.toLocaleDateString('nb-NO', { month: 'short' }).replace('.', '');
-      if (d.getMonth() === 0) {
-        span.dataset.arsskifte = 'true';
-        span.textContent = String(d.getFullYear());
-      }
-      maneder.appendChild(span);
+    const pFra = new Date(fraDato), pTil = new Date(tilDato), aar = k;
+    seg.addEventListener('mouseenter', () => {
+      etikett.textContent = `${aar}. avtaleår · ${norskDato(pFra)} – ${norskDato(pTil)}`;
+      etikett.dataset.lys = 'true';
     });
+    seg.addEventListener('mouseleave', basisEtikett);
 
-    avtaler.forEach(a => {
-      const andel = andelAvVinduet(a.slutt);
-      if (andel < 0 || andel > 1) return;
-      const m = document.createElement('span');
-      m.className = 'merke';
-      m.style.left = `${(andel * 100).toFixed(2)}%`;
-      if (haster(a)) m.dataset.haster = 'true';
-      if (a.id === valgtId) {
-        m.dataset.valgt = 'true';
-        const lapp = document.createElement('span');
-        lapp.className = 'merke-etikett';
-        lapp.style.left = `${(andel * 100).toFixed(2)}%`;
-        lapp.textContent = `${a.navn} · ${norskDato(a.slutt)}`;
-        merker.appendChild(lapp);
-      }
-      merker.appendChild(m);
-    });
+    stolpe.appendChild(seg);
+    fraDato = tilDato;
+  }
+
+  el('ganttIdag').style.left = `${(vinduAndel(IDAG.getTime(), vindu) * 100).toFixed(2)}%`;
+}
+
+/* Hva gantten viser akkurat nå. null betyr «tilbake til hvilebildet» — med
+   mindre et avtalekort står åpent: da beholder aksen kortets avtale, så
+   tidslinja alltid peker på det du står i. */
+function visGantt(a) {
+  const visning = document.querySelector('.scene').dataset.visning;
+  const kortApent = visning === 'avtale' || visning === 'nyoppgave';
+  ganttAvtale = a || (kortApent ? apenAvtale : null);
+  tegnHorisont();
+}
+
+/* ── Ny oppgave — siden ───────────────────────────────────────────────────
+   Springer alltid ut fra avtalen som står åpen. Typevelgeren bytter hvilke
+   felter som vises (data-for lister typene et felt gjelder for), og Opprett
+   legger oppgaven i øktas minne så den umiddelbart står i lista og på
+   oppgavelinja. Graph-handlingene (sendMail, events, planner) kobles på i
+   adapteren senere — skjemaet er sømmen deres. */
+let nyType = 'notat';
+
+const NY_TYPETEKST = { notat: 'Notat', epost: 'E-post', mote: 'Møte',
+                       planner: 'Planner-oppgave', utsatt: 'Utsatt e-post' };
+
+/* Vanlige oppfølgingsaktiviteter per type — snarveier i tittelfeltet.
+   I produksjon læres denne lista av hva institusjonen faktisk oppretter. */
+const NY_TITTELFORSLAG = {
+  notat:   ['Sjekke opsjonsvilkårene', 'Vurdere behovet før utløp',
+            'Gjennomgå prisjusteringen', 'Notere avvik fra siste leveranse'],
+  epost:   ['Be leverandøren om statusmøte', 'Etterspørre oppdatert prisliste',
+            'Varsle eier om utløpet', 'Be om dokumentasjon på leveransekrav'],
+  mote:    ['Leverandørmøte — status og avvik', 'Internt formøte før forhandling',
+            'Oppstartsmøte for ny utlysning'],
+  planner: ['Vurdere forlengelse eller ny utlysning', 'Kartlegge behov hos enhetene',
+            'Forberede konkurransegrunnlag'],
+  utsatt:  ['Purre på svar fra leverandøren', 'Minne eier på opsjonsfristen',
+            'Varsle enheten om utløpet'],
+};
+
+/* Mock-planer. I produksjon: GET /me/planner/plans + /plans/{id}/buckets. */
+const PLANNER_MOCK = [
+  { plan: 'Innkjøp — oppfølging',  buckets: ['Denne uka', 'Venter', 'Gjort'] },
+  { plan: 'Avtaleforvaltning',     buckets: ['Forlengelser', 'Nye utlysninger'] },
+  { plan: '+ Ny plan …',           buckets: ['+ Ny bucket …'] },
+];
+
+function velgOppgaveType(type) {
+  nyType = type;
+  /* data-valgt driver koreografien: kortene glir fra fullskjerm tilbake på
+     linjen sin, det valgte vokser seg størst, og skjemaet stiger inn. */
+  el('visNyOppgave').dataset.valgt = type;
+  document.querySelectorAll('.no-type').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.type === type)));
+  document.querySelectorAll('#noSkjema [data-for]').forEach(felt => {
+    felt.hidden = !felt.dataset.for.split(' ').includes(type);
   });
+  el('noTittel').focus();
+}
+
+function visNyOppgave(a) {
+  el('noRef').textContent = a.ref;
+  el('noAvtale').textContent = `${a.navn} · ${a.leverandor}`;
+
+  /* Standardvalg i de låste nedtrekkene. */
+  el('noPlan').value = PLANNER_MOCK[0].plan;
+  el('noBucket').value = PLANNER_MOCK[0].buckets[0];
+  el('noTrigger').value = TRIGGER_VALG[0];
+
+  /* Ferske felter per besøk; emnet arver avtalens referanse. */
+  el('noTittel').value = '';
+  el('noFrist').value = '';
+  el('noTid').value = '';
+  el('noMottakere').value = '';
+  el('noMelding').value = '';
+  el('noTildel').value = '';
+  el('noEmne').value = `[${a.ref}] ${a.navn}`;
+
+  /* KI-forslagene (skisse): deterministisk mock. I produksjon leser en
+     LUKKET modell — kundens egen Azure OpenAI eller lokal — avtaleteksten
+     hentet fra arkivet, og dokumentet lagres aldri i Sigill. Ett trykk
+     setter type, tittel og frist; alt kan overstyres etterpå. */
+  const kiRot = el('kiForslagRot');
+  kiRot.innerHTML = '';
+  const kiForslag = [
+    { type: 'mote',   tittel: `Avklare opsjon og vilkår med ${a.leverandor}`,   dager: 180 },
+    { type: 'utsatt', tittel: 'Varsle enheten før oppsigelsesfristen',          dager: 120 },
+    { type: 'notat',  tittel: 'Kontrollere prisjustering mot indeksklausulen',  dager: 240 },
+  ];
+  /* Etisk fokus legger kjerneoppgaven sin i forslagsraden. */
+  if (etiskFokus) {
+    kiForslag.push({ type: 'utsatt', tittel: 'Innhente egenerklæring etisk handel', dager: 150 });
+  }
+  kiForslag.forEach(f => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'ki-chip';
+    chip.append(ikonSvg(OPPGAVE_IKON[f.type]), f.tittel);
+    chip.addEventListener('click', () => {
+      velgOppgaveType(f.type);
+      el('noTittel').value = f.tittel;
+      el('noFrist').value = new Date(a.slutt - f.dager * 86400000)
+        .toISOString().slice(0, 10);
+    });
+    kiRot.appendChild(chip);
+  });
+
+  /* Siden åpner som VALGET: de fem kortene fyller flaten til ett er trykt.
+     Ingen programmatisk fokusring — den kan misleses som et valg. */
+  el('visNyOppgave').dataset.valgt = 'ingen';
+  document.querySelectorAll('.no-type').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  visVisning('nyoppgave');
+}
+
+/* ── Nedtrekket — husets ene meny ─────────────────────────────────────────
+   Nettleserens datalist og select er OS-chrome og ser ulike ut per maskin;
+   Sigill har ÉN meny. `hentValg(tekst, utvidet)` leverer radene:
+   {navn, verdi?, detalj?, klasse?} eller {skille}. Fritekstfelt foreslår
+   under seg selv; låste felt (readonly) åpner hele lista ved klikk.
+   Pil ned utvider fra de prioriterte forslagene til hele organisasjonen. */
+function lagNedtrekk(inputId, hentValg, { laast = false, vedValg } = {}) {
+  const input = el(inputId);
+  const liste = input.parentElement.querySelector('.nedtrekk-liste');
+  let aktiv = -1, utvidet = false;
+
+  const lukk = () => { liste.hidden = true; aktiv = -1; utvidet = false; };
+  const velgRad = v => {
+    input.value = v.verdi ?? v.navn;
+    lukk();
+    if (vedValg) vedValg(v);
+  };
+
+  const tegn = () => {
+    const valg = hentValg(laast ? '' : input.value.trim(), utvidet);
+    liste.innerHTML = '';
+    aktiv = -1;
+    valg.forEach(v => {
+      const li = document.createElement('li');
+      if (v.skille) {
+        li.className = 'nedtrekk-skille';
+        li.textContent = v.skille;
+      } else {
+        li.className = 'nedtrekk-rad';
+        li.setAttribute('role', 'option');
+        const navn = document.createElement('span');
+        navn.textContent = v.navn;
+        li.appendChild(navn);
+        if (v.detalj) {
+          const d = document.createElement('span');
+          d.className = 'nedtrekk-detalj' + (v.klasse ? ' ' + v.klasse : '');
+          d.textContent = v.detalj;
+          li.appendChild(d);
+        }
+        /* mousedown, ikke click: valget skal vinne over feltets blur. */
+        li.addEventListener('mousedown', e => { e.preventDefault(); velgRad(v); });
+        li.valg = v;
+      }
+      liste.appendChild(li);
+    });
+    liste.hidden = !liste.children.length;
+  };
+
+  input.addEventListener('focus', tegn);
+  input.addEventListener('click', () => { if (liste.hidden) tegn(); });
+  if (!laast) input.addEventListener('input', () => { utvidet = true; tegn(); });
+  input.addEventListener('blur', () => setTimeout(lukk, 120));
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { lukk(); return; }
+    if (e.key === 'ArrowDown' && (liste.hidden || !utvidet)) { utvidet = true; tegn(); }
+    const rader = [...liste.querySelectorAll('.nedtrekk-rad')];
+    if (!rader.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      aktiv = (aktiv + (e.key === 'ArrowDown' ? 1 : -1) + rader.length) % rader.length;
+      rader.forEach((r, i) => r.setAttribute('aria-selected', String(i === aktiv)));
+      rader[aktiv].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && aktiv >= 0) {
+      e.preventDefault();
+      velgRad(rader[aktiv].valg);
+    }
+  });
+}
+
+/* Demo-adresse for et navn; i produksjon kommer den fra Graph. */
+const mockEpost = navn =>
+  navn.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.|\.$/g, '') + '@eksempeluni.no';
+
+/* Mottaker-forslagene: avtalens rollehavere og eier FØRST, med rollen i
+   rollefargen — så leverandøren fra e-posthistorikken (Til-feltet). Først
+   når man skriver eller trykker pil ned kommer resten av organisasjonen. */
+function personValg(tekst, utvidet, medLeverandor) {
+  const a = apenAvtale;
+  if (!a) return [];
+  const q = tekst.toLowerCase();
+  const passer = navn => !q || navn.toLowerCase().includes(q);
+  const valg = [];
+  const medRolle = new Set();
+  [[a.eier.navn, 'eier', 'eier-ord'],
+   [a.forvalter.navn, 'forvalter', 'forv-ord'],
+   [a.administrator.navn, 'administrator', 'adm-ord']].forEach(([navn, rolle, klasse]) => {
+    if (medRolle.has(navn)) return;
+    medRolle.add(navn);
+    if (passer(navn)) {
+      valg.push({ navn, detalj: rolle, klasse, verdi: `${navn} <${mockEpost(navn)}>` });
+    }
+  });
+  if (medLeverandor) {
+    const adresse = 'post@' + a.leverandor.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.no';
+    if (passer(a.leverandor) || adresse.includes(q)) {
+      valg.push({ navn: a.leverandor, detalj: 'e-posthistorikken', verdi: adresse });
+    }
+  }
+  if (utvidet || q) {
+    const flere = PERSONER.filter(p => !medRolle.has(p.navn) && passer(p.navn));
+    if (flere.length) valg.push({ skille: 'Organisasjonen' });
+    flere.forEach(p =>
+      valg.push({ navn: p.navn, detalj: p.enhet, verdi: `${p.navn} <${mockEpost(p.navn)}>` }));
+  }
+  return valg;
+}
+
+const TRIGGER_VALG = ['90 dager før utløp', '60 dager før utløp',
+                     '30 dager før utløp', 'på fristdatoen'];
+
+/* Tavlas utløpsoversikt: bildet som før lå på søkesiden — alle avtalene
+   som merker langs tolv måneder. Tegnes én gang; mocken endrer seg ikke. */
+function tegnTavleHorisont() {
+  const vindu = standardVindu();
+  const merker = el('tavleMerker');
+  merker.innerHTML = '';
+  MOCK.forEach(a => {
+    const andel = vinduAndel(a.slutt.getTime(), vindu);
+    if (andel < 0 || andel > 1) return;
+    const m = document.createElement('span');
+    m.className = 'merke';
+    m.style.left = `${(andel * 100).toFixed(2)}%`;
+    if (haster(a)) m.dataset.haster = 'true';
+    m.title = `${a.navn} · ${norskDato(a.slutt)}`;
+    merker.appendChild(m);
+  });
+  tegnManeder(vindu, el('tavleManeder'));
 }
 
 /* ── Trefflista ───────────────────────────────────────────────────────────*/
@@ -3060,6 +4865,9 @@ function tegnTreff(avtaler, q, personer = []) {
   const liste = el('treff');
   liste.innerHTML = '';
   aktivRad = -1;
+  /* Radene som ble pekt på finnes ikke lenger — uten denne kunne gantten
+     blitt stående på en avtale ingen peker på. */
+  visGantt(null);
 
   if (!q.trim()) {
     el('treffBoks').dataset.apen = 'false';
@@ -3117,6 +4925,10 @@ function tegnTreff(avtaler, q, personer = []) {
     }
 
     rad.append(ref, navn, meta);
+    /* Hover er spørsmålet: horisonten under spoler seg om til akkurat denne
+       avtalens levetid mens pekeren står her. */
+    rad.addEventListener('mouseenter', () => visGantt(a));
+    rad.addEventListener('mouseleave', () => visGantt(null));
     rad.addEventListener('click', () => visAvtaleKort(a));
     liste.appendChild(rad);
   });
@@ -3174,13 +4986,6 @@ function tegnTreff(avtaler, q, personer = []) {
   el('sok').setAttribute('aria-expanded', 'true');
 }
 
-/* Merker avtalen på horisonten — kalles av avtalekortet, så tidslinja
-   nederst alltid peker på det du står i. */
-function velg(avtale) {
-  valgtId = avtale.id;
-  tegnHorisont();
-}
-
 function markerRad(ny) {
   const rader = [...el('treff').querySelectorAll('.treff-rad')];
   if (!rader.length) return;
@@ -3192,6 +4997,16 @@ function markerRad(ny) {
 /* ── Hendelser ────────────────────────────────────────────────────────────*/
 el('railToggle').addEventListener('click', vekslePanel);
 el('kartKnapp').addEventListener('click', vekselKart);
+
+/* Søkeparet i topplinja: samme dører som kartlinsa, bare i klartekst. */
+el('stiSok').addEventListener('click', () => {
+  if (kartModus) vekselKart();
+  visVisning('hjem');
+});
+el('stiAvansert').addEventListener('click', () => {
+  if (!kartModus) vekselKart();
+  else visVisning('hjem');
+});
 
 /* Alt som kan endre resultatet går gjennom denne ene veien: feltet, klokka
    og kartet stiller samme spørsmål, bare med hvert sitt kriterium. I kart-
@@ -3222,7 +5037,7 @@ function settRegister(hvor) {
   el('registervelger').querySelectorAll('button').forEach(b =>
     b.setAttribute('aria-pressed', String(b.dataset.register === hvor)));
   el('nyAvtale').hidden = hvor !== 'sigill';
-  el('avProlonger').hidden = hvor !== 'sigill';
+  el('avForleng').hidden = hvor !== 'sigill';
 }
 
 el('registervelger').querySelectorAll('button').forEach(b =>
@@ -3245,19 +5060,457 @@ document.addEventListener('click', e => {
 el('temavelger').querySelectorAll('button').forEach(b =>
   b.addEventListener('click', () => settTema(b.dataset.tema)));
 
-/* Avtalekortet og personkortet: veiene ut. */
-el('avtaleTilbake').addEventListener('click', () => visVisning('hjem'));
+/* ── Om-vinduet ───────────────────────────────────────────────────────────
+   Presentasjonen. Profilvelgeren er tre stoler i en trekant; valget bytter
+   pålogget bruker i hele appen, og bildet lander i margen med et sprett. */
+function apneOm() {
+  tegnOmProfiler();
+  el('omBakteppe').hidden = false;
+}
+function lukkOm() {
+  el('omBakteppe').hidden = true;
+}
+
+function tegnOmProfiler() {
+  const rot = el('omProfiler');
+  rot.innerHTML = '';
+  PROFILER.forEach((p, i) => {
+    const knapp = document.createElement('button');
+    knapp.type = 'button';
+    knapp.className = 'om-profil';
+    knapp.dataset.plass = i;
+    knapp.dataset.aktiv = String(p === aktivProfil);
+    const avatar = document.createElement('span');
+    avatar.className = 'om-avatar';
+    if (p.bilde) {
+      const img = document.createElement('img');
+      img.src = p.bilde;
+      img.alt = '';
+      avatar.appendChild(img);
+    } else {
+      const ledd = p.navn.split(/\s+/);
+      avatar.textContent = (ledd[0][0] + ledd[ledd.length - 1][0]).toUpperCase();
+    }
+    const navn = document.createElement('b');
+    navn.textContent = p.navn;
+    const rolle = document.createElement('span');
+    rolle.textContent = p.rolle;
+    knapp.append(avatar, navn, rolle);
+    knapp.addEventListener('click', () => velgProfil(p));
+    rot.appendChild(knapp);
+  });
+}
+
+function velgProfil(p) {
+  aktivProfil = p;
+  megBruker = null;              /* Min side henter den nye stolen selv */
+  tegnBruker();                  /* avatar + tallene i margen */
+  lukkOm();
+  /* Landingen: bildet spretter inn i margen fra flaten. */
+  const avatar = el('avatar');
+  avatar.dataset.lander = 'true';
+  avatar.addEventListener('animationend', () => { delete avatar.dataset.lander; }, { once: true });
+  /* Står du på Min side, skifter stolen under deg. */
+  if (document.querySelector('.scene').dataset.visning === 'meg') visMeg(megFane);
+}
+
+el('lenkeOm').addEventListener('click', e => { e.preventDefault(); apneOm(); });
+el('omLukk').addEventListener('click', lukkOm);
+el('omBakteppe').addEventListener('click', e => {
+  if (e.target === el('omBakteppe')) lukkOm();
+});
+
+/* Etisk fokus: én toggle styrer Samfunnshensyn-feltet på avtalekortet,
+   egenerklærings-forslaget i Ny oppgave og Produksjonsland-kortet på Tavla. */
+function settEtisk(pa) {
+  etiskFokus = pa;
+  el('etiskVelger').querySelectorAll('button').forEach(b =>
+    b.setAttribute('aria-pressed', String((b.dataset.etisk === 'pa') === pa)));
+  el('tavleEtisk').hidden = !pa;
+  el('feltEtisk').hidden = !pa;
+}
+el('etiskVelger').querySelectorAll('button').forEach(b =>
+  b.addEventListener('click', () => settEtisk(b.dataset.etisk === 'pa')));
+
+/* Produksjonsrisikoen: husets nedtrekk, egenvurdert per avtale. Valget
+   lagres og kortet tegnes om, så høy-risiko-chipen følger med. */
+lagNedtrekk('avRisiko', () => RISIKO_VALG.map(v => ({ navn: v })), {
+  laast: true,
+  vedValg: v => {
+    if (!apenAvtale) return;
+    RISIKO[apenAvtale.id] = v.navn;
+    visAvtaleKort(apenAvtale);
+  }
+});
+
+/* Egenerklæringen: kjerneoppgaven Etisk fokus foreslår — legger seg som
+   utsatt e-post i oppgavelista, med arkiveringsspørsmål ved lukking. */
+el('avEgenerklaering').addEventListener('click', () => {
+  const a = apenAvtale;
+  if (!a) return;
+  (EKSTRA_OPPGAVER[a.id] ??= []).push({
+    tekst: 'Innhente egenerklæring etisk handel',
+    type: 'utsatt',
+    frist: new Date(a.slutt - 120 * 86400000),
+    gjort: false
+  });
+  visAvtaleKort(a);
+});
+
+/* Avtalekortet og personkortet: veiene ut. Tilbake til søket betyr alltid
+   STANDARDSØKET — kartmodus er noe du velger på nytt hver gang. */
+el('avtaleTilbake').addEventListener('click', () => {
+  if (kartModus) vekselKart();
+  visVisning('hjem');
+});
+
+/* Kollapsbare felt på avtalekortet: deltittelen er bryteren. */
+function settFelt(id, apen) {
+  const felt = el(id);
+  felt.dataset.apen = String(apen);
+  felt.querySelector('.felt-topp').setAttribute('aria-expanded', String(apen));
+}
+document.querySelectorAll('.felt-topp').forEach(topp =>
+  topp.addEventListener('click', () => {
+    const felt = topp.closest('.felt');
+    settFelt(felt.id, felt.dataset.apen !== 'true');
+  }));
+
+/* Familie-knappen folder lista ut og inn. */
+el('avFamilieKnapp').addEventListener('click', () => {
+  const liste = el('avFamilie');
+  liste.hidden = !liste.hidden;
+  el('avFamilieKnapp').setAttribute('aria-expanded', String(!liste.hidden));
+});
+
+/* ── Notatene på avtalekortet ─────────────────────────────────────────────*/
+function tegnNotater() {
+  const a = apenAvtale;
+  if (!a) return;
+  const rot = el('avNotater');
+  rot.innerHTML = '';
+  const liste = (NOTATER[a.id] || []).filter(n => n.syn === notatSyn);
+  if (!liste.length) {
+    const tom = document.createElement('li');
+    tom.className = 'notat-rad notat-tom';
+    tom.textContent = notatSyn === 'egne'
+      ? 'Ingen egne notater ennå — skriv i feltet over.'
+      : 'Ingen delte notater på avtalen ennå.';
+    rot.appendChild(tom);
+    return;
+  }
+  liste.forEach(n => {
+    const li = document.createElement('li');
+    li.className = 'notat-rad';
+    const tekst = document.createElement('span');
+    tekst.textContent = n.tekst;
+    const tid = document.createElement('span');
+    tid.className = 'notat-tid';
+    tid.textContent = n.tid;
+    li.append(tekst, tid);
+    rot.appendChild(li);
+  });
+}
+
+el('notatSynlighet').querySelectorAll('button').forEach(b =>
+  b.addEventListener('click', () => {
+    notatSyn = b.dataset.syn;
+    el('notatSynlighet').querySelectorAll('button').forEach(x =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    tegnNotater();
+  }));
+
+/* Enter lagrer — notatet er GJORT idet det er skrevet; teksten er
+   leveransen. Ingen egen skjerm, ingen ekstra klikk. */
+el('notatFelt').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const tekst = e.target.value.trim();
+  const a = apenAvtale;
+  if (!tekst || !a) return;
+  (NOTATER[a.id] ??= []).push({
+    tekst,
+    syn: notatSyn,
+    tid: new Date().toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })
+  });
+  e.target.value = '';
+  tegnNotater();
+});
+
+/* ── Min side ─────────────────────────────────────────────────────────────
+   Alt som angår den påloggede — som et FILTER på registeret, aldri en silo:
+   samme avtaler, samme oppgaver, sett fra én stol. Hvilken node i margen du
+   trykket, bestemmer åpen fane. Hover på radene spoler gantten nederst. */
+let megFane = 'oppgaver';
+let megBruker = null;
+
+function visMeg(fane) {
+  megFane = fane;
+  megEnhet = null;               /* frisk stol hver gang siden åpnes */
+  settFelt('feltMegKart', true);
+  Data.hentPaloggetBruker().then(bruker => {
+    megBruker = bruker;
+    const avatar = el('megAvatar');
+    if (bruker.bildeUrl) {
+      const img = document.createElement('img');
+      img.src = bruker.bildeUrl;
+      img.alt = '';
+      avatar.replaceChildren(img);
+    } else {
+      const ledd = bruker.navn.trim().split(/\s+/);
+      avatar.textContent = (ledd[0][0] + ledd[ledd.length - 1][0]).toUpperCase();
+    }
+    el('megNavn').textContent = bruker.navn;
+    el('megUnder').textContent = `${bruker.rolle} · ${bruker.enhet}`;
+    visVisning('meg');
+    tegnMeg();
+  });
+}
+
+/* Mine data, regnet fra registeret: løpende avtaler jeg har rolle i, og de
+   ugjorte oppgavene deres. */
+function megData() {
+  const { avtaler } = personRoller(megBruker.navn);
+  const naa = new Date();
+  const lopende = avtaler.filter(a => a.slutt >= naa);
+  const mineOppgaver = [];
+  lopende.forEach(a => {
+    [...oppgaverFor(a), ...(EKSTRA_OPPGAVER[a.id] || [])].forEach(o => {
+      if (!o.gjort) mineOppgaver.push({ ...o, avtale: a });
+    });
+  });
+  mineOppgaver.sort((x, y) => x.frist - y.frist);
+  return { lopende, mineOppgaver };
+}
+
+/* Innkjøperens oversikt: organisasjonskartet gjenbrukt, med MINE avtaler
+   talt per enhet — svaret på «hvor mange følger jeg egentlig opp?».
+   Gren-noder teller løvene sine, klikk filtrerer lista under. */
+let megEnhet = null;
+
+function tegnMegKart(avtaler) {
+  const svg = el('megKartSvg');
+  svg.innerHTML = '';
+  const antall = {};
+  avtaler.forEach(a => { antall[a.enhet] = (antall[a.enhet] || 0) + 1; });
+  const hFor = id => ORG_AV_ID[id].mor ? 46 : 30;
+
+  ORG.filter(n => n.mor).forEach((n, i) => {
+    const m = ORG_AV_ID[n.mor];
+    const fraY = m.y + hFor(m.id), tilY = n.y;
+    const p = svgEl('path', {
+      class: 'kart-strek',
+      d: `M ${m.x} ${fraY} V ${(fraY + tilY) / 2} H ${n.x} V ${tilY}`
+    });
+    svg.appendChild(p);
+    const len = p.getTotalLength();
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
+    p.style.setProperty('--d', (n.mor === 'rektor' ? 60 : 240) + i * 22 + 'ms');
+  });
+
+  ORG.forEach((n, i) => {
+    const iGren = enheterUnder(n.id).reduce((s, id) => s + (antall[id] || 0), 0);
+    const g = svgEl('g', { class: 'kart-node', 'data-id': n.id, tabindex: '0', role: 'button' });
+    if (n.mor && !iGren) g.setAttribute('data-stille', 'true');
+    g.appendChild(svgEl('rect', {
+      x: n.x - n.w / 2, y: n.y, width: n.w, height: hFor(n.id), rx: 8
+    }));
+    const tittel = svgEl('text', { class: 'kart-enhet', x: n.x, y: n.y + 17 });
+    tittel.textContent = n.kort;
+    g.appendChild(tittel);
+    if (n.mor && iGren) {
+      const tall = svgEl('text', { class: 'kart-tall', x: n.x, y: n.y + 34 });
+      tall.textContent = iGren === 1 ? 'én avtale' : `${iGren} avtaler`;
+      g.appendChild(tall);
+    }
+    g.dataset.valgt = String(megEnhet === n.id);
+    g.style.setProperty('--d', 40 + i * 34 + 'ms');
+    /* Klikk markerer og filtrerer — uten å bygge kartet på nytt, så
+       nodene ikke spretter for hvert valg. */
+    const velg = () => {
+      megEnhet = megEnhet === n.id ? null : n.id;
+      svg.querySelectorAll('.kart-node').forEach(x =>
+        x.dataset.valgt = String(x.dataset.id === megEnhet));
+      tegnMegListe();
+    };
+    g.addEventListener('click', velg);
+    g.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); velg(); }
+    });
+    svg.appendChild(g);
+  });
+}
+
+function tegnMeg() {
+  if (!megBruker) return;
+  const { lopende, mineOppgaver } = megData();
+
+  document.querySelectorAll('.meg-fane').forEach(f => {
+    f.dataset.aktiv = String(f.dataset.fane === megFane);
+    f.textContent = f.dataset.fane === 'oppgaver'
+      ? `Mine oppgaver · ${mineOppgaver.length}`
+      : `Mine avtaler · ${lopende.length}`;
+  });
+
+  el('feltMegKart').hidden = megFane !== 'avtaler';
+  if (megFane === 'avtaler') tegnMegKart(lopende);
+  tegnMegListe();
+}
+
+function tegnMegListe() {
+  const navn = megBruker.navn;
+  const { lopende, mineOppgaver } = megData();
+  const rot = el('megListe');
+  rot.innerHTML = '';
+
+  const radHover = a => {
+    return [['mouseenter', () => visGantt(a)], ['mouseleave', () => visGantt(null)]];
+  };
+
+  if (megFane === 'oppgaver') {
+    if (!mineOppgaver.length) {
+      const tom = document.createElement('li');
+      tom.className = 'meg-tom';
+      tom.textContent = 'Ingen åpne oppgaver — porteføljen puster.';
+      rot.appendChild(tom);
+      return;
+    }
+    mineOppgaver.forEach(o => {
+      const li = document.createElement('li');
+      li.className = 'meg-rad';
+      const tekst = document.createElement('span');
+      tekst.textContent = o.tekst;
+      const under = document.createElement('span');
+      under.className = 'meg-under';
+      under.textContent = `${o.avtale.ref} · ${o.avtale.navn}`;
+      tekst.appendChild(under);
+      const meta = document.createElement('span');
+      meta.className = 'meg-meta';
+      meta.textContent = 'frist ' + norskDato(o.frist);
+      if (dagerTil(o.frist) <= 30) meta.dataset.haster = 'true';
+      li.append(ikonSvg(OPPGAVE_IKON[o.type]), tekst, meta);
+      li.addEventListener('click', () => visAvtaleKort(o.avtale));
+      radHover(o.avtale).forEach(([ev, fn]) => li.addEventListener(ev, fn));
+      rot.appendChild(li);
+    });
+  } else {
+    let liste = lopende;
+    if (megEnhet) {
+      const under = enheterUnder(megEnhet);
+      liste = liste.filter(a => under.includes(a.enhet));
+    }
+    if (!liste.length) {
+      const tom = document.createElement('li');
+      tom.className = 'meg-tom';
+      tom.textContent = `Ingen av dine avtaler i ${ORG_AV_ID[megEnhet].kort} ennå.`;
+      rot.appendChild(tom);
+      return;
+    }
+    [...liste].sort((x, y) => x.slutt - y.slutt).forEach(a => {
+      const li = document.createElement('li');
+      li.className = 'meg-rad';
+      li.dataset.slag = 'avtale';
+      const ref = document.createElement('span');
+      ref.className = 'treff-ref';
+      ref.textContent = a.ref;
+      const tekst = document.createElement('span');
+      tekst.textContent = a.navn;
+      const grunn = document.createElement('span');
+      grunn.className = 'treff-grunn';
+      grunn.textContent = ' · ' + a.leverandor;
+      tekst.appendChild(grunn);
+      /* Min rolle på akkurat denne avtalen, i rollefargen. */
+      const rolle = a.eier.navn === navn ? ['eier', 'eier-ord']
+                  : a.forvalter.navn === navn ? ['forvalter', 'forv-ord']
+                  : ['administrator', 'adm-ord'];
+      const meta = document.createElement('span');
+      meta.className = 'meg-meta';
+      const rolleOrd = document.createElement('span');
+      rolleOrd.className = rolle[1];
+      rolleOrd.textContent = rolle[0];
+      meta.append(rolleOrd, ` · ${dagerTil(a.slutt) <= HASTER_DAGER
+        ? `utløper om ${dagerTil(a.slutt)} dager` : norskDato(a.slutt)}`);
+      if (dagerTil(a.slutt) <= HASTER_DAGER) meta.dataset.haster = 'true';
+      li.append(ref, tekst, meta);
+      li.addEventListener('click', () => visAvtaleKort(a));
+      radHover(a).forEach(([ev, fn]) => li.addEventListener(ev, fn));
+      rot.appendChild(li);
+    });
+  }
+}
+
+/* Nodene i margen er dørene: oppgave-noden åpner oppgavefanen, avtale-noden
+   avtalefanen. Fanene på siden bytter uten å forlate den. */
+document.querySelectorAll('.rail-bruker .node').forEach(node =>
+  node.addEventListener('click', () => visMeg(node.dataset.fane)));
+document.querySelectorAll('.meg-fane').forEach(fane =>
+  fane.addEventListener('click', () => { megFane = fane.dataset.fane; tegnMeg(); }));
+el('megTilTavla').addEventListener('click', () => visVisning('tavle'));
+
+/* ── Ny oppgave: veiene inn og ut ─────────────────────────────────────────*/
+el('nyOppgaveKnapp').addEventListener('click', () => {
+  if (apenAvtale) visNyOppgave(apenAvtale);
+});
+el('noTilbake').addEventListener('click', () => visVisning('avtale'));
+
+document.querySelectorAll('.no-type').forEach(b =>
+  b.addEventListener('click', () => velgOppgaveType(b.dataset.type)));
+
+/* Nedtrekkene: tittel og personer foreslår under fritekst; plan, bucket og
+   trigger er låste valg. Bucket-standarden følger valgt plan. */
+lagNedtrekk('noTittel', tekst => {
+  const q = tekst.toLowerCase();
+  return (NY_TITTELFORSLAG[nyType] || [])
+    .filter(t => !q || t.toLowerCase().includes(q))
+    .map(t => ({ navn: t }));
+});
+lagNedtrekk('noMottakere', (t, u) => personValg(t, u, true));
+lagNedtrekk('noTildel',    (t, u) => personValg(t, u, false));
+lagNedtrekk('noPlan', () => PLANNER_MOCK.map(p => ({ navn: p.plan })), {
+  laast: true,
+  vedValg: v => {
+    const p = PLANNER_MOCK.find(x => x.plan === v.navn);
+    if (p) el('noBucket').value = p.buckets[0];
+  }
+});
+lagNedtrekk('noBucket', () => {
+  const p = PLANNER_MOCK.find(x => x.plan === el('noPlan').value) || PLANNER_MOCK[0];
+  return p.buckets.map(b => ({ navn: b }));
+}, { laast: true });
+lagNedtrekk('noTrigger', () => TRIGGER_VALG.map(t => ({ navn: t })), { laast: true });
+
+el('noSkjema').addEventListener('submit', e => {
+  e.preventDefault();
+  const a = apenAvtale;
+  if (!a) return;
+  /* Fristen: feltet hvis satt, ellers møtetidspunktet, ellers 90 dager før
+     utløp — en oppgave uten dato finnes ikke i et avtaleregister. */
+  const frist = el('noFrist').value ? new Date(el('noFrist').value + 'T00:00:00')
+              : el('noTid').value   ? new Date(el('noTid').value)
+              : new Date(a.slutt - 90 * 86400000);
+  (EKSTRA_OPPGAVER[a.id] ??= []).push({
+    tekst: el('noTittel').value.trim() || NY_TYPETEKST[nyType],
+    type: nyType,
+    frist,
+    gjort: false
+  });
+  /* Rett tilbake til kortet: den nye oppgaven står alt i lista og på linja. */
+  visAvtaleKort(a);
+});
 el('personBakteppe').addEventListener('click', e => {
   if (e.target === el('personBakteppe')) lukkPersonkort();
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !el('personBakteppe').hidden) lukkPersonkort();
+  if (e.key === 'Escape' && !el('omBakteppe').hidden) lukkOm();
 });
 
-/* Lenker som bytter skjerm. */
+/* Lenker som bytter skjerm. Søk åpner ALLTID i standardmodus — sto kartet
+   på fra sist, slås det av før skjermen vises. */
 document.querySelectorAll('.rail-lenke[data-visning]').forEach(lenke => {
   lenke.addEventListener('click', e => {
     e.preventDefault();
+    if (lenke.dataset.visning === 'hjem' && kartModus) vekselKart();
     visVisning(lenke.dataset.visning);
   });
 });
@@ -3274,6 +5527,13 @@ document.querySelectorAll('[data-kommer]').forEach(lenke => {
       setTimeout(() => { el('avtaleHint').textContent = ''; }, 2600);
       return;
     }
+    /* I kartmodus er hintlinja borte — meldinga får stå i statuslinja
+       mellom kart og galleri i stedet. */
+    if (kartModus && !el('kart').hidden) {
+      el('kartStatus').textContent = lenke.dataset.kommer;
+      setTimeout(() => tegnGalleri(), 2600);
+      return;
+    }
     visVisning('hjem');                  /* meldinga står under søkefeltet — vis det først */
     el('hint').textContent = lenke.dataset.kommer;
     setTimeout(() => {
@@ -3284,6 +5544,23 @@ document.querySelectorAll('[data-kommer]').forEach(lenke => {
 
 window.addEventListener('resize', tegnHorisont);
 
+/* Datosveipen: med en avtale framme følger en liten datolapp pekeren langs
+   horisonten — vinduet vet hvilken dato hvert punkt på aksen er. */
+const horisontEl = document.querySelector('.horisont');
+horisontEl.addEventListener('mousemove', e => {
+  const chip = el('ganttDato');
+  if (!ganttAvtale) { chip.dataset.synlig = 'false'; return; }
+  const rekt = horisontEl.getBoundingClientRect();
+  const andel = klem((e.clientX - rekt.left) / rekt.width, 0, 1);
+  const vindu = ganttVindu(ganttAvtale);
+  chip.textContent = norskDato(new Date(vindu.start + andel * (vindu.slutt - vindu.start)));
+  chip.style.left = `${(andel * 100).toFixed(2)}%`;
+  chip.dataset.synlig = 'true';
+});
+horisontEl.addEventListener('mouseleave', () => {
+  el('ganttDato').dataset.synlig = 'false';
+});
+
 /* ── Oppstart ─────────────────────────────────────────────────────────────*/
 Promise.all([Data.hentKunde(), Data.hentAvtaler()]).then(([kunde, avtaler]) => {
   el('kundeNavn').textContent = kunde.navn;
@@ -3291,6 +5568,7 @@ Promise.all([Data.hentKunde(), Data.hentAvtaler()]).then(([kunde, avtaler]) => {
      regnes med først når klokka slås på. */
   el('sok').placeholder = `Søk i ${avtaler.filter(a => a.slutt >= new Date()).length} avtaler`;
   tegnHorisont();
+  tegnTavleHorisont();
   tegnKoblinger();
   tegnBruker();
   /* Tavlas ene ekte tall: telles fra registeret, ikke skissert. */
@@ -3300,6 +5578,8 @@ Promise.all([Data.hentKunde(), Data.hentAvtaler()]).then(([kunde, avtaler]) => {
   /* Margen starter smal, altså starter merket som burgeren. Sluttbildet i
      «tilMeny»-retning er nettopp det — vuggen ferdig dempet, figuren borte. */
   tegnStempel(STEMPEL_SLUTT.tilMeny, 'tilMeny');
+  /* Presentasjonen møter deg først — Om-vinduet står åpent fra start. */
+  tegnOmProfiler();
 });
 </script>
 
