@@ -2101,7 +2101,9 @@ body.deck-mork { background: var(--ink); }
    (padding trukket fra), mens prosent går på hele flaten — og det er
    flaten kortet over står i. 61 % er rett under kortets underkant. */
 .kilder__kolonne {
-  position: absolute; left: 18cqi; top: 61%;
+  /* 71 %, ikke 61: Trening-kortet vokste, og tallene la seg BAK det.
+     Målt 2026-08-18 — kortets underkant ligger på ~69 % av flaten. */
+  position: absolute; left: 18cqi; top: 71%;
   transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 0.9cqi;
 }
@@ -2600,6 +2602,16 @@ body.deck-mork { background: var(--ink); }
   overflow: visible; filter: url(#tusj-wobble-bot);
 }
 
+/* De tre vinklingene bolken skal gjennom — samme rekkefølge som
+   slidene som følger. Mono-kicker, dempet: et varsel, ikke et poeng. */
+.tre__vinklinger {
+  display: flex; justify-content: center; gap: 1.4cqi;
+  margin: 4cqi 0 0;
+  font-family: var(--font-mono); font-size: 1.3cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   /* De kommer inn etter hverandre. Samme gange som på forsiden,
      bare med hver sin forsinkelse — tre klasser slår de to i
@@ -2747,6 +2759,18 @@ body.deck-mork { background: var(--ink); }
    for ett — 7cqi ville brutt over tre linjer. */
 .agentbrudd .penta__tittel { font-size: 5cqi; line-height: 1.02; }
 
+/* Agentbrudd har lengre ingress og fire nøkler — sentrert la
+   innholdet seg for langt ned og avisen gikk utenfor flaten.
+   Toppjustert med egen luft, og avisen får høyden sonen gir. */
+.agentbrudd {
+  align-items: start;
+  padding-top: 6cqi; padding-bottom: 6cqi;
+}
+.agentbrudd .penta__ingress { font-size: 1.5cqi; margin-bottom: 2.2cqi; }
+.agentbrudd .avis { height: 44cqi; }
+/* Kilden midtstilles: venstrestilt krasjet den med nøkkellista. */
+.agentbrudd .deck-kilde { text-align: center; }
+
 .penta__nokler { list-style: none; margin: 0; padding: 0; }
 .penta__nokler li {
   position: relative;
@@ -2840,6 +2864,17 @@ body.deck-mork { background: var(--ink); }
 .aktor, .makt { padding: 6cqi 6cqi 5cqi; box-sizing: border-box; height: 100%; }
 
 .aktor__topp { margin-bottom: 2cqi; }
+
+/* Kilden per kolonne står i kolonnehodet: mono-mikrolinje under
+   overskriften, så leseren ser hvor hver vurdering kommer fra. */
+.aktor .tab th span {
+  display: block;
+  margin-top: 0.3cqi;
+  font-family: var(--font-mono); font-size: 0.85cqi;
+  font-weight: 400;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+}
 .aktor__topp h2 {
   margin: 0 0 0.8cqi;
   font-family: var(--font-display);
@@ -3341,8 +3376,13 @@ body.deck-mork { background: var(--ink); }
 }
 /* Trappa: hvert trinn står et hakk høyere enn det forrige, så
    rekkefølgen leses i selve formen — ikke bare i nummereringen. */
+/* Trappa leses i formen: lik korthøyde + stigende løft. Uten lik
+   høyde røper toppene innholdsmengden (trinn 2 ble høyest da
+   DBA-nyansen kom inn) og trappa forsvinner. Høyden er målt fra
+   det høyeste kortet; min-height, så en tekstvekst ikke klipper. */
 .veier__kort:nth-child(2) { margin-bottom: 4cqi; }
 .veier__kort:nth-child(3) { margin-bottom: 8cqi; }
+.veier__kort { min-height: 28.5cqi; }
 .veier__kort {
   text-align: left;
   padding: 2.4cqi 2.2cqi;
@@ -3381,8 +3421,8 @@ body.deck-mork { background: var(--ink); }
 }
 
 /* Trinnene stiger mot høyre — det billigste ligger nederst og først. */
-.veier__kort--kanskje { margin-bottom: 2cqi; }
-.veier__kort--nei     { margin-bottom: 4cqi; }
+/* (Døde margin-regler for --kanskje/--nei fjernet 2026-08-18 —
+   nth-child-reglene over vant alltid på spesifisitet.) */
 
 .veier__sp {
   margin: 0 0 0.7cqi;
@@ -4072,29 +4112,14 @@ body.deck-mork { background: var(--ink); }
 }
 .riks__kritikk i { font-style: italic; }
 
-.riks__landing {
-  position: absolute;
-  left: 7cqi; right: 7cqi; bottom: 8cqi;
-  margin: 0; text-align: left;
-  font-family: var(--font-display);
-  font-weight: var(--display-weight);
-  font-size: 2.6cqi; line-height: 1.3;
-  color: var(--ink);
-  opacity: 0;
-}
-.riks__landing b { font-weight: inherit; color: var(--spot); }
-
+/* Landingen er fjernet (2026-08-18) — Lars sier den muntlig. */
 .riks[data-steg="1"] .riks__andel,
-.riks[data-steg="2"] .riks__andel,
-.riks[data-steg="3"] .riks__andel  { opacity: 1; }
-.riks[data-steg="2"] .riks__avslor,
-.riks[data-steg="3"] .riks__avslor  { opacity: 1; }
-.riks[data-steg="3"] .riks__landing { opacity: 1; }
+.riks[data-steg="2"] .riks__andel  { opacity: 1; }
+.riks[data-steg="2"] .riks__avslor { opacity: 1; }
 
 @media (prefers-reduced-motion: no-preference) {
   .riks__andel   { transition: opacity .5s ease; }
   .riks__avslor  { transition: opacity .6s ease; }
-  .riks__landing { transition: opacity .6s ease .25s; }
 }
 
 /* ============================================================
@@ -4183,12 +4208,221 @@ body.deck-mork { background: var(--ink); }
 }
 
 /* ============================================================
+   SLIDE — Én dag i uka
+   Ukekalenderen er grafen: fem dagspor, fyllet stiger nedenfra.
+   Steg 0 = landet (grått, 84 % av fredagen = 16,8 % av uka),
+   steg 1 = rommet (spot: hele fredagen + 54 % av torsdagen =
+   30,8 %). Spot er reservert for det som gjelder DERE — samme
+   emphasis-disiplin som i grafene ellers.
+   ============================================================ */
+
+.uke__over {
+  position: absolute;
+  left: 7cqi; right: 7cqi; top: var(--tittel-topp);
+  margin: 0; text-align: left;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+.uke__tittel {
+  position: absolute;
+  left: 7cqi; right: 7cqi; top: calc(var(--tittel-topp) + 3.4cqi);
+  margin: 0; text-align: left;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 4.2cqi;
+}
+
+.uke__venstre {
+  position: absolute;
+  left: 7cqi; top: 30cqi; width: 34cqi;
+  text-align: left;
+}
+.uke__blokk--dere { margin-top: 3cqi; opacity: 0; }
+.uke__tall {
+  margin: 0 0 0.8cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 6.2cqi; line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.uke__blokk--dere .uke__tall { color: var(--spot); }
+.uke__hva {
+  margin: 0;
+  font-family: var(--font-body); font-size: 1.5cqi; line-height: 1.45;
+  color: var(--ink-soft);
+}
+.uke__hva b { font-weight: 400; color: var(--ink); }
+
+/* Kalenderen: sporet er ikke en akse — bare der dagen får stå. */
+.uke__kalender {
+  position: absolute;
+  right: 7cqi; top: 30cqi; width: 42cqi; height: 22cqi;
+  display: flex; gap: 1.8cqi;
+}
+.uke__dag {
+  flex: 1 1 0;
+  display: flex; flex-direction: column; gap: 1cqi;
+}
+.uke__spor {
+  position: relative; flex: 1;
+  border: 1.5px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.uke__spor i {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 0%;
+  background: var(--rule);
+}
+.uke__navn {
+  font-family: var(--font-mono); font-size: 1.05cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+/* Fyllet per steg: først landet i grått, så rommet i spot. */
+.uke:not([data-steg]) .uke__dag--fre i,
+.uke[data-steg="0"] .uke__dag--fre i { height: 84%; }
+.uke[data-steg="1"] .uke__dag--fre i,
+.uke[data-steg="2"] .uke__dag--fre i { height: 100%; background: var(--spot); }
+.uke[data-steg="1"] .uke__dag--tor i,
+.uke[data-steg="2"] .uke__dag--tor i { height: 54%; background: var(--spot); }
+
+.uke[data-steg="1"] .uke__blokk--dere,
+.uke[data-steg="2"] .uke__blokk--dere { opacity: 1; }
+
+.uke__landing {
+  position: absolute;
+  /* Lavt på flaten: tekstblokka til venstre rekker ned til ca.
+     58cqi, og på 8cqi kolliderte de. */
+  left: 7cqi; right: 7cqi; bottom: 4.6cqi;
+  margin: 0; text-align: left;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 2.4cqi; line-height: 1.3;
+  color: var(--ink);
+  opacity: 0;
+}
+.uke__landing b { font-weight: inherit; color: var(--spot); }
+.uke[data-steg="2"] .uke__landing { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .uke__spor i      { transition: height .8s cubic-bezier(.22,.86,.28,1), background .4s ease; }
+  .uke__dag--tor i  { transition-delay: .15s; }
+  .uke__blokk--dere { transition: opacity .6s ease .2s; }
+  .uke__landing     { transition: opacity .6s ease .25s; }
+  /* Fredagen fylles når sliden spilles — samme reise som stolpene ellers. */
+  .uke.play .uke__dag--fre i { transition-delay: .45s; }
+  .uke.play[data-steg="1"] .uke__dag--fre i,
+  .uke.play[data-steg="2"] .uke__dag--fre i { transition-delay: 0s; }
+}
+
+/* ============================================================
+   SLIDE — Tidlige tegn
+   To signaler som leses MOT hverandre, samme grep som «Hvor er
+   vi nå»: Menon-funnet med forbeholdet synlig til venstre,
+   angrekurven til høyre. Landingen løser spenningen: hvordan,
+   ikke om.
+   ============================================================ */
+
+.tegn__over {
+  position: absolute;
+  left: 7cqi; right: 7cqi; top: var(--tittel-topp);
+  margin: 0; text-align: left;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+.tegn__tittel {
+  position: absolute;
+  left: 7cqi; right: 7cqi; top: calc(var(--tittel-topp) + 3.4cqi);
+  margin: 0; text-align: left;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 4.2cqi;
+}
+
+.tegn__par {
+  position: absolute;
+  /* 27.5, ikke 29: venstre spalte fikk yrkeslista i tillegg og
+     rakk da ned i kildelinja. */
+  left: 7cqi; right: 7cqi; top: 27.5cqi;
+  display: flex; gap: 6cqi;
+  text-align: left;
+}
+.tegn__side { flex: 1 1 0; }
+.tegn__side--anger { opacity: 0; }
+
+.tegn__merke {
+  margin: 0 0 1.4cqi;
+  font-family: var(--font-mono); font-size: 1cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.tegn__tall {
+  margin: 0 0 0.8cqi;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 6.2cqi; line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.tegn__side--anger .tegn__tall { color: var(--spot); }
+.tegn__hva {
+  margin: 0;
+  font-family: var(--font-body); font-size: 1.5cqi; line-height: 1.45;
+  color: var(--ink-soft);
+  max-width: 32cqi;
+}
+.tegn__hva i {
+  font-style: normal;
+  font-family: var(--font-mono); font-size: 1.05cqi;
+  color: var(--ink-faint);
+}
+.tegn__forbehold {
+  margin: 1.8cqi 0 0;
+  padding-top: 1.2cqi;
+  border-top: 1.5px solid var(--rule);
+  font-family: var(--font-body); font-size: 1.3cqi; line-height: 1.45;
+  color: var(--ink-soft);
+  max-width: 32cqi;
+}
+.tegn__navn {
+  margin: 1.3cqi 0 0; padding: 0;
+  list-style: none;
+  font-family: var(--font-body); font-size: 1.3cqi; line-height: 1.55;
+  color: var(--ink-soft);
+}
+.tegn__navn li { margin-bottom: 0.5cqi; }
+.tegn__navn b { font-weight: 400; color: var(--ink); }
+
+/* Landingen er fjernet (2026-08-18) — Lars sier den muntlig.
+   Sliden lander på kontrasten mellom spaltene i stedet. */
+.tegn[data-steg="1"] .tegn__side--anger { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .tegn__side--anger { transition: opacity .6s ease; }
+}
+
+/* ============================================================
    SLIDE — Klimaregnskapet
-   Emphasis-graf: én farge på det som er poenget (modellvalget),
-   grått på referansene. Skalaen er lineær til 40 Wh — at de to
-   små søylene nesten forsvinner ER funnet, ikke en tegnefeil, så
-   tallene står som direktelabel ved siden av.
-   Ingen nye farger: spot og grå fra tokens.
+   Tre panel som bytter plass i samme sone — å LAGE modellen,
+   å BRUKE den, HVA du ber om — pluss landingen (§ 7-9).
+   Panelbyttet er tilstand (data-steg), ikke inngang: opacity-
+   nullene her er stater og ligger derfor UTENFOR bevegelses-
+   guarden, akkurat som resten av steg-mekanikken i decket.
+
+   Emphasis-grafer: én farge på poenget, grått på referansene.
+   Lineær skala og arealriktige sirkler — at de små nesten
+   forsvinner ER funnet, ikke en tegnefeil, så tallene står som
+   direktelabel. Ingen nye farger: spot og grå fra tokens.
    ============================================================ */
 
 .klima__over {
@@ -4210,10 +4444,29 @@ body.deck-mork { background: var(--ink); }
   font-size: 4cqi;
 }
 
+/* ── Panelene: samme sone, ett synlig om gangen ────────────── */
+.klima__panel {
+  position: absolute;
+  left: 7cqi; right: 7cqi; top: 27cqi; bottom: 8cqi;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* :not([data-steg]) — sliden har ikke fått steg ennå (før første
+   visning); da skal åpningspanelet stå der, ikke en tom flate. */
+.klima:not([data-steg]) .klima__panel--lage,
+.klima[data-steg="0"] .klima__panel--lage,
+.klima[data-steg="1"] .klima__panel--bruke,
+.klima[data-steg="2"] .klima__panel--be   { opacity: 1; }
+
+/* Å lage-panelet har lengre navn enn bruke-panelet. */
+.klima__panel--lage .klima__rad { grid-template-columns: 26cqi 1fr 8cqi; }
+
 /* Hero-tallet: avvæpner før poenget kommer. */
 .klima__hero {
   position: absolute;
-  left: 7cqi; top: 31cqi; width: 34cqi;
+  left: 0; top: 4cqi; width: 34cqi;
   text-align: left;
 }
 .klima__tall {
@@ -4231,12 +4484,11 @@ body.deck-mork { background: var(--ink); }
 }
 .klima__hva b { font-weight: 400; color: var(--ink); }
 
-/* ── Grafen ────────────────────────────────────────────────── */
+/* ── Grafen (bruke-panelet) ────────────────────────────────── */
 .klima__graf {
   position: absolute;
-  right: 7cqi; top: 29cqi; width: 48cqi;
+  right: 0; top: 0; width: 48cqi;
   text-align: left;
-  opacity: 0;
 }
 .klima__grafmerke {
   margin: 0 0 1.8cqi;
@@ -4287,35 +4539,75 @@ body.deck-mork { background: var(--ink); }
 }
 .klima__note b { font-weight: 400; color: var(--ink); }
 
-.klima__landing {
+/* ── Boblene (hva du ber om-panelet) ───────────────────────────
+   Arealriktige sirkler à la NRK-grafikken: diameteren i --dia er
+   regnet fra kvadratrota av verdien, med videoen som fastpunkt.
+   min-width holder de minste synlige som prikker — at de nesten
+   forsvinner er poenget. */
+.klima__bobler {
+  /* Opp og til venstre (Lars 2026-08-18): venstrestilt rekke med
+     luft i bunn, i stedet for sentrert helt nede. */
   position: absolute;
-  left: 7cqi; right: 7cqi; bottom: 7.5cqi;
-  margin: 0; text-align: left;
-  font-family: var(--font-display);
-  font-weight: var(--display-weight);
-  font-size: 2.2cqi; line-height: 1.3;
-  color: var(--ink);
-  opacity: 0;
+  left: 0; right: 14cqi; bottom: 3.5cqi;
+  display: flex; align-items: flex-end; justify-content: flex-start;
+  gap: 7cqi;
 }
-.klima__landing b { font-weight: inherit; color: var(--spot); }
+.klima__boble {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.8cqi;
+  text-align: center;
+}
+.klima__boble i {
+  display: block;
+  width: max(0.5cqi, calc(var(--dia) * 1cqi));
+  height: max(0.5cqi, calc(var(--dia) * 1cqi));
+  border-radius: 50%;
+  background: var(--rule);
+}
+.klima__boble--na i { background: var(--spot); }
+.klima__boble--na .klima__navn  { color: var(--ink); }
+.klima__boble--na .klima__verdi { color: var(--spot); }
 
-.klima[data-steg="1"] .klima__graf,
-.klima[data-steg="2"] .klima__graf   { opacity: 1; }
-.klima[data-steg="2"] .klima__landing { opacity: 1; }
+.klima__note--be {
+  position: absolute;
+  left: 0; top: 5.5cqi; width: 24cqi;
+  margin: 0;
+}
+
+/* Landingen (§ 7-9) er strøket 2026-08-18 — rommet kan
+   anskaffelsesforskriften bedre enn foredragsholderen. */
 
 @media (prefers-reduced-motion: no-preference) {
-  .klima__graf    { transition: opacity .55s ease; }
-  .klima__landing { transition: opacity .6s ease .2s; }
-  /* Søylene vokser fra venstre når grafen kommer. */
-  .klima[data-steg="1"] .klima__spor i,
-  .klima[data-steg="2"] .klima__spor i {
-    animation: t-vokse .8s cubic-bezier(.22,.86,.28,1) both;
+  /* Byttet: det som går ut, går først; det som kommer, kommer
+     litt etter — derfor delay bare på det synlige. */
+  .klima__panel { transition: opacity .4s ease; }
+  .klima:not([data-steg]) .klima__panel--lage,
+  .klima[data-steg="0"] .klima__panel--lage,
+  .klima[data-steg="1"] .klima__panel--bruke,
+  .klima[data-steg="2"] .klima__panel--be { transition-delay: .3s; }
+
+  /* Søylene vokser fra venstre når panelet deres er inne:
+     lage-panelet ved slidens inngang, bruke-panelet på steg 1. */
+  .klima.play .klima__panel--lage .klima__spor i,
+  .klima[data-steg="1"] .klima__panel--bruke .klima__spor i {
+    animation: t-vokse .8s cubic-bezier(.22,.86,.28,1) .35s both;
   }
-  .klima__rad:nth-of-type(2) .klima__spor i { animation-delay: .1s; }
-  .klima__rad:nth-of-type(3) .klima__spor i { animation-delay: .2s; }
-  .klima__rad--na .klima__spor i { animation-delay: .35s !important; }
+  /* Basen (.35s) er panelets egen inntoning; staggeren ligger oppå. */
+  .klima__rad:nth-of-type(2) .klima__spor i { animation-delay: .47s; }
+  .klima__rad:nth-of-type(3) .klima__spor i { animation-delay: .59s; }
+  .klima__rad:nth-of-type(4) .klima__spor i { animation-delay: .71s; }
+  .klima__rad--na .klima__spor i { animation-delay: .9s !important; }
   @keyframes t-vokse { from { transform: scaleX(0); } to { transform: none; } }
   .klima__spor i { transform-origin: left center; }
+
+  /* Boblene blåses opp når panelet kommer — videoen til slutt. */
+  .klima[data-steg="2"] .klima__boble i {
+    animation: t-boble .55s cubic-bezier(.22,.86,.28,1) .35s both;
+  }
+  .klima__boble:nth-child(2) i { animation-delay: .47s; }
+  .klima__boble:nth-child(3) i { animation-delay: .59s; }
+  .klima__boble--na i          { animation-delay: .8s; }
+  @keyframes t-boble { from { transform: scale(0); } to { transform: none; } }
 }
 
 </style>
@@ -4846,126 +5138,7 @@ body.deck-mork { background: var(--ink); }
     <p class="innibit__fot"><span class="innibit__fot--a">slik den står etter at den har sett på de andre</span><span class="innibit__fot--b">attention hentet fra naboene — detektorene henter fra det den har lest</span></p>
   </section>
 
-  <!-- ── 5 · Tre kilder, ett svar ─────────────────────────────
-       Avslutningen på bolk 2. Tre kort, én vektor: treningen satte
-       tallene og låste dem; prompten-i-kontekst og innhentingen
-       skriver om noen av dem — bare for denne runden. Omgjort
-       2026-08-16: banene som ble tegnet (strekene) er ute, og
-       tullelovteksten/tulleforbrytelsen er byttet med ekte skala
-       og et ekte oppslag. Rent CSS, ingen måling.
-       ────────────────────────────────────────────────────── -->
-  <section class="deck-slide kilder" data-tittel="Tre kilder" data-inn="opp" data-maks-steg="2" data-tema="Språkmodellen">
-    <ol class="deck-reise">
-      <li>Spørsmålet</li>
-      <li>Ordbiter</li>
-      <li>Kontekst</li>
-      <li><span class="na">Utregningen</span></li>
-      <li>Gjettingen</li>
-      <li>Runden</li>
-      <li>Svaret</li>
-    </ol>
 
-    <h2>Kilder</h2>
-
-    <!-- Kortene kommer ett per steg: Treningen står fra start, prompten
-         på steg 1, innhentingen på steg 2. Under Treningen står dyrs
-         vektor loddrett — de LÅSTE tallene — og hvert nye kort skriver
-         om noen av dem, i spot. Tallene og omskrivingene er de samme
-         som på Ordbiter/Kontekst, så historien er konsistent. -->
-    <div class="kilder__kort kilder__kort--lest" style="--x:18">
-      <div class="kilder__bilde kilder__bilde--lov">
-        <b>≈ 15 billioner ordbiter</b>
-        <span>Typisk treningsmengde for en stor modell — det meste lest omtrent én gang, i millioner av små justeringsrunder.</span>
-      </div>
-      <span class="kilder__nr">1 · Treningen</span>
-      <p class="kilder__hva">Det den har lest</p>
-    </div>
-
-    <div class="kilder__kort kilder__kort--sam" style="--x:50">
-      <div class="kilder__bilde kilder__bilde--prompt">
-        <span>Hvor dyr kaffemaskin kan vi anskaffe?</span>
-      </div>
-      <span class="kilder__nr">2 · Prompten</span>
-      <p class="kilder__hva">Prompten satt i kontekst</p>
-    </div>
-
-    <div class="kilder__kort kilder__kort--opp" style="--x:82">
-      <div class="kilder__bilde kilder__bilde--dok">
-        <b>doffin.no · i dag</b>
-        <span>Ferske treff hentes inn og legges rett i samtalen før den regner.</span>
-      </div>
-      <span class="kilder__nr">3 · Oppslaget</span>
-      <p class="kilder__hva">Innhenting av fersk data</p>
-    </div>
-
-    <!-- Dyrs vektor, loddrett under Treningen. .f er den låste verdien,
-         .e legger seg over: --sam-radene skrives om på steg 1 (samme
-         omskriving som på Kontekst-sliden), --opp-radene på steg 2. -->
-    <!-- Tallene og merkelappen står i samme kolonne, så «låst fra
-         trening» alltid følger rett under vektoren uansett hvor høyt
-         Trening-kortet over blir. -->
-    <div class="kilder__kolonne">
-      <div class="kilder__vek" aria-hidden="true">
-        <i class="endres endres--opp" style="--r:0"><span class="f">−0.38</span><span class="e">−0.12</span></i>
-        <i class="endres endres--sam" style="--r:0"><span class="f">0.22</span><span class="e">0.49</span></i>
-        <i>0.65</i>
-        <i class="endres endres--sam" style="--r:1"><span class="f">0.41</span><span class="e">0.68</span></i>
-        <i class="endres endres--opp" style="--r:1"><span class="f">−0.53</span><span class="e">0.24</span></i>
-        <i class="endres endres--sam" style="--r:2"><span class="f">0.27</span><span class="e">0.44</span></i>
-        <em>⋮</em>
-      </div>
-      <p class="kilder__laast">låst fra trening</p>
-    </div>
-
-    <p class="kilder__fot">Treningen satte tallene <b>inne i modellen</b> — der er de låst. Prompten og innhentingen endrer bare tallene den regner med <b>denne ene gangen</b>.</p>
-  </section>
-
-  <!-- ── 6 · Treningen ────────────────────────────────────────
-       Zoom inn i Trening-kortet. Generalisert 2026-08-16: sliden
-       heter «Kort om trening» og skal være et overblikk, ikke en
-       fasit — detaljnivået lå før på «inne i det den har lest»-
-       nivå. Merk arbeidsdelingen — HER er det hva trening ER;
-       i bolk 5 brukes det samme som argument for at det ikke er
-       det samme hvilken modell du bruker.
-       ────────────────────────────────────────────────────── -->
-  <section class="deck-slide trening" data-tittel="Treningen" data-inn="zoom"
-           data-zoom-fra=".kilder__kort--lest" data-maks-steg="2" data-tema="Språkmodellen">
-    <ol class="deck-reise">
-      <li>Spørsmålet</li>
-      <li>Ordbiter</li>
-      <li>Kontekst</li>
-      <li><span class="na">Utregningen</span></li>
-      <li>Gjettingen</li>
-      <li>Runden</li>
-      <li>Svaret</li>
-    </ol>
-
-    <p class="trening__over">Kort om trening</p>
-
-    <div class="trening__rad">
-      <div class="trening__steg">
-        <span class="trening__nr">01 · Lesingen</span>
-        <p class="trening__hva">Billioner av ordbiter, fra all slags data</p>
-        <p class="trening__om">Gjetter neste ordbit, om og om igjen. Det er her kunnskapen kommer fra. Den kan fortsette en setning — men ikke svare på et spørsmål.</p>
-      </div>
-      <div class="trening__steg">
-        <span class="trening__nr">02 · Skolen <b>SFT</b></span>
-        <p class="trening__hva">Eksempler på gode svar</p>
-        <p class="trening__om">Mennesker viser den tusenvis av eksempler: her er et spørsmål, slik ser et godt svar ut. Etterpå behandler den det du skriver som noe som skal besvares — ikke som en setning som skal fortsettes.</p>
-      </div>
-      <div class="trening__steg">
-        <span class="trening__nr">03 · Smaken <b>RLHF</b></span>
-        <p class="trening__hva">«Hvilket av de to var best?»</p>
-        <p class="trening__om">Modellen lager to svar, og en dommer peker på det beste — først et menneske, etter hvert tar ofte en annen modell over dommerrollen. Det svaret blir litt mer sannsynlig neste gang.</p>
-      </div>
-    </div>
-
-    <!-- Skalaen er poenget Lars savnet: uten den høres tre kolonner ut
-         som tre ettermiddager. Siste setning er vaktposten — dette er
-         ett oppsett, ikke fasit for alle modeller. -->
-    <p class="trening__skala">Alle tre gjentas i et omfang som er vanskelig å ta inn, over timer, uker eller måneder. For hver runde flyttes tallene i modellen et lite hakk. <b>Dette er ett vanlig oppsett — ikke alle modeller trenes likt, og detaljene er sjelden offentlige.</b></p>
-
-  </section>
 
   <!-- ── Gjettingen sto her — parkert 2026-08-17 i
        `parkert/gjettingen.html`, se kommentaren der. Steget står
@@ -5040,12 +5213,147 @@ body.deck-mork { background: var(--ink); }
     <p class="svaret__note">Ingen av setningene er sjekket mot regelverket. De er regnet fram.</p>
   </section>
 
+  <!-- ── Kildene og treningen ────────────────────────────────
+       Flyttet hit 2026-08-18. Sto før mellom «Inn i én bit» og
+       «Runden» og brøt reisen midt i: reisestripa lyste på
+       «Utregningen» tre slides på rad, fordi disse to ikke ER
+       stasjoner på reisen. Reisen er en sanntidshistorie; dette
+       er en taksonomi og en forhistorie.
+
+       Her svarer de i stedet på spørsmålet Svaret nettopp plantet:
+       «de er regnet fram» — regnet fram FRA HVA?
+
+       NB: Treningen zoomer fra .kilder__kort--lest, som slås opp
+       på FORRIGE slide (se zoomInn). De to må derfor alltid stå
+       rett etter hverandre, i denne rekkefølgen.
+       ────────────────────────────────────────────────────── -->
+  <!-- ── 5 · Tre kilder, ett svar ─────────────────────────────
+       Avslutningen på bolk 2. Tre kort, én vektor: treningen satte
+       tallene og låste dem; prompten-i-kontekst og innhentingen
+       skriver om noen av dem — bare for denne runden. Omgjort
+       2026-08-16: banene som ble tegnet (strekene) er ute, og
+       tullelovteksten/tulleforbrytelsen er byttet med ekte skala
+       og et ekte oppslag. Rent CSS, ingen måling.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide kilder" data-tittel="Tre kilder" data-inn="opp" data-maks-steg="2" data-tema="Språkmodellen">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li><span class="na">Svaret</span></li>
+    </ol>
+
+    <h2>Kilder</h2>
+
+    <!-- Kortene kommer ett per steg: Treningen står fra start, prompten
+         på steg 1, innhentingen på steg 2. Under Treningen står dyrs
+         vektor loddrett — de LÅSTE tallene — og hvert nye kort skriver
+         om noen av dem, i spot. Tallene og omskrivingene er de samme
+         som på Ordbiter/Kontekst, så historien er konsistent. -->
+    <div class="kilder__kort kilder__kort--lest" style="--x:18">
+      <div class="kilder__bilde kilder__bilde--lov">
+        <b>≈ 15 billioner ordbiter</b>
+        <span>Typisk treningsmengde for en stor modell — det meste lest omtrent én gang, i millioner av små justeringsrunder.</span>
+      </div>
+      <span class="kilder__nr">1 · Treningen</span>
+      <p class="kilder__hva">Det den har lest</p>
+    </div>
+
+    <div class="kilder__kort kilder__kort--sam" style="--x:50">
+      <div class="kilder__bilde kilder__bilde--prompt">
+        <span>Hvor dyr kaffemaskin kan vi anskaffe?</span>
+      </div>
+      <span class="kilder__nr">2 · Prompten</span>
+      <p class="kilder__hva">Prompten satt i kontekst</p>
+    </div>
+
+    <div class="kilder__kort kilder__kort--opp" style="--x:82">
+      <div class="kilder__bilde kilder__bilde--dok">
+        <b>doffin.no · i dag</b>
+        <span>Ferske treff hentes inn og legges rett i samtalen før den regner.</span>
+      </div>
+      <span class="kilder__nr">3 · Oppslaget</span>
+      <p class="kilder__hva">Innhenting av fersk data</p>
+    </div>
+
+    <!-- Dyrs vektor, loddrett under Treningen. .f er den låste verdien,
+         .e legger seg over: --sam-radene skrives om på steg 1 (samme
+         omskriving som på Kontekst-sliden), --opp-radene på steg 2. -->
+    <!-- Tallene og merkelappen står i samme kolonne, så «låst fra
+         trening» alltid følger rett under vektoren uansett hvor høyt
+         Trening-kortet over blir. -->
+    <div class="kilder__kolonne">
+      <div class="kilder__vek" aria-hidden="true">
+        <i class="endres endres--opp" style="--r:0"><span class="f">−0.38</span><span class="e">−0.12</span></i>
+        <i class="endres endres--sam" style="--r:0"><span class="f">0.22</span><span class="e">0.49</span></i>
+        <i>0.65</i>
+        <i class="endres endres--sam" style="--r:1"><span class="f">0.41</span><span class="e">0.68</span></i>
+        <i class="endres endres--opp" style="--r:1"><span class="f">−0.53</span><span class="e">0.24</span></i>
+        <i class="endres endres--sam" style="--r:2"><span class="f">0.27</span><span class="e">0.44</span></i>
+        <em>⋮</em>
+      </div>
+      <p class="kilder__laast">låst fra trening</p>
+    </div>
+
+    <p class="kilder__fot">Treningen satte tallene <b>inne i modellen</b> — der er de låst. Prompten og innhentingen endrer bare tallene den regner med <b>denne ene gangen</b>.</p>
+  </section>
+
+  <!-- ── 6 · Treningen ────────────────────────────────────────
+       Zoom inn i Trening-kortet. Generalisert 2026-08-16: sliden
+       heter «Kort om trening» og skal være et overblikk, ikke en
+       fasit — detaljnivået lå før på «inne i det den har lest»-
+       nivå. Merk arbeidsdelingen — HER er det hva trening ER;
+       i bolk 5 brukes det samme som argument for at det ikke er
+       det samme hvilken modell du bruker.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide trening" data-tittel="Treningen" data-inn="zoom"
+           data-zoom-fra=".kilder__kort--lest" data-maks-steg="2" data-tema="Språkmodellen">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li><span class="na">Svaret</span></li>
+    </ol>
+
+    <p class="trening__over">Kort om trening</p>
+
+    <div class="trening__rad">
+      <div class="trening__steg">
+        <span class="trening__nr">01 · Lesingen</span>
+        <p class="trening__hva">Billioner av ordbiter, fra all slags data</p>
+        <p class="trening__om">Gjetter neste ordbit, om og om igjen. Det er her kunnskapen kommer fra. Den kan fortsette en setning — men ikke svare på et spørsmål.</p>
+      </div>
+      <div class="trening__steg">
+        <span class="trening__nr">02 · Skolen <b>SFT</b></span>
+        <p class="trening__hva">Eksempler på gode svar</p>
+        <p class="trening__om">Mennesker viser den tusenvis av eksempler: her er et spørsmål, slik ser et godt svar ut. Etterpå behandler den det du skriver som noe som skal besvares — ikke som en setning som skal fortsettes.</p>
+      </div>
+      <div class="trening__steg">
+        <span class="trening__nr">03 · Smaken <b>RLHF</b></span>
+        <p class="trening__hva">«Hvilket av de to var best?»</p>
+        <p class="trening__om">Modellen lager to svar, og en dommer peker på det beste — først et menneske, etter hvert tar ofte en annen modell over dommerrollen. Det svaret blir litt mer sannsynlig neste gang.</p>
+      </div>
+    </div>
+
+    <!-- Skalaen er poenget Lars savnet: uten den høres tre kolonner ut
+         som tre ettermiddager. Siste setning er vaktposten — dette er
+         ett oppsett, ikke fasit for alle modeller. -->
+    <p class="trening__skala">Alle tre gjentas i et omfang som er vanskelig å ta inn, over timer, uker eller måneder. For hver runde flyttes tallene i modellen et lite hakk. <b>Dette er ett vanlig oppsett — ikke alle modeller trenes likt, og detaljene er sjelden offentlige.</b></p>
+
+  </section>
   <!-- ── Skille · Menneske vs Maskin ──────────────────────────
        Mørk flate som bryter opp etter bolk 2. Ingen reisestripe,
        ingen innhold — den er en pust, og et signal om at vi bytter
        spor. Bakgrunnen settes med tokens, ikke hex.
        ────────────────────────────────────────────────────── -->
   <section class="deck-slide skille" data-tittel="Menneske vs Maskin" data-inn="opp" data-tema="Menneske vs Maskin">
+    <p class="fx-fade del2__over" style="--d:.15s">Del 1 · bolk 2</p>
     <h2 class="skille__tittel fx-rise" style="--d:.2s">Menneske <span class="skille__mot">vs</span> Maskin</h2>
   </section>
 
@@ -5121,7 +5429,7 @@ body.deck-mork { background: var(--ink); }
           <li>Hjernen endrer seg mens den holder på. Modellen ble <b>låst</b> da treningen var ferdig.</li>
           <li>Ingenting du skriver i dag havner i tallene. Den lærer ikke av deg.</li>
           <li>Ingen kropp, ingen sanser, ingen grunn til å bry seg om utfallet.</li>
-          <li>Og <b>ingen mekanisme for å vite at den ikke vet</b>.</li>
+          <li>Og ingen mekanisme for å vite at den ikke vet.</li>
         </ul>
       </div>
     </div>
@@ -5250,7 +5558,7 @@ body.deck-mork { background: var(--ink); }
 
     <p class="avlast__strumke">«Vi mennesker er laget for å ta minste motstands vei.»</p>
 
-    <p class="avlast__slutt">Er det et dypere samfunnsproblem dersom dagens 17-åringer <b>slår opp</b> hva sosialdemokrati og frontfagsmodellen er — i stedet for å <b>vite</b> det?</p>
+    <p class="avlast__slutt">Det du slår opp, kan du bruke. Det du vet, kan du tenke med. Hva skjer med samfunnsforståelsen når frontfagsmodellen blir noe man <b>henter</b> — ikke noe man <b>har</b>?</p>
   </section>
 
   <!-- ── 11 · Er det det samme hvem? (bolk 5) ─────────────────
@@ -5265,6 +5573,7 @@ body.deck-mork { background: var(--ink); }
        skrus ned på samme måte som ved Menneske vs Maskin. Token-
        byttet ligger i .deck-slide--mork i deck.css. -->
   <section class="deck-slide deck-slide--mork tre" data-tittel="Er det det samme hvilken modell?" data-tema="Hvem du bruker">
+    <p class="fx-fade del2__over" style="--d:.15s">Del 1 · bolk 3</p>
     <h2 class="tre__sporsmal">Er det det samme <span class="offset" data-echo="hvilken modell">hvilken modell</span> vi bruker?</h2>
 
     <div class="tre__rad">
@@ -5278,6 +5587,14 @@ body.deck-mork { background: var(--ink); }
         <svg viewBox="0 0 100 178" role="img" aria-label="Håndtegnet robot i gult blekk, med hodetelefoner"><g class="cam"></g></svg>
       </figure>
     </div>
+
+    <!-- Svaret varsles: tre vinklinger, i samme rekkefølge som slidene
+         som følger. Ordene kommer etter at robotene har landet. -->
+    <p class="tre__vinklinger">
+      <span class="fx-fade" style="--d:3.4s">Åpen kildekode</span>
+      <span class="fx-fade" style="--d:3.9s">· Pentagate</span>
+      <span class="fx-fade" style="--d:4.4s">· Klimaregnskapet</span>
+    </p>
   </section>
 
   <!-- ── 12 · Valgene tas nå (Gladstein) ──────────────────────
@@ -5364,6 +5681,139 @@ body.deck-mork { background: var(--ink); }
     <p class="deck-kilde">CBS News · Fortune, 3. mars 2026 · The Guardian, 28. februar 2026</p>
   </section>
 
+  <!-- ── Klimaregnskapet ──────────────────────────────────────
+       Tredje vinkling i modellvalg-bolken (åpen kildekode →
+       Pentagate → klima), og ligger med vilje FØR aktør-tabellen:
+       de tre vinklingene skal være fortalt før tabellen samler dem.
+
+       Tre panel som byttes inn og ut per steg, + en landing:
+       steg 0 — Å LAGE modellen: kg CO₂ for å trene fra bunnen
+                (Luccioni m.fl. / Hugging Face, BLOOM ~176B:
+                75 200 kg inkl. eksperimenter)
+       steg 1 — Å BRUKE den: energi per spørring, modellvalget
+                avgjør (Google mai 2025: 0,24 Wh median tekst-
+                prompt · HF AI Energy Score v2: resonnering ≈30×)
+       steg 2 — HVA du ber om: arealriktige sirkler (UNU-INWEH-
+                rapporten 2026 / NRK: søk 0,3 · kort spørring
+                0,42 · KI-bilde 2,9 · KI-video 415 Wh)
+       steg 3 — landingen: § 7-9, klima og miljø vektes minst
+                30 % siden 01.01.2024
+
+       Grafene er emphasis-grafer: én farge på poenget, grått på
+       referansene. Lineær skala — at de små stolpene/sirklene
+       nesten forsvinner ER funnet, ikke en tegnefeil; tallene
+       står som direktelabel.
+
+       Kilder (hentet inn 2026-08-18):
+       · UNU-INWEH: The Environmental Cost of AI (2026)
+       · Nature npj Climate Action s44168-026-00411-0
+       · NRK Urix: «FN-rapport: Så mye koster KI-bruken din»
+       · Google Cloud aug. 2025 · HF AI Energy Score v2
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide klima" data-tittel="Klimaregnskapet" data-inn="opp"
+           data-maks-steg="2" data-tema="Hvem du bruker">
+    <p class="klima__over">Klimaregnskapet</p>
+    <h2 class="klima__tittel">Hva koster det <span class="offset" data-echo="for kloden">for kloden</span>?</h2>
+
+    <!-- Steg 0: å LAGE én modell fra bunnen -->
+    <div class="klima__panel klima__panel--lage" aria-hidden="true">
+      <p class="klima__grafmerke">Å lage modellen — utslipp før den har svart på noe som helst · kg CO₂</p>
+
+      <div class="klima__rad" style="--v:1.2">
+        <span class="klima__navn">Fly tur-retur New York–San Francisco</span>
+        <span class="klima__spor"><i></i></span>
+        <span class="klima__verdi">900 kg</span>
+      </div>
+      <div class="klima__rad" style="--v:6.6">
+        <span class="klima__navn">Et menneskes utslipp, ett år</span>
+        <span class="klima__spor"><i></i></span>
+        <span class="klima__verdi">5 000 kg</span>
+      </div>
+      <div class="klima__rad" style="--v:21.8">
+        <span class="klima__navn">En amerikaners utslipp, ett år</span>
+        <span class="klima__spor"><i></i></span>
+        <span class="klima__verdi">16 400 kg</span>
+      </div>
+      <div class="klima__rad" style="--v:76">
+        <span class="klima__navn">En bil, hele livsløpet med drivstoff</span>
+        <span class="klima__spor"><i></i></span>
+        <span class="klima__verdi">57 152 kg</span>
+      </div>
+      <div class="klima__rad klima__rad--na" style="--v:100">
+        <span class="klima__navn">Å trene én stor språkmodell</span>
+        <span class="klima__spor"><i></i></span>
+        <span class="klima__verdi">75 200 kg</span>
+      </div>
+
+      <p class="klima__note">En engangsregning på <b>75 tonn CO₂</b> — mer enn en bil slipper ut i hele sitt liv. Og så kommer bruken.</p>
+    </div>
+
+    <!-- Steg 1: å BRUKE den — modellvalget avgjør -->
+    <div class="klima__panel klima__panel--bruke" aria-hidden="true">
+      <div class="klima__hero">
+        <p class="klima__tall">0,24 Wh</p>
+        <p class="klima__hva">per vanlig tekstprompt — som en mikrobølgeovn i <b>ett sekund</b>. 0,03 g CO₂.</p>
+      </div>
+
+      <div class="klima__graf">
+        <p class="klima__grafmerke">Å bruke den — energi per spørring, samme skala</p>
+
+        <div class="klima__rad" style="--v:0.75">
+          <span class="klima__navn">Google-søk</span>
+          <span class="klima__spor"><i></i></span>
+          <span class="klima__verdi">0,3 Wh</span>
+        </div>
+        <div class="klima__rad" style="--v:0.6">
+          <span class="klima__navn">Vanlig prompt</span>
+          <span class="klima__spor"><i></i></span>
+          <span class="klima__verdi">0,24 Wh</span>
+        </div>
+        <div class="klima__rad klima__rad--na" style="--v:100">
+          <span class="klima__navn">Resonneringsmodell</span>
+          <span class="klima__spor"><i></i></span>
+          <span class="klima__verdi">7–40 Wh</span>
+        </div>
+
+        <p class="klima__note">Modeller som «tenker høyt» bruker i snitt <b>30 ganger</b> mer — de verste hundrevis.</p>
+      </div>
+    </div>
+
+    <!-- Steg 2: HVA du ber om — arealriktige sirkler à la NRK -->
+    <div class="klima__panel klima__panel--be" aria-hidden="true">
+      <p class="klima__grafmerke">Hva du ber om — energi per spørring, arealriktig</p>
+
+      <div class="klima__bobler">
+        <div class="klima__boble" style="--dia:0.45">
+          <span class="klima__navn">Nettsøk</span>
+          <span class="klima__verdi">0,3 Wh</span>
+          <i></i>
+        </div>
+        <div class="klima__boble" style="--dia:0.55">
+          <span class="klima__navn">Kort spørring</span>
+          <span class="klima__verdi">0,42 Wh</span>
+          <i></i>
+        </div>
+        <div class="klima__boble" style="--dia:1.4">
+          <span class="klima__navn">KI-bilde</span>
+          <span class="klima__verdi">2,9 Wh</span>
+          <i></i>
+        </div>
+        <div class="klima__boble klima__boble--na" style="--dia:16.5">
+          <span class="klima__navn">KI-video</span>
+          <span class="klima__verdi">415 Wh</span>
+          <i></i>
+        </div>
+      </div>
+
+      <p class="klima__note klima__note--be">Én KI-video koster som <b>1 400 nettsøk</b>.</p>
+    </div>
+
+    <!-- § 7-9-landingen strøket 2026-08-18: Lars («det kan jeg ikke
+         si som junior til gamle innkjøpsfolk — de vet det»). -->
+
+    <p class="deck-kilde">FN-universitetet UNU-INWEH, 2026 · NRK Urix · Google Cloud, aug. 2025 · Hugging Face AI Energy Score v2 · Luccioni m.fl.</p>
+  </section>
+
   <!-- ── 14 · Aktørene ────────────────────────────────────────
        Tabellen fra highborn. Tallene er ferskvare — sjekk dem
        mot kilden før september.
@@ -5373,10 +5823,22 @@ body.deck-mork { background: var(--ink); }
       <h2>Forskjeller på <span class="offset" data-echo="LLM-aktører">LLM-aktører</span></h2>
     </div>
 
+    <!-- Kilden per kolonne står nå I kolonnehodet (mono-underlinje),
+         ikke bare i kildelinja — Lars' ønske 2026-08-18. Klima-
+         kolonnen kom samtidig: den måler ÅPENHET om utslipp, ikke
+         utslippene selv (de er ikke sammenlignbart publisert).
+         Mistral-LCA-en verifisert 2026-08-18 (Carbone 4/ADEME,
+         ISO 14040/44, Large 2). xAI: gasskraft-kontroversen i
+         Memphis er bredt dokumentert. -->
     <table class="tab">
       <thead>
         <tr>
-          <th>Selskap</th><th>Åpen kildekode</th><th>Etiske retningslinjer</th><th>Militær tilknytning</th><th>Transparens</th>
+          <th>Selskap</th>
+          <th>Åpen kildekode<span>egne utgivelser</span></th>
+          <th>Etiske retningslinjer<span>selskapenes policyer</span></th>
+          <th>Militær tilknytning<span>CNN · DoD, 2026</span></th>
+          <th>Transparens<span>Stanford FMTI 2025</span></th>
+          <th>Klimaåpenhet<span>egne utslippsdata</span></th>
         </tr>
       </thead>
       <tbody>
@@ -5386,6 +5848,7 @@ body.deck-mork { background: var(--ink); }
           <td>Constitutional AI, RSP — transparenshub publisert</td>
           <td>Saksøkte Pentagon da de krevde autonome våpen og masseovervåking</td>
           <td><b>Høy</b><span>5. → 2. plass</span></td>
+          <td>Lite publisert om egen bruk</td>
         </tr>
         <tr>
           <td><b>Mistral</b><span>Le Chat</span></td>
@@ -5393,6 +5856,7 @@ body.deck-mork { background: var(--ink); }
           <td>Begrenset publisert</td>
           <td>Testet av DoD, ingen kjent stor kontrakt</td>
           <td>Svært lav<span>55 → 18</span></td>
+          <td><b>Full livsløpsanalyse</b><span>først i bransjen, ISO-revidert</span></td>
         </tr>
         <tr>
           <td><b>Meta</b><span>Llama</span></td>
@@ -5400,6 +5864,7 @@ body.deck-mork { background: var(--ink); }
           <td>Begrenset</td>
           <td>Llama brukes aktivt av militær</td>
           <td>Lav<span>1. → 5. plass</span></td>
+          <td>Trenings-CO₂ i modellkortene</td>
         </tr>
         <tr>
           <td><b>OpenAI</b><span>GPT</span></td>
@@ -5407,6 +5872,7 @@ body.deck-mork { background: var(--ink); }
           <td>Ja — men svekket</td>
           <td>200 mill. USD DoD-kontrakt</td>
           <td>Lav<span>2. → 6. plass</span></td>
+          <td>Ett blogg-tall, uten metode</td>
         </tr>
         <tr>
           <td><b>Google</b><span>Gemini</span></td>
@@ -5414,6 +5880,7 @@ body.deck-mork { background: var(--ink); }
           <td>Ja — begrenset</td>
           <td>200 mill. USD DoD-kontrakt, IL6-klarering</td>
           <td>Middels</td>
+          <td>Måler og publiserer per spørring</td>
         </tr>
         <tr>
           <td><b>xAI</b><span>Grok</span></td>
@@ -5421,6 +5888,7 @@ body.deck-mork { background: var(--ink); }
           <td>Minimalt</td>
           <td>200 mill. USD DoD-kontrakt</td>
           <td>Svært lav<span>ny i indeksen</span></td>
+          <td>Gasskraft i Memphis — omstridt</td>
         </tr>
         <tr class="tab__advar">
           <td><b>DeepSeek</b><span>R1</span></td>
@@ -5428,6 +5896,7 @@ body.deck-mork { background: var(--ink); }
           <td>Kinesisk regulering — ikke vestlig åpenhet</td>
           <td>Kinesisk militærtilknytning antatt</td>
           <td>Svært lav</td>
+          <td>Ingenting publisert</td>
         </tr>
         <tr class="tab__advar">
           <td><b>Alibaba</b><span>Qwen — den jeg kjører lokalt</span></td>
@@ -5435,66 +5904,12 @@ body.deck-mork { background: var(--ink); }
           <td>Kinesisk regulering</td>
           <td>Kinesisk militærtilknytning antatt</td>
           <td>Svært lav</td>
+          <td>Ingenting publisert</td>
         </tr>
       </tbody>
     </table>
 
-    <p class="deck-kilde">Stanford FMTI 2025 · Anthropic Transparency Hub · CNN, mai 2026</p>
-  </section>
-
-  <!-- ── Klimaregnskapet ──────────────────────────────────────
-       Ligger i modellvalg-bolken med vilje: poenget er ikke at
-       KI bruker strøm, men at MODELLVALGET avgjør hvor mye.
-       Derfor kommer den rett før «Din brukermakt» — den er enda
-       et argument for at valget betyr noe.
-
-       Grafen er en emphasis-graf: én farge på det som er poenget,
-       grått på referansene. Skalaen er LINEÆR og går til 40 Wh —
-       at de to første søylene nesten forsvinner er ikke en
-       tegnefeil, det er funnet. Tallene står som direktelabel.
-
-       Alt verifisert 2026-08-17:
-       · 0,24 Wh / 0,03 g CO₂e — Googles egen måling, median
-         Gemini-tekstprompt mai 2025 (full telemetri: også kjøling
-         og idle-kapasitet, ikke bare akseleratoren)
-       · resonneringsmodeller ≈ 30× i snitt (Hugging Face AI
-         Energy Score v2); o3-klassen 7–40 Wh per spørring
-       · § 7-9: klima og miljø vektes minst 30 % siden 01.01.2024
-       ────────────────────────────────────────────────────── -->
-  <section class="deck-slide klima" data-tittel="Klimaregnskapet" data-inn="opp"
-           data-maks-steg="2" data-tema="Hvem du bruker">
-    <p class="klima__over">Google, målt mai 2025 · Hugging Face AI Energy Score</p>
-    <h2 class="klima__tittel">Hva koster det <span class="offset" data-echo="i strøm">i strøm</span>?</h2>
-
-    <div class="klima__hero">
-      <p class="klima__tall">0,24 Wh</p>
-      <p class="klima__hva">per vanlig tekstprompt — som en mikrobølgeovn i <b>ett sekund</b>. 0,03 g CO₂.</p>
-    </div>
-
-    <div class="klima__graf" aria-hidden="true">
-      <p class="klima__grafmerke">Energi per spørring — samme skala</p>
-
-      <div class="klima__rad" style="--v:0.75">
-        <span class="klima__navn">Google-søk</span>
-        <span class="klima__spor"><i></i></span>
-        <span class="klima__verdi">0,3 Wh</span>
-      </div>
-      <div class="klima__rad" style="--v:0.6">
-        <span class="klima__navn">Vanlig prompt</span>
-        <span class="klima__spor"><i></i></span>
-        <span class="klima__verdi">0,24 Wh</span>
-      </div>
-      <div class="klima__rad klima__rad--na" style="--v:100">
-        <span class="klima__navn">Resonneringsmodell</span>
-        <span class="klima__spor"><i></i></span>
-        <span class="klima__verdi">7–40 Wh</span>
-      </div>
-
-      <p class="klima__note">Modeller som «tenker høyt» bruker i snitt <b>30 ganger</b> mer — de verste hundrevis.</p>
-    </div>
-
-
-    <p class="deck-kilde">Google Cloud, aug. 2025 · Hugging Face AI Energy Score v2 · anskaffelsesforskriften § 7-9 (fra 01.01.2024)</p>
+    <p class="deck-kilde">Stanford FMTI 2025 · Anthropic Transparency Hub · CNN, mai 2026 · klima: Mistral LCA (Carbone 4/ADEME, juli 2025) · Google Cloud, aug. 2025 · Meta modellkort · Memphis: bredt dekket, bl.a. The Guardian 2025</p>
   </section>
 
   <!-- ── 15 · Din brukermakt ──────────────────────────────────
@@ -5550,12 +5965,15 @@ body.deck-mork { background: var(--ink); }
        · kritikken i Stat og Styring, bl.a. barnehage/SFO-anslaget
        ────────────────────────────────────────────────────── -->
   <section class="deck-slide skille" data-tittel="Arbeidsplasser" data-inn="opp" data-tema="Arbeidsplasser">
-    <p class="fx-fade del2__over" style="--d:.15s">Del 1 · siste bolk</p>
+    <p class="fx-fade del2__over" style="--d:.15s">Del 1 · bolk 4</p>
     <h2 class="skille__tittel fx-rise" style="--d:.3s">Arbeidsplasser<br>og <span class="skille__mot">byråkrati</span></h2>
   </section>
 
+  <!-- Landingen «Det ble regnet fram …» er tatt bort 2026-08-18:
+       Lars sier den i stedet. Derfor er maks-steg 2, ikke 3 —
+       ellers ville siste klikk vært et dødt trykk. -->
   <section class="deck-slide riks" data-tittel="155 000 årsverk" data-inn="opp"
-           data-maks-steg="3" data-tema="Arbeidsplasser">
+           data-maks-steg="2" data-tema="Arbeidsplasser">
     <p class="riks__over">Riksrevisjonen · Dokument 3:18 (2023–2024)</p>
     <p class="riks__tall">155 000</p>
     <p class="riks__hva">årsverk i offentlig sektor kan erstattes av kunstig intelligens</p>
@@ -5570,43 +5988,122 @@ body.deck-mork { background: var(--ink); }
       <p class="riks__kritikk">Forskere i <i>Stat og Styring</i> kritiserte både metoden og bruken — blant annet anslaget om 15 000 stillinger i barnehage og SFO.</p>
     </div>
 
-    <p class="riks__landing">Det ble <b>regnet fram</b>. Det så riktig ut. Ingen spurte hvor det kom fra.</p>
-
-    <p class="deck-kilde">Riksrevisjonen Dok. 3:18 (2023–2024) · Menon Economics · Stat og Styring 35(3)</p>
+    <p class="deck-kilde">Riksrevisjonen Dok. 3:18 (2023–2024) · Menon-publikasjon 127/2023 · Stat &amp; Styring 35(3), 2026</p>
   </section>
 
-  <!-- ── Hvor er vi nå ────────────────────────────────────────
-       Motstykket til 155 000-sliden: løftet mot virkeligheten.
-       Tallene er fra IT i praksis 2025 (Rambøll med KS, Digdir,
-       TEK-Norge og NTNU) — verifisert 2026-08-17. Poenget er
-       gapet: verktøyet er tatt i bruk, men gevinsten er ikke tatt
-       ut, og det er ikke teknologien som står i veien.
+  <!-- «Hvor er vi nå?» sto her til 2026-08-18. Parkert i
+       parkert/hvor-er-vi-na.html — se fila for hvorfor og
+       hvordan den settes inn igjen. .hvor__*-CSS-en står igjen
+       i deck.css og er urørt. -->
 
-       Landingen er den viktigste: for anskaffelser finnes det
-       ingen norske tall ennå. Kartleggingen (Svenning &
-       Mwesiumo, Høgskolen i Molde) pågår mens vi sitter her —
-       det gjør rommet til deltakere, ikke tilskuere.
+  <!-- ── Én dag i uka ─────────────────────────────────────────
+       Det bærende bildet i arbeidsbolken: SSB-notatet 2025/15
+       (Vigtel, finansiert av HK-dir) beregner automatiserings-
+       potensialet til 16,8 % av arbeidstiden — i underkant av én
+       arbeidsdag per uke. For «høyere saksbehandlere i offentlig
+       og privat virksomhet» (91 000 jobber): 30,8 % — det er
+       ROMMET. Økonomisk-administrative fag ba/ma: ~26 %.
+
+       Kalenderen fyller seg per steg: steg 0 = landet (grått,
+       84 % av fredagen), steg 1 = dere (spot: hele fredagen +
+       godt over halve torsdagen). Spot er reservert for det som
+       gjelder rommet, i tråd med emphasis-disiplinen.
+
+       Verifisert 2026-08-18 direkte i notatet (SSB Notater
+       2025/15, kap. 3 og 6). NB: potensial, ikke prognose —
+       landingen sier det eksplisitt.
        ────────────────────────────────────────────────────── -->
-  <section class="deck-slide hvor" data-tittel="Hvor er vi nå?" data-inn="opp"
+  <section class="deck-slide uke" data-tittel="Én dag i uka" data-inn="opp"
            data-maks-steg="2" data-tema="Arbeidsplasser">
-    <p class="hvor__over">IT i praksis 2025 · Rambøll med KS, Digdir, TEK-Norge og NTNU</p>
-    <h2 class="hvor__tittel">Hvor er vi nå?</h2>
+    <p class="uke__over">SSB, notat 2025/15 — automatiseringspotensialet i norsk økonomi</p>
+    <h2 class="uke__tittel">Én dag <span class="offset" data-echo="i uka">i uka</span></h2>
 
-    <div class="hvor__par">
-      <div class="hvor__side">
-        <p class="hvor__tall">7 av 10</p>
-        <p class="hvor__hva">offentlige virksomheter bruker KI i arbeidshverdagen</p>
+    <div class="uke__venstre">
+      <div class="uke__blokk">
+        <p class="uke__tall">16,8 %</p>
+        <p class="uke__hva">av arbeidstiden i Norge kan automatiseres med generativ KI — i underkant av <b>én arbeidsdag i uka</b>.</p>
       </div>
-      <div class="hvor__side hvor__side--men">
-        <p class="hvor__tall">1 av 4</p>
-        <p class="hvor__hva">har faktisk kuttet kostnader eller ressursbruk</p>
+      <div class="uke__blokk uke__blokk--dere">
+        <p class="uke__tall">30,8 %</p>
+        <p class="uke__hva">for <b>høyere saksbehandlere</b> i offentlig og privat virksomhet — halvannen dag. Økonomisk-administrative fag: rundt 26 %.</p>
       </div>
     </div>
 
-    <p class="hvor__nyanse">Enkel bruk vokser raskt. <b>Integrert</b> bruk — der KI snakker med fagsystemene — er så vidt begynt.</p>
+    <div class="uke__kalender" aria-hidden="true">
+      <div class="uke__dag"><span class="uke__spor"><i></i></span><span class="uke__navn">man</span></div>
+      <div class="uke__dag"><span class="uke__spor"><i></i></span><span class="uke__navn">tir</span></div>
+      <div class="uke__dag"><span class="uke__spor"><i></i></span><span class="uke__navn">ons</span></div>
+      <div class="uke__dag uke__dag--tor"><span class="uke__spor"><i></i></span><span class="uke__navn">tor</span></div>
+      <div class="uke__dag uke__dag--fre"><span class="uke__spor"><i></i></span><span class="uke__navn">fre</span></div>
+    </div>
 
+    <!-- Kort med vilje: resten («spørsmålet er hvilke oppgaver»)
+         sier Lars muntlig. Ligger lavt på flaten så den ikke
+         kolliderer med tekstblokka over. -->
+    <p class="uke__landing">Potensial er ikke oppsigelser.</p>
 
-    <p class="deck-kilde">IT i praksis 2025 · kartleggingen: Svenning &amp; Mwesiumo, Høgskolen i Molde</p>
+    <p class="deck-kilde">SSB Notater 2025/15 (Vigtel) · registerbasert sysselsetting 2024 · finansiert av HK-dir</p>
+  </section>
+
+  <!-- ── Tidlige tegn ─────────────────────────────────────────
+       To ferske signaler som skal leses MOT hverandre, samme
+       grep som «Hvor er vi nå»: venstre side Menon-rapporten
+       32/2026 (norske Claude-data × Nav-ledighet), høyre side
+       angrekurven fra sommeren 2026. Spenningen mellom dem er
+       poenget — derfor lander sliden på hvordan, ikke om.
+
+       Forbeholdet på venstre side er ikke pynt: bolken har
+       nettopp lært rommet å spørre hvor tall kommer fra
+       (155 000-sliden), så her modellerer vi det selv.
+
+       Verifisert 2026-08-18: Menon-tallet lest direkte i
+       rapporten (kap. 4: +8 pp per 10 pp, signifikant på
+       1 %-nivå, samvariasjon). Orgvue-tallet bekreftet hos
+       Orgvue selv (Vitreous World, 1 163 toppledere, feb.–mars
+       2025: 39 % kuttet, 55 % av dem angrer). Ford/IBM/CBA:
+       CNBC 01.07.2026 + Finansavisen samme dag.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide tegn" data-tittel="Tidlige tegn" data-inn="opp"
+           data-maks-steg="1" data-tema="Arbeidsplasser">
+    <p class="tegn__over">To ferske signaler — de peker hver sin vei</p>
+    <h2 class="tegn__tittel">Tidlige tegn</h2>
+
+    <div class="tegn__par">
+      <!-- Erstattet +8pp-regresjonen 2026-08-18: prosentpoeng per
+           prosentpoeng var vanskelig å danne bilde av. Yrkeslista
+           er samme rapport, men konkret og peker rett på rommet.
+           Rangeringen er Menons figur 3-4 (topp 10 etter andel
+           oppgaver med registrerte KI-spørringer); 3, 4, 7 og 8 er
+           økonomi-/administrasjons-/kontoryrker = 4 av 10. -->
+      <div class="tegn__side">
+        <p class="tegn__merke">Menon · februar 2026 · faktisk KI-bruk per yrke</p>
+        <p class="tegn__tall">4 av 10</p>
+        <p class="tegn__hva">yrker på topplista over hvor KI allerede brukes mest, er økonomi-, administrasjons- og kontoryrker</p>
+        <ul class="tegn__navn">
+          <li><b>3.</b> Rådgivere innen økonomi, administrasjon og salg</li>
+          <li><b>4.</b> Kontormedarbeidere</li>
+          <li><b>7.</b> Medarbeidere innen økonomi og administrasjon</li>
+          <li><b>8.</b> Administrative og merkantile ledere</li>
+        </ul>
+        <p class="tegn__forbehold">Øverst: undervisningsyrker og IKT-rådgivere. Nederst: skogbrukere, fiskere, jordbrukere og renholdere.</p>
+      </div>
+      <div class="tegn__side tegn__side--anger">
+        <p class="tegn__merke">Angrekurven · Finansavisen, 1. juli 2026</p>
+        <p class="tegn__tall">55 %</p>
+        <p class="tegn__hva">av topplederne som kuttet ansatte for KI, innrømmer at beslutningen var feil <i>(Orgvue, 1 163 ledere)</i></p>
+        <ul class="tegn__navn">
+          <li><b>Ford</b> henter flere hundre erfarne ingeniører tilbake — kvalitetsfeil de automatiserte systemene ikke klarte å løse</li>
+          <li><b>IBM</b> lot KI ta 94 % av HR-sakene, men de siste 6 % var menneskejobben — tredobler nå juniorrekrutteringen</li>
+          <li><b>Commonwealth Bank</b> byttet 40 kundeservice­ansatte mot en talebot, fikk flere henvendelser — og hentet folkene tilbake</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Landingen om 58 % samarbeid er tatt bort 2026-08-18 —
+         Lars sier den muntlig. Sliden lander på kontrasten
+         mellom de to spaltene i stedet. -->
+
+    <p class="deck-kilde">Menon-publikasjon 32/2026 · Orgvue, 1 163 toppledere (2025) · CNBC &amp; Finansavisen, 1. juli 2026</p>
   </section>
 
   <!-- ── Skille · Del 2 ───────────────────────────────────────
@@ -5707,12 +6204,12 @@ body.deck-mork { background: var(--ink); }
           <td><b>Maskinen vi får utlevert</b><span>slik den er satt opp</span></td>
           <td>Ikke utviklingsmiljø · ikke egne agenter · ikke lokal modell. IT vil gjennomgå koden før KI-programmer implementeres.</td>
           <td>IT-drift</td>
-          <td class="lagene__ja">Ja — en beslutning, ikke en regel</td>
+          <td class="lagene__ja">Ja — vurdering av tilganger besluttes av ny DUIT-direktør</td>
         </tr>
       </tbody>
     </table>
 
-    <p class="deck-kilde">Policy for bruk av KI ved USN, vedtatt 17.06.2025 · innledningen og kapittel 6</p>
+    <p class="deck-kilde">Policy for bruk av KI ved USN · innledningen og kapittel 6</p>
   </section>
 
   <!-- ── U3 · Hierarkiet ──────────────────────────────────────
@@ -5771,7 +6268,7 @@ body.deck-mork { background: var(--ink); }
         <span>Policyen, kapittel 3 — «på en tydelig måte».</span>
       </li>
       <li>
-        <b>Og for øvrig kan du gjøre som du vil.</b>
+        <b>… og for øvrig kan du gjøre som du vil.</b>
         <span>Du velger selv hvem og hva du spør om. Ingen standardiserer spørsmålene
               dine, og ingen sitter og ser på dem.</span>
       </li>
@@ -5790,16 +6287,21 @@ body.deck-mork { background: var(--ink); }
       <h2>Har vi <span class="offset" data-echo="GO">GO</span> for å legge avtaler eller tilbud inn i LLM?</h2>
     </div>
 
+    <!-- Dokumentet var et tilbud til 2026-08-18. Byttet til
+         avtaletekst på Lars' ønske: rommet kjenner tilbud ut og
+         inn — avtalen er der de faktisk skal bruke verktøyet. -->
     <div class="gront__flate">
       <article class="gront__ark">
-        <p class="gront__hode">Tilbud · Rammeavtale kontorrekvisita 2026–2029</p>
+        <p class="gront__hode">Avtale · Rammeavtale kontorrekvisita 2026–2029</p>
         <ul class="gront__linjer">
-          <li>Tilbyder: <em data-merk="1">Nordvest Kontor AS, org.nr. 998 xxx xxx</em></li>
-          <li>Kontaktperson: <em data-merk="2">Marte Lien, mobil og e-post</em></li>
-          <li>Nøkkelpersonell: <em data-merk="2">CV for tre navngitte konsulenter</em></li>
-          <li>Prisskjema: <em data-merk="1">enhetspriser og rabattmatrise</em></li>
-          <li>Referanser: <em data-merk="2">tre kunder med kontaktpersoner</em></li>
-          <li>Vedlegg 3: <em data-merk="1">avtale med underleverandør</em></li>
+          <!-- Leverandørnavnet på en inngått avtale er offentlig —
+               ingen markering (Lars 2026-08-18). -->
+          <li>Leverandør: Nordvest Kontor AS, org.nr. 998 xxx xxx</li>
+          <li>Leverandørens kontaktperson: <em data-merk="2">Marte Lien, mobil og e-post</em></li>
+          <li>Vår kontraktsansvarlige: <em data-merk="2">navn, telefon og e-post</em></li>
+          <li>Bilag 2 · Priser: <em data-merk="1">enhetspriser og rabattmatrise</em></li>
+          <li>Bilag 3 · Nøkkelpersonell: <em data-merk="2">navngitte konsulenter med CV</em></li>
+          <li>Bilag 4: <em data-merk="1">avtale med underleverandør</em></li>
           <li class="gront__ok">Leveringstid: 5 virkedager</li>
           <li class="gront__ok">Miljøsertifisering: ISO 14001</li>
         </ul>
@@ -5809,9 +6311,11 @@ body.deck-mork { background: var(--ink); }
         <p><i class="gront__prikk gront__prikk--gul"></i> Forretningshemmelighet</p>
         <p><i class="gront__prikk gront__prikk--spot"></i> Personopplysning</p>
         <p><i class="gront__prikk gront__prikk--ok"></i> Åpne data — grønt</p>
-        <p class="gront__dom"><b>To linjer av åtte.</b> Resten kan ikke limes inn noe sted, heller ikke i Sikt KI-chat.</p>
+        <p class="gront__dom"><b>Ifølge Sikts veiledning:</b> med databehandleravtale kan vanlige personopplysninger (navn, e-post) lovlig behandles i godkjente verktøy. Særlige kategorier (helse, religion, fagforening) skal aldri dit.</p>
       </aside>
     </div>
+
+    <p class="deck-kilde">sikt.no: databehandleravtale kreves, samtaler krypteres og brukes ikke til trening · sektorveilederen ki.norge.no: grønn/gul med databehandleravtale</p>
 
   </section>
 
@@ -5823,7 +6327,6 @@ body.deck-mork { background: var(--ink); }
   <section class="deck-slide kap6" data-tittel="Kapittel 6" data-inn="opp" data-tema="Utgangspunktet">
     <div class="aktor__topp">
       <h2>Kapittel 6: <span class="offset" data-echo="administrasjon og drift">administrasjon og drift</span></h2>
-      <p>Hele innkjøpsseksjonens plass i policyen. Tre kulepunkter.</p>
     </div>
 
     <div class="kap6__flate">
@@ -5861,8 +6364,8 @@ body.deck-mork { background: var(--ink); }
       </li>
       <li>
         <b>Personvernkonsekvensvurdering.</b>
-        <span>Kreves ved sannsynlig høy risiko. Personvernombudet avgjør — og den blir
-              kort når svaret på «hvilke personopplysninger deles?» er «ingen».
+        <span>Kreves ved sannsynlig høy risiko. Personvernombudet avgjør.
+              Ingen personopplysninger — ingen behov.
               <i>GDPR artikkel 35.</i></span>
       </li>
     </ol>
@@ -5894,8 +6397,9 @@ body.deck-mork { background: var(--ink); }
         <p class="veier__dom">Trinn 2</p>
         <h3>Lukket, godkjent miljø</h3>
         <p class="veier__sp">Vanskelig å automatisere uten personopplysninger?</p>
-        <p>Da kan teksten leses et sted som allerede er godkjent — f.eks. Copilot på
-           USN-maskin eller Sikts KI-chat.</p>
+        <p>Da kan teksten leses et sted med databehandleravtale — Copilot på USN-maskin
+           eller Sikts KI-chat. Vanlige personopplysninger er da innenfor; særlige
+           kategorier (helse, religion m.m.) holdes utenfor uansett.</p>
       </article>
 
       <article class="veier__kort veier__kort--nei">
@@ -6249,6 +6753,31 @@ body.deck-mork { background: var(--ink); }
   const SVGNS = 'http://www.w3.org/2000/svg';
   let buetid, klammetid, blikktid;
 
+  // Engangs-tegningene (buer, blikk, klammer) og kaffe-reisen måler
+  // brikkenes faktiske posisjon. Før ventet de en GJETTET tid (220–
+  // 1180 ms) og målte så — men gjettingen antok rolig tempo: scrollet
+  // man fort, eller landet midt i en annen reise, ble det målt
+  // underveis og feilen frøs fast. Nå måles det til det står stille:
+  // to like avlesninger på rad = flaten er i ro, tegn. setTimeout og
+  // aldri rAF — den fyrer ikke i en fane som ikke tegnes.
+  // `sett` tar imot timer-id-en, så clearTimeout(buetid) m.fl. i
+  // settSteg fortsatt avbryter en ventende tegning ved stegbytte.
+  function narStille(slide, sel, sett, cb) {
+    if (rolig.matches) { sett(setTimeout(cb, 20)); return; }
+    const les = () => [...slide.querySelectorAll(sel)]
+      .map(e => { const r = e.getBoundingClientRect(); return r.left.toFixed(1) + ',' + r.top.toFixed(1); })
+      .join(';');
+    let forrige = null, runder = 0;
+    const sjekk = () => {
+      const na = les();
+      // Taket (20 runder ≈ 3 s) er en nødutgang, ikke en forventning.
+      if ((na === forrige && na !== '') || runder++ > 20) { cb(); return; }
+      forrige = na;
+      sett(setTimeout(sjekk, 140));
+    };
+    sett(setTimeout(sjekk, 160));
+  }
+
   function tegnBuer(slide) {
     const svg  = slide.querySelector('.bitene__buer');
     const bits = [...slide.querySelectorAll('.bit')];
@@ -6428,22 +6957,20 @@ body.deck-mork { background: var(--ink); }
     // så de følger dem uansett hvor bred flaten er.
     if (n === 1 || n === 2) { flyttKaffe(slide, false); skjulKlammer(slide); return; }
 
-    // Steg 3 · kandidatene. Klammene måles fra kolonnene, som først
-    // står stille når setningen er ferdig med å synke.
+    // Steg 3 · kandidatene. Klammene måles fra kolonnene — tegnes
+    // når de faktisk står stille, ikke etter en gjettet ventetid.
     if (n === 3) {
       flyttKaffe(slide, false);
       clearTimeout(klammetid);
-      klammetid = setTimeout(() => tegnKlammer(slide), rolig.matches ? 20 : 260);
+      narStille(slide, '.bit', id => klammetid = id, () => tegnKlammer(slide));
       return;
     }
 
-    // Buene. Brikkene er på vei hjem fra skyene idet vi lander her,
-    // og buene måles fra brikkenes faktiske posisjon — derfor tegnes
-    // de først når reisen er over.
-    const varUte = !!slide.querySelector('.bit--to')?.style.transform;
+    // Buene måles fra brikkenes faktiske posisjon — derfor tegnes de
+    // først når brikkene står stille (også etter hjemreisen fra skyene).
     flyttKaffe(slide, false);
     if (!slide.querySelector('.bitene__buer path')) {
-      buetid = setTimeout(() => tegnBuer(slide), rolig.matches ? 20 : (varUte ? 1180 : 640));
+      narStille(slide, '.bit', id => buetid = id, () => tegnBuer(slide));
     }
   }
 
@@ -6457,10 +6984,11 @@ body.deck-mork { background: var(--ink); }
     if (n < 4) slide.classList.remove('landet');
 
     // Blikket blir stående gjennom steg 1–5; tegnes bare én gang, så
-    // det ikke hopper mellom stegene.
+    // det ikke hopper mellom stegene — men først når brikkene står
+    // stille, ellers fryses en måling gjort midt i en reise.
     if (n >= 1 && n <= 5) {
       if (!slide.querySelector('.kontekst__blikk path')) {
-        blikktid = setTimeout(() => tegnBlikk(slide), rolig.matches ? 20 : 220);
+        narStille(slide, '.bit', id => blikktid = id, () => tegnBlikk(slide));
       }
     } else {
       skjulBlikk(slide);
@@ -6472,15 +7000,20 @@ body.deck-mork { background: var(--ink); }
     if (n === 5) { landProsenter(slide); return; }
 
     if (n < 6) { flyttKaffe(slide, false); skjulBuer(slide); return; }
-    if (n === 6) { flyttKaffe(slide, true); return; }
+    // Steg 6 · skyene. Reisemålet måles fra brikkenes posisjon, så
+    // også avreisen venter til de står stille — kommer man hit fort,
+    // ville dx/dy ellers blitt målt midt i inngangene.
+    if (n === 6) {
+      narStille(slide, '.bit, .ordsky', id => buetid = id, () => flyttKaffe(slide, true));
+      return;
+    }
     // Steg 7 · oppgjøret. Egen komposisjon; setningsrekka er ute, og
     // brikkene må hjem så de ikke står igjen i skyene bak den.
     if (n === 7) { flyttKaffe(slide, false); skjulBuer(slide); return; }
 
-    const varUteK = !!slide.querySelector('.bit--to')?.style.transform;
     flyttKaffe(slide, false);
     if (!slide.querySelector('.bitene__buer path')) {
-      buetid = setTimeout(() => tegnBuer(slide), rolig.matches ? 20 : (varUteK ? 1180 : 640));
+      narStille(slide, '.bit', id => buetid = id, () => tegnBuer(slide));
     }
   }
 
