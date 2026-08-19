@@ -1475,6 +1475,223 @@ body.deck-mork { background: var(--ink); }
   opacity: 0;
 }
 
+/* Matrisene bak q/k/v: én dempet linje rett under spørsmålet.
+   Synlig på samme steg som spørsmålet (1–3) — når prosentene
+   lander på steg 4, har den gjort jobben sin. */
+.kontekst__matr {
+  position: absolute;
+  left: 0; right: 0; top: calc(27% + 2.9cqi);
+  margin: 0; text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-body); font-size: 1.25cqi;
+  line-height: 1.35; color: var(--ink-faint);
+  opacity: 0;
+}
+.kontekst__matr sub { font-size: 0.72em; }
+.kontekst__matr b   { font-weight: 400; color: var(--ink-soft); }
+.kontekst[data-steg="1"] .kontekst__matr,
+.kontekst[data-steg="2"] .kontekst__matr,
+.kontekst[data-steg="3"] .kontekst__matr { opacity: 1; }
+
+/* «Setningen hadde altså ett problem …» — den lette overskriften
+   på steg 6, der setningen står ren igjen før skyene. */
+.kontekst__problem {
+  position: absolute;
+  left: 0; right: 0; top: 27%;
+  margin: 0; text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 2.4cqi; line-height: 1.3;
+  color: var(--ink);
+  opacity: 0;
+}
+
+/* ============================================================
+   SLIDE — Post-sannhet (video)
+   YouTube-shorten står i sentrum, i samme vindusramme som
+   avis-scrollene (chrome-prikkene gjenbrukes) — da ser den ut
+   som resten av decket, ikke som et fremmedlegeme. Stående
+   format (9:16) fordi det er en short.
+   ============================================================ */
+
+.video__over {
+  position: absolute;
+  left: 7cqi; right: 7cqi; top: var(--tittel-topp);
+  margin: 0; text-align: left;
+  font-family: var(--font-mono); font-size: 1.15cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--spot);
+}
+.video__tittel {
+  position: absolute;
+  left: 7cqi; width: 34cqi; top: calc(var(--tittel-topp) + 3.4cqi);
+  margin: 0; text-align: left;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: 1.15;
+  letter-spacing: var(--display-tracking);
+  font-size: 3.6cqi;
+}
+.video__tittel b { font-weight: inherit; color: var(--spot); }
+
+/* Undertittelen: ordet som setter navn på fenomenet. */
+.video__under {
+  position: absolute;
+  left: 7cqi; width: 34cqi; top: calc(var(--tittel-topp) + 17.2cqi);
+  margin: 0; text-align: left;
+  font-family: var(--font-mono); font-size: 1.5cqi;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--spot);
+}
+
+.video__ramme {
+  display: flex; flex-direction: column;
+  width: 21cqi;
+  /* Skyves mot høyre: tittelen eier venstresiden. */
+  margin-left: 30cqi;
+  background: var(--paper-raised);
+  border: var(--edge-w) solid var(--edge);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.video__vindu { aspect-ratio: 9 / 16; background: var(--paper-sunk); }
+.video__vindu iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* Ærlighetsmerket er tatt av flaten (2026-08-18) — annonseringen
+   av at alt er falskt gjøres muntlig, se manus. */
+
+/* ============================================================
+   SLIDE — Til hverdagen
+   Bolk 1s hjemlekse: sju bruksregler, ett klikk om gangen
+   (deck-trinn gjør avdekkingen). Kulepunkter, ikke numre —
+   dette er en huskeliste, ikke en rangering.
+   ============================================================ */
+
+.hjem__liste {
+  margin: 1cqi 0 0 6cqi; padding: 0;
+  list-style: none;
+  text-align: left;
+  max-width: 66cqi;
+}
+.hjem__liste li {
+  position: relative;
+  padding-left: 2.6cqi;
+  margin-bottom: 1.9cqi;
+  font-family: var(--font-body);
+  font-size: 1.9cqi; line-height: 1.35;
+  color: var(--ink);
+}
+.hjem__liste li::before {
+  content: '';
+  position: absolute; left: 0; top: 0.42em;
+  width: 0.85cqi; height: 0.85cqi;
+  border-radius: 50%;
+  background: var(--spot);
+}
+.hjem__liste b { font-weight: 400; color: var(--spot); }
+
+/* ============================================================
+   SLIDE — Avgangsplattformen
+   Broen fra lagene til Runden: alt setningen vet, renner inn i
+   den siste brikka — og derfra kommer scoren for neste ord.
+   Samlelinjene tegnes av tegnSamling (JS, målt med narStille).
+   ============================================================ */
+
+.plattform__tittel {
+  position: absolute;
+  left: 7cqi; right: 7cqi; top: var(--tittel-topp);
+  margin: 0; text-align: left;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  font-size: 4.2cqi;
+}
+
+.plattform__linjer {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1; pointer-events: none;
+  overflow: visible;
+  color: var(--spot);
+}
+.plattform__linjer path {
+  fill: none; stroke: currentColor; stroke-width: 1.2;
+  stroke-linecap: round; opacity: 0.45;
+}
+
+/* Setningen litt over midten — det skal være luft under til
+   samlelinjene, sitatet og landingen. */
+.plattform__setning { top: 44%; }
+
+.plattform__under {
+  position: absolute;
+  left: 14cqi; right: 14cqi; top: 56%;
+  margin: 0; text-align: center;
+  font-family: var(--font-body); font-size: 1.5cqi; line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.plattform__merke {
+  position: absolute;
+  left: 14cqi; right: 14cqi; top: 56%;
+  margin: 0; text-align: center;
+  font-family: var(--font-body); font-size: 1.5cqi; line-height: 1.45;
+  color: var(--ink-soft);
+  opacity: 0;
+}
+.plattform__merke b { font-weight: 400; color: var(--spot); }
+
+.plattform__sitat {
+  position: absolute;
+  left: 10cqi; right: 10cqi; top: 66%;
+  margin: 0; text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 2.6cqi; line-height: 1.3;
+  color: var(--ink);
+  opacity: 0;
+}
+
+.plattform__landing {
+  position: absolute;
+  left: 10cqi; right: 10cqi; bottom: 6cqi;
+  margin: 0; text-align: center;
+  font-family: var(--font-mono); font-size: 1.25cqi;
+  letter-spacing: var(--tracking-mono); text-transform: uppercase;
+  color: var(--ink-soft);
+  opacity: 0;
+}
+
+/* Stegene: dempingen og løftet av siste brikke er tilstand. */
+.plattform[data-steg="1"] .bit:not(.plattform__siste),
+.plattform[data-steg="2"] .bit:not(.plattform__siste),
+.plattform[data-steg="3"] .bit:not(.plattform__siste) { opacity: 0.3; }
+.plattform[data-steg="1"] .plattform__siste,
+.plattform[data-steg="2"] .plattform__siste,
+.plattform[data-steg="3"] .plattform__siste {
+  color: var(--spot);
+  border-color: var(--spot);
+  transform: translateY(-0.6cqi) scale(1.15);
+}
+.plattform[data-steg="1"] .plattform__under { opacity: 0; }
+.plattform[data-steg="2"] .plattform__under,
+.plattform[data-steg="3"] .plattform__under { opacity: 0; }
+.plattform[data-steg="1"] .plattform__merke,
+.plattform[data-steg="2"] .plattform__merke,
+.plattform[data-steg="3"] .plattform__merke { opacity: 1; }
+.plattform[data-steg="2"] .plattform__sitat,
+.plattform[data-steg="3"] .plattform__sitat { opacity: 1; }
+.plattform[data-steg="3"] .plattform__landing { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .kontekst__matr, .kontekst__problem { transition: opacity .5s ease .15s; }
+  .plattform__under, .plattform__merke,
+  .plattform__sitat, .plattform__landing { transition: opacity .5s ease .15s; }
+  .plattform .bit { transition: opacity .45s ease, transform .6s cubic-bezier(.22,.86,.28,1), color .45s ease, border-color .45s ease; }
+}
+
 /* q og k er samme form med vilje: to blikk på samme bit, som skal
    møtes. Derfor står de på samme høyde og har samme bredde. */
 .bit__q, .bit__k {
@@ -1641,16 +1858,21 @@ body.deck-mork { background: var(--ink); }
 .kontekst[data-steg="5"] .bit--ser .endret .f  { opacity: 0; }
 .kontekst[data-steg="5"] .bit--ser .endret .e  { opacity: 1; }
 
-/* Steg 6 · nabolagene */
-.kontekst[data-steg="6"] .ordsky      { opacity: 1; }
-.kontekst[data-steg="6"] .ordsky span { opacity: 0.55; }
-.kontekst[data-steg="6"] .bit:not(.bit--to) { opacity: 0; }
-.kontekst[data-steg="6"] .bitene__buer      { opacity: 0; }
+/* Steg 6 · setningen ren tilbake — problemet varsles. Ingen egne
+   regler for brikkene: uten steg-regler står setningen i
+   grunntilstand, og det ER poenget. Bare overskriften kommer. */
+.kontekst[data-steg="6"] .kontekst__problem { opacity: 1; }
 
-/* Steg 7 · riktig betydning */
-.kontekst[data-steg="7"] .bitene__setning { opacity: 0; }
-.kontekst[data-steg="7"] .kontekst__betydning { opacity: 1; }
-.kontekst[data-steg="7"] .brikke { transform: translateX(0); }
+/* Steg 7 · nabolagene */
+.kontekst[data-steg="7"] .ordsky      { opacity: 1; }
+.kontekst[data-steg="7"] .ordsky span { opacity: 0.55; }
+.kontekst[data-steg="7"] .bit:not(.bit--to) { opacity: 0; }
+.kontekst[data-steg="7"] .bitene__buer      { opacity: 0; }
+
+/* Steg 8 · riktig betydning */
+.kontekst[data-steg="8"] .bitene__setning { opacity: 0; }
+.kontekst[data-steg="8"] .kontekst__betydning { opacity: 1; }
+.kontekst[data-steg="8"] .brikke { transform: translateX(0); }
 
 .kontekst .bitene__buer { opacity: 1; }
 .kontekst[data-steg="0"] .bitene__buer,
@@ -1659,7 +1881,8 @@ body.deck-mork { background: var(--ink); }
 .kontekst[data-steg="3"] .bitene__buer,
 .kontekst[data-steg="4"] .bitene__buer,
 .kontekst[data-steg="5"] .bitene__buer,
-.kontekst[data-steg="7"] .bitene__buer { opacity: 0; }
+.kontekst[data-steg="6"] .bitene__buer,
+.kontekst[data-steg="8"] .bitene__buer { opacity: 0; }
 
 /* Delt: hver bit får sin egen beholder, og setningen utvider seg
    litt. Mellomrommene blir like store overalt — det er nettopp
@@ -1844,14 +2067,14 @@ body.deck-mork { background: var(--ink); }
   opacity: 0;
 }
 
-.kontekst[data-steg="6"] .ordsky      { opacity: 1; }
-.kontekst[data-steg="6"] .ordsky span { opacity: 0.55; }
+.kontekst[data-steg="7"] .ordsky      { opacity: 1; }
+.kontekst[data-steg="7"] .ordsky span { opacity: 0.55; }
 
 /* Resten av setningen går helt bort mens vi er ute i nabolagene. Å la
    den ligge svakt igjen delte oppmerksomheten mellom to bilder. */
-.kontekst[data-steg="6"] .bit:not(.bit--to) { opacity: 0; }
-.kontekst[data-steg="6"] .bitene__buer      { opacity: 0; }
-.kontekst[data-steg="6"] .bitene__tall      { opacity: 0; }
+.kontekst[data-steg="7"] .bit:not(.bit--to) { opacity: 0; }
+.kontekst[data-steg="7"] .bitene__buer      { opacity: 0; }
+.kontekst[data-steg="7"] .bitene__tall      { opacity: 0; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* transform ligger i samme liste som resten: da arver de to
@@ -1870,7 +2093,7 @@ body.deck-mork { background: var(--ink); }
   .bitene__buer  { transition: opacity .45s ease; }
   /* Ferdigtegnede buer venter til brikkene er hjemme igjen — samme
      pust som JS bruker første gang de tegnes. */
-  .kontekst[data-steg="7"] .bitene__buer { transition-delay: 1.1s; }
+  .kontekst[data-steg="8"] .bitene__buer { transition-delay: 1.1s; }
 
   /* Tallene kommer etter at delingen har satt seg, i samme rekkefølge
      som brikkene delte seg. */
@@ -3013,7 +3236,7 @@ body.deck-mork { background: var(--ink); }
 
    .vitrine er PARKERT (parkert/atte-ting.html) — reglene står igjen
    så sliden kan limes rett inn igjen. */
-.vitrine, .lagene, .hierarki, .setninger, .gront, .kap6 {
+.vitrine, .lagene, .hierarki, .setninger, .gront, .kap6, .hjem {
   padding: 6cqi 6cqi 4cqi;
   box-sizing: border-box;
   height: 100%;
@@ -4969,7 +5192,7 @@ body.deck-mork { background: var(--ink); }
       <span class="bit" style="--k:0">Hvor<b class="bit__id">4471</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">0.14</i><i style="--r:1">−0.62</i><i style="--r:2">0.31</i><i style="--r:3">0.07</i><i style="--r:4">−0.25</i><i style="--r:5">0.48</i><i style="--r:6">−0.11</i><i style="--r:7">0.36</i><em>⋮</em></span></span><span class="bit" style="--k:1">dyr<b class="bit__id">18294</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">−0.38</i><i style="--r:1">0.22</i><i style="--r:2">0.65</i><i style="--r:3">−0.19</i><i style="--r:4">0.41</i><i style="--r:5">−0.53</i><i style="--r:6">0.08</i><i style="--r:7">0.27</i><em>⋮</em></span></span><span class="bit bit--to" style="--k:2">kaffe<b class="bit__id">12351</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">0.03</i><i style="--r:1">−0.21</i><i style="--r:2">0.24</i><i style="--r:3">0.88</i><i style="--r:4">−0.47</i><i style="--r:5">0.12</i><i style="--r:6">−0.06</i><i style="--r:7">0.55</i><em>⋮</em></span></span><span class="bit bit--kandidat" style="--k:3;--m:0">maskin<b class="bit__id">8072</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">0.51</i><i style="--r:1">0.09</i><i style="--r:2">−0.34</i><i style="--r:3">0.16</i><i style="--r:4">0.72</i><i style="--r:5">−0.28</i><i style="--r:6">0.33</i><i style="--r:7">−0.42</i><em>⋮</em></span></span><span class="bit" style="--k:4">kan<b class="bit__id">1829</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">−0.07</i><i style="--r:1">0.44</i><i style="--r:2">0.18</i><i style="--r:3">−0.56</i><i style="--r:4">0.29</i><i style="--r:5">0.61</i><i style="--r:6">−0.23</i><i style="--r:7">0.11</i><em>⋮</em></span></span><span class="bit" style="--k:5">vi<b class="bit__id">2077</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">0.26</i><i style="--r:1">−0.15</i><i style="--r:2">0.52</i><i style="--r:3">0.34</i><i style="--r:4">−0.08</i><i style="--r:5">0.19</i><i style="--r:6">0.47</i><i style="--r:7">−0.31</i><em>⋮</em></span></span><span class="bit" style="--k:6">ans<b class="bit__id">15321</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">0.39</i><i style="--r:1">0.58</i><i style="--r:2">−0.27</i><i style="--r:3">−0.13</i><i style="--r:4">0.05</i><i style="--r:5">0.36</i><i style="--r:6">−0.49</i><i style="--r:7">0.22</i><em>⋮</em></span></span><span class="bit bit--to" style="--k:7;--m:0">kaffe<b class="bit__id">12351</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">0.03</i><i style="--r:1">−0.21</i><i style="--r:2">0.24</i><i style="--r:3">0.88</i><i style="--r:4">−0.47</i><i style="--r:5">0.12</i><i style="--r:6">−0.06</i><i style="--r:7">0.55</i><em>⋮</em></span></span><span class="bit" style="--k:8;--m:0">?<b class="bit__id">30</b><span class="bit__vek" aria-hidden="true"><i style="--r:0">−0.11</i><i style="--r:1">0.07</i><i style="--r:2">−0.03</i><i style="--r:3">0.45</i><i style="--r:4">0.21</i><i style="--r:5">−0.38</i><i style="--r:6">0.14</i><i style="--r:7">0.62</i><em>⋮</em></span></span>
     </p>
 
-    <p class="bitene__tall"><span class="bitene__tall--a">9 ordbiter</span><span class="bitene__tall--b">ofte 400 til over 10 000 posisjonstall — avhengig av modellen</span><span class="bitene__tall--c">vektor-tallene er oppstått under trening og er ikke leselige for mennesker — selv om vi kan regne oss tilbake til enkelte retninger</span></p>
+    <p class="bitene__tall"><span class="bitene__tall--a">9 ordbiter</span><span class="bitene__tall--b">ofte over 100 000 posisjonstall — avhengig av modellen</span><span class="bitene__tall--c">vektor-tallene er oppstått under trening og er ikke leselige for mennesker — selv om vi kan regne oss tilbake til enkelte retninger</span></p>
 
   </section>
 
@@ -4979,11 +5202,11 @@ body.deck-mork { background: var(--ink); }
        Ordbiter fordi ti steg på én slide ble uhåndterlig.
        ────────────────────────────────────────────────────── -->
   <section class="deck-slide bitene kontekst" data-tittel="Kontekst" data-inn="opp"
-           data-maks-steg="7" data-tema="Språkmodellen">
+           data-maks-steg="8" data-tema="Språkmodellen">
     <ol class="deck-reise">
       <li>Spørsmålet</li>
       <li>Ordbiter</li>
-      <li><span data-na="0 1 2 3 4 5 6 7">Kontekst</span></li>
+      <li><span data-na="0 1 2 3 4 5 6 7 8">Kontekst</span></li>
       <li>Utregningen</li>
       <li>Gjettingen</li>
       <li>Runden</li>
@@ -4994,6 +5217,14 @@ body.deck-mork { background: var(--ink); }
     <svg class="kontekst__blikk" aria-hidden="true"></svg>
 
     <p class="kontekst__hva">Hva betyr de andre ordbitene for «dyr»?</p>
+    <!-- Matrisene bak q/k/v — Lars' ønske 2026-08-18: mekanismen
+         skal ha en avsender før radene animerer inn. -->
+    <p class="kontekst__matr">Tre innlærte tabeller i modellen — W<sub>q</sub>, W<sub>k</sub> og W<sub>v</sub> — gjør hver ordbits vektor om til tre nye tallsett: en spørring <b>q</b>, et skilt <b>k</b> og et innhold <b>v</b>.</p>
+    <!-- Nytt steg 6 (2026-08-18): setningen kommer REN tilbake med
+         denne overskriften før kaffe-brikkene reiser til hvert sitt
+         univers — da leses skyene som svaret på et varslet problem,
+         og «Riktig betydning» på siste steg lander som forløsning. -->
+    <p class="kontekst__problem">Setningen hadde altså ett problem …</p>
 
     <p class="bitene__setning delt">
       <span class="bit" style="--k:0;--v:19">Hvor<b class="bit__pos">1</b><b class="bit__pct" data-pct="19">19 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>0.31</i><i>−0.08</i><i>0.62</i></span></span><span class="bit bit--ser" style="--k:1">dyr<b class="bit__pos">2</b><span class="bit__q" aria-hidden="true"><b>q</b><i>0.71</i><i>−0.24</i><i>0.93</i></span><span class="bit__vek" aria-hidden="true"><i style="--r:0">−0.38</i><i class="endret" style="--r:1"><span class="f">0.22</span><span class="e">0.49</span></i><i style="--r:2">0.65</i><i style="--r:3">−0.19</i><i class="endret" style="--r:4"><span class="f">0.41</span><span class="e">0.68</span></i><i style="--r:5">−0.53</i><i class="endret" style="--r:6"><span class="f">0.08</span><span class="e">0.31</span></i><i class="endret" style="--r:7"><span class="f">0.27</span><span class="e">0.44</span></i><em>⋮</em></span></span><span class="bit bit--to" style="--k:2;--v:34">kaffe<b class="bit__pos">3</b><b class="bit__pct" data-pct="34">34 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>0.68</i><i>−0.19</i><i>0.88</i></span></span><span class="bit" style="--k:3;--v:24;--m:0">maskin<b class="bit__pos">4</b><b class="bit__pct" data-pct="24">24 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>0.55</i><i>−0.30</i><i>0.71</i></span></span><span class="bit" style="--k:4;--v:5">kan<b class="bit__pos">5</b><b class="bit__pct" data-pct="5">5 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>−0.12</i><i>0.41</i><i>0.06</i></span></span><span class="bit" style="--k:5;--v:3">vi<b class="bit__pos">6</b><b class="bit__pct" data-pct="3">3 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>−0.22</i><i>0.35</i><i>−0.14</i></span></span><span class="bit" style="--k:6;--v:9">ans<b class="bit__pos">7</b><b class="bit__pct" data-pct="9">9 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>0.29</i><i>0.11</i><i>0.44</i></span></span><span class="bit bit--to" style="--k:7;--v:5;--m:0">kaffe<b class="bit__pos">8</b><b class="bit__pct" data-pct="5">5 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>0.41</i><i>−0.05</i><i>0.52</i></span></span><span class="bit" style="--k:8;--v:1;--m:0">?<b class="bit__pos">9</b><b class="bit__pct" data-pct="1">1 %</b><span class="bit__k" aria-hidden="true"><b>k</b><i>−0.40</i><i>0.02</i><i>−0.33</i></span></span>
@@ -5022,8 +5253,10 @@ body.deck-mork { background: var(--ink); }
           <p class="kontekst__ut">Ut kommer: en vare med en pris — noe man kjøper og som koster noe.</p>
         </div>
         <div class="kontekst__side">
+          <!-- «kan jeg» var én brikke OG feil ord — setningen sier
+               «kan vi». Delt i to og rettet 2026-08-18. -->
           <p class="kontekst__ord">
-            <span class="brikke" style="--dx:-10">kan jeg</span><span class="brikke" style="--dx:-5">ans</span><span class="brikke brikke--n" style="--dx:9">kaffe<b>7</b></span>
+            <span class="brikke" style="--dx:-12">kan</span><span class="brikke" style="--dx:-7">vi</span><span class="brikke" style="--dx:-4">ans</span><span class="brikke brikke--n" style="--dx:9">kaffe<b>7</b></span>
           </p>
           <p class="kontekst__ut">Ut kommer: halen av et verb — handlingen å anskaffe, ikke noe man drikker.</p>
         </div>
@@ -5141,9 +5374,48 @@ body.deck-mork { background: var(--ink); }
 
 
   <!-- ── Gjettingen sto her — parkert 2026-08-17 i
-       `parkert/gjettingen.html`, se kommentaren der. Steget står
-       fortsatt i reise-listen nedenfor; det er med vilje.
+       `parkert/gjettingen.html`, se kommentaren der.
        ────────────────────────────────────────────────────── -->
+
+  <!-- ── Avgangsplattformen ───────────────────────────────────
+       Ny 2026-08-18 (Lars): broen mellom lagene og Runden — hvor
+       kommer selve svaret fra? Tar Gjettingen-plassen i reisa.
+
+       Bildet: alle ni brikkene har vært gjennom alle lagene.
+       Steg 1: de åtte første dempes, samlelinjer tegnes inn i den
+       SISTE brikka (tegnSamling — målt med narStille, samme
+       disiplin som buene). Steg 2: spørsmålet den stiller seg.
+       Steg 3: landingen — én representasjon, én score per ordbit.
+       Runden-sliden åpner med nettopp de rå scorene.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide plattform" data-tittel="Avgangsplattformen" data-inn="opp"
+           data-maks-steg="3" data-tema="Språkmodellen">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li><span class="na">Gjettingen</span></li>
+      <li>Runden</li>
+      <li>Svaret</li>
+    </ol>
+
+    <h2 class="plattform__tittel">Så hvor kommer selve <span class="offset" data-echo="svaret">svaret</span> fra?</h2>
+
+    <svg class="plattform__linjer" aria-hidden="true"></svg>
+
+    <p class="bitene__setning delt plattform__setning">
+      <span class="bit" style="--k:0">Hvor</span><span class="bit" style="--k:1">dyr</span><span class="bit" style="--k:2">kaffe</span><span class="bit" style="--k:3">maskin</span><span class="bit" style="--k:4">kan</span><span class="bit" style="--k:5">vi</span><span class="bit" style="--k:6">ans</span><span class="bit" style="--k:7">kaffe</span><span class="bit plattform__siste" style="--k:8">?</span>
+    </p>
+
+    <p class="plattform__under">Alle ordbitene har vært med gjennom alle lagene. Hver av dem bærer nå en rik forståelse av sin plass i akkurat denne setningen.</p>
+
+    <p class="plattform__merke">Den siste ordbiten er <b>avgangsplattformen</b> — den har hentet det den trenger fra hele setningen.</p>
+
+    <p class="plattform__sitat">«Gitt alt jeg har lest så langt — hva bør komme nå?»</p>
+
+    <p class="plattform__landing">Én representasjon inn → én score for hver av de ~100 000 ordbitene i ordforrådet.</p>
+  </section>
 
   <!-- ── 8 · Runden ───────────────────────────────────────────
        Etter mønster av side 18–21 i pptx-en «under panseret»:
@@ -5345,6 +5617,42 @@ body.deck-mork { background: var(--ink); }
          som tre ettermiddager. Siste setning er vaktposten — dette er
          ett oppsett, ikke fasit for alle modeller. -->
     <p class="trening__skala">Alle tre gjentas i et omfang som er vanskelig å ta inn, over timer, uker eller måneder. For hver runde flyttes tallene i modellen et lite hakk. <b>Dette er ett vanlig oppsett — ikke alle modeller trenes likt, og detaljene er sjelden offentlige.</b></p>
+
+  </section>
+
+  <!-- ── Til hverdagen ────────────────────────────────────────
+       Bolk 1s hjemlekse (Lars' punkter, 2026-08-18): ikke en
+       oppsummering av innholdet — bolkens landinger står støtt —
+       men mekanikken OVERSATT til bruksregler. Sju kulepunkter,
+       ett per klikk, hvert med rot i en slide de nettopp så.
+       Punkt 7-hypotesen (smak-treningen belønner selvsikkerhet)
+       ligger i manus, ikke på flaten.
+       ────────────────────────────────────────────────────── -->
+  <section class="deck-slide hjem" data-tittel="Til hverdagen" data-inn="opp"
+           data-maks-steg="7" data-tema="Språkmodellen">
+    <ol class="deck-reise">
+      <li>Spørsmålet</li>
+      <li>Ordbiter</li>
+      <li>Kontekst</li>
+      <li>Utregningen</li>
+      <li>Gjettingen</li>
+      <li>Runden</li>
+      <li><span class="na">Svaret</span></li>
+    </ol>
+
+    <div class="aktor__topp">
+      <h2>Til <span class="offset" data-echo="hverdagen">hverdagen</span></h2>
+    </div>
+
+    <ul class="hjem__liste deck-trinn">
+      <li>Alt du gir den, er regnestykket.</li>
+      <li>En LLM gjetter — bedre enn oss til mye, men ingen <b>sannhetskilde</b>.</li>
+      <li>Det eneste ferske er det den <b>slår opp</b> — og den slår ikke alltid opp.</li>
+      <li>Lukker du chatten, er den tilbake på null.</li>
+      <li>Blir samtalen lang, må mye komprimeres — noen ganger for mye.</li>
+      <li>Den kan gå i ring: for lang chat, og hvert svar er en ny sannsynlighetsberegning.</li>
+      <li>Den svarer selvsikkert uansett — <b>forbehold er ikke noe den er trent på</b>.</li>
+    </ul>
 
   </section>
   <!-- ── Skille · Menneske vs Maskin ──────────────────────────
@@ -5558,7 +5866,44 @@ body.deck-mork { background: var(--ink); }
 
     <p class="avlast__strumke">«Vi mennesker er laget for å ta minste motstands vei.»</p>
 
-    <p class="avlast__slutt">Det du slår opp, kan du bruke. Det du vet, kan du tenke med. Hva skjer med samfunnsforståelsen når frontfagsmodellen blir noe man <b>henter</b> — ikke noe man <b>har</b>?</p>
+    <p class="avlast__slutt">Vi står i en <b>post-sannhetstid</b>. Er dette et godt tidspunkt å svekke vår egen <b>vurderingsevne</b> på?</p>
+  </section>
+
+  <!-- ── Post-sannhet (video) ─────────────────────────────────
+       Ny 2026-08-18: svaret på spørsmålet forrige slide stiller.
+       YouTube-short i sentrum — KI-generert desinformasjon
+       (fabrikkert innhold om innvandrere; manus krever at Lars
+       SIER at alt er falskt FØR avspilling, og debriefer etter).
+
+       Tittelen er Peter Pomerantsevs boktittel (2014) om Surkovs
+       Russland — verifisert 2026-08-18: IKKE et Surkov-sitat, og
+       «true», ikke «real». Bannon-sitatet (2018, til Michael
+       Lewis) står i kildelinja.
+
+       Teknikk: youtube-nocookie + enablejsapi (decket pauser
+       videoen ved slidebytte, se pausVideoer i vis()), og decket
+       tar tastaturfokus tilbake når iframen stjeler det. Krever
+       nett — nedlastet kopi i bakhånd er et KRAV, samme regel
+       som Tailscale-demoen. -->
+  <section class="deck-slide video" data-tittel="Post-sannhet" data-inn="opp" data-tema="Menneske vs Maskin">
+    <p class="video__over">KI-generert video · 2026</p>
+    <h2 class="video__tittel">«Nothing is true and <b>everything is possible</b>»</h2>
+    <p class="video__under">Slopaganda</p>
+
+    <div class="video__ramme">
+      <div class="avis__chrome">
+        <span class="avis__prikk"></span><span class="avis__prikk"></span><span class="avis__prikk"></span>
+        <p class="avis__url">youtube.com/shorts/3QKqvZeQ7-E</p>
+      </div>
+      <div class="video__vindu">
+        <iframe data-video src="https://www.youtube-nocookie.com/embed/3QKqvZeQ7-E?enablejsapi=1&amp;rel=0" title="KI-generert kortvideo — alt innhold er fabrikkert" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- Ærlighetsmerket tatt av flaten 2026-08-18 — Lars sier det
+         muntlig i stedet (merket dempet alvorlighetseffekten).
+         Manuset bærer nå HELE ansvaret for falskt-annonseringen. -->
+    <p class="deck-kilde">Tittel: Peter Pomerantsev (2014) om Vladislav Surkovs Russland · Steve Bannon til Michael Lewis, 2018: «flood the zone with shit»</p>
   </section>
 
   <!-- ── 11 · Er det det samme hvem? (bolk 5) ─────────────────
@@ -6943,6 +7288,8 @@ body.deck-mork { background: var(--ink); }
 
     if (slide.classList.contains('kontekst')) { settStegKontekst(slide, n); return; }
 
+    if (slide.classList.contains('plattform')) { settStegPlattform(slide, n); return; }
+
     if (!slide.classList.contains('bitene')) return;
     clearTimeout(buetid);
 
@@ -6999,17 +7346,19 @@ body.deck-mork { background: var(--ink); }
     if (n === 4) { rullProsenter(slide); return; }
     if (n === 5) { landProsenter(slide); return; }
 
-    if (n < 6) { flyttKaffe(slide, false); skjulBuer(slide); return; }
-    // Steg 6 · skyene. Reisemålet måles fra brikkenes posisjon, så
+    // Steg 6 · setningen ren tilbake («hadde altså ett problem …»)
+    // dekkes av n < 7: kaffe hjem, ingen buer — CSS gjør resten.
+    if (n < 7) { flyttKaffe(slide, false); skjulBuer(slide); return; }
+    // Steg 7 · skyene. Reisemålet måles fra brikkenes posisjon, så
     // også avreisen venter til de står stille — kommer man hit fort,
     // ville dx/dy ellers blitt målt midt i inngangene.
-    if (n === 6) {
+    if (n === 7) {
       narStille(slide, '.bit, .ordsky', id => buetid = id, () => flyttKaffe(slide, true));
       return;
     }
-    // Steg 7 · oppgjøret. Egen komposisjon; setningsrekka er ute, og
+    // Steg 8 · oppgjøret. Egen komposisjon; setningsrekka er ute, og
     // brikkene må hjem så de ikke står igjen i skyene bak den.
-    if (n === 7) { flyttKaffe(slide, false); skjulBuer(slide); return; }
+    if (n === 8) { flyttKaffe(slide, false); skjulBuer(slide); return; }
 
     flyttKaffe(slide, false);
     if (!slide.querySelector('.bitene__buer path')) {
@@ -7129,6 +7478,57 @@ body.deck-mork { background: var(--ink); }
     if (svg) svg.textContent = '';
   }
 
+  // ── Avgangsplattformen ───────────────────────────────────────
+  // Samlelinjene: alt setningen vet, renner inn i den siste brikka.
+  // Speilbildet av tegnBlikk (der spurte én bit alle; her leverer
+  // alle til én) — og tegnes med samme stillhets-disiplin.
+  let samletid;
+  function tegnSamling(slide) {
+    const svg = slide.querySelector('.plattform__linjer');
+    const alle = [...slide.querySelectorAll('.bit')];
+    const mott = alle.pop();                       // den siste brikka tar imot
+    if (!svg || !mott || !alle.length) return;
+
+    const S = slide.getBoundingClientRect();
+    const M = mott.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${S.width} ${S.height}`);
+    svg.textContent = '';
+
+    const xm = M.left + M.width / 2 - S.left;
+    const ym = M.bottom - S.top - 2;
+
+    alle.forEach((b, k) => {
+      const B = b.getBoundingClientRect();
+      const xb = B.left + B.width / 2 - S.left;
+      const yb = B.bottom - S.top - 2;
+      // Dypere buk jo lengre unna — samme grep som blikket.
+      const bunn = Math.max(ym, yb) + 14 + Math.min(52, Math.abs(xm - xb) * 0.08);
+      const p = document.createElementNS(SVGNS, 'path');
+      p.setAttribute('d', `M ${xb.toFixed(1)} ${yb.toFixed(1)} C ${xb.toFixed(1)} ${bunn.toFixed(1)}, ${xm.toFixed(1)} ${bunn.toFixed(1)}, ${xm.toFixed(1)} ${ym.toFixed(1)}`);
+      svg.append(p);
+
+      if (rolig.matches) return;
+      const len = p.getTotalLength();
+      p.style.strokeDasharray  = len;
+      p.style.strokeDashoffset = len;
+      void p.getBoundingClientRect();
+      p.style.transition = `stroke-dashoffset .7s cubic-bezier(.3,.8,.35,1) ${k * 110}ms`;
+      p.style.strokeDashoffset = '0';
+    });
+  }
+
+  function settStegPlattform(slide, n) {
+    clearTimeout(samletid);
+    if (n >= 1) {
+      if (!slide.querySelector('.plattform__linjer path')) {
+        narStille(slide, '.bit', id => samletid = id, () => tegnSamling(slide));
+      }
+    } else {
+      const svg = slide.querySelector('.plattform__linjer');
+      if (svg) svg.textContent = '';
+    }
+  }
+
   // De to kaffe-brikkene forlater linja og lander i hvert sitt
   // nabolag. Målet er skyenes egne sentre, målt der og da — da
   // slipper JS å vite hva en cqi er verdt akkurat nå.
@@ -7167,10 +7567,19 @@ body.deck-mork { background: var(--ink); }
   // når man blar bakover, og skrives til data-vei — som er det CSS ser
   // på. Da overlever den skrevne retningen at man blar fram og tilbake.
   let reisen, sistReise = 0, stilletid;
+  // Videoer pauses når sliden deres forlates — ellers fortsetter
+  // lyden bak neste slide. Krever enablejsapi=1 på embedden.
+  function pausVideoer(slide) {
+    for (const v of slide.querySelectorAll('iframe[data-video]')) {
+      v.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+    }
+  }
+
   function vis(n, dir = 1) {
     const fra = slides[i];
     i = (n + slides.length) % slides.length;
     const til = slides[i];
+    if (fra !== til) pausVideoer(fra);
 
     // Rydd etter en reise som ikke rakk å bli ferdig før neste tast.
     clearTimeout(reisen);
@@ -7247,6 +7656,15 @@ body.deck-mork { background: var(--ink); }
     if (e.deltaY > 0) frem(); else tilbake();
     setTimeout(() => { sperre = false; }, 900);
   }, { passive: true });
+
+  // Klikk i en video stjeler tastaturfokuset — og da slutter
+  // piltastene å virke i decket. Når vinduet mister fokus til en
+  // iframe, tas det tilbake etter en liten pust: videoen spiller
+  // videre, men tastene styrer decket igjen.
+  addEventListener('blur', () => setTimeout(() => {
+    const a = document.activeElement;
+    if (a && a.tagName === 'IFRAME') a.blur();
+  }, 350));
 
   let y0 = 0, x0 = 0;
   addEventListener('touchstart', e => { y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; }, { passive: true });
