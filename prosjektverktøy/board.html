@@ -1150,55 +1150,78 @@ function exportJSON() {
 /* ── Risiko-sjekkliste accordion ── */
 const CHECKLIST = [
   {
-    section: "Personvern og data",
+    section: "Utgangspunktet",
     items: [
       {
-        title: "Behandles det personopplysninger?",
-        badge: "Kritisk å avklare", badgeColor: "rød",
-        lead: "Dette er det første spørsmålet dere alltid må stille. Svaret bestemmer nesten alle andre krav.",
+        title: "Bruker vi Sikts KI-chat eller Copilot?",
+        badge: "Trygg grunnmur", badgeColor: "grønn",
+        lead: "USNs godkjente verktøy har databehandleravtale og avtaleverk på plass sentralt — de fleste risikospørsmålene er allerede besvart for deg. Tre ting gjenstår uansett verktøy:",
         checks: [
-          "Inneholder inputen navn, e-postadresser, fødselsnummer, roller eller annet som kan knyttes til en person?",
-          "Er det snakk om særlige kategorier — helse, fagforeningsmedlemskap, etnisitet, straffbare forhold?",
-          "Kan KI-systemet koble opplysninger på tvers slik at noen blir identifiserbare — selv om enkeltdelene er anonyme?",
-          "Hvor lagres dataene — i Norge, EU, eller tredjeland (f.eks. USA)?",
-        ],
-        example: "Sortere fellesmail — ja, personopplysninger. Evaluere anonymiserte tilbud — kanskje ikke.",
-        laws: [
-          { label: "GDPR art. 4 og 9", type: "eu" },
-          { label: "GDPR art. 44–49 (tredjeland)", type: "eu" },
-          { label: "Datatilsynets veileder", type: "no" },
-        ],
-      },
-      {
-        title: "Har vi rettslig grunnlag og databehandleravtale?",
-        badge: "Kritisk å avklare", badgeColor: "rød",
-        lead: "Selv om dere har en avtale med leverandøren betyr det ikke at alle bruksformål er dekket.",
-        checks: [
-          "Finnes det en databehandleravtale (DPA) med KI-leverandøren som dekker dette spesifikke formålet?",
-          "Brukes dataene til å trene modellen videre? Mange gratisverktøy gjør dette som standard.",
-          "Er Microsoft 365 Copilot-avtalen signert — og dekker den akkurat denne bruken?",
-          "Har dere rettslig grunnlag: samtykke, oppgave av allmenn interesse, eller lovhjemmel?",
+          "Særlige kategorier (helse, fagforening, etnisitet, straffbare forhold) holdes utenfor — alltid.",
+          "Fakta, tall og referanser etterprøves før de brukes videre — KI kan finne på ting som ser riktige ut.",
+          "Har KI bidratt til en beslutning, dokumenteres det «på en tydelig måte» (policyen, kap. 3).",
         ],
         laws: [
-          { label: "GDPR art. 6 og 28", type: "eu" },
-          { label: "Personopplysningsloven § 1", type: "no" },
-          { label: "Schrems II (tredjeland)", type: "warn" },
+          { label: "Policy for bruk av KI ved USN", type: "no" },
+          { label: "GDPR art. 9", type: "eu" },
         ],
       },
     ],
   },
   {
-    section: "Beslutning og ansvar",
+    section: "Eskalering 1 — KI-en gjør oppgaver selv",
     items: [
       {
-        title: "Støtter KI-en en beslutning som påvirker enkeltpersoner?",
+        title: "Vurderer vi agentiske oppgaver?",
+        badge: "Viktig å vurdere", badgeColor: "gul",
+        lead: "Å hente kilder via API, kjøre automatisk eller la en agent ta egne steg er noe annet enn å chatte. Da må dere vurdere:",
+        checks: [
+          "Hvor kjører koden, hvor lagres resultatene — og hvem har tilgang?",
+          "Ser et menneske på det KI-en flagger før noe får konsekvens?",
+          "Kan agenten manipuleres av innholdet den leser (prompt injection)?",
+          "Hvem eier driften over tid — oppdateringer, logging, feilhåndtering?",
+        ],
+        example: "En agent som overvåker leverandører (medieomtale, manglende regnskap, konkursrisiko) trenger API-kilder, lagringssted, varsling — og et menneske i enden.",
+        laws: [
+          { label: "NSM grunnprinsipper", type: "no" },
+          { label: "EU AI Act art. 26", type: "eu" },
+        ],
+      },
+    ],
+  },
+  {
+    section: "Eskalering 2 — utenfor de godkjente verktøyene",
+    items: [
+      {
+        title: "Vurderer vi andre KI-modeller enn Sikt og Copilot?",
+        badge: "Kritisk å avklare", badgeColor: "rød",
+        lead: "Da står dere uten det sentrale avtaleverket, og må selv få på plass:",
+        checks: [
+          "Rettslig grunnlag for behandlingen — og databehandleravtale med leverandøren for akkurat dette formålet.",
+          "Brukes dataene til å trene modellen videre? Mange gratisverktøy gjør det som standard.",
+          "Sletterutiner og tilgangsstyring — hvem ser hva, og når forsvinner det?",
+          "Lagres data i tredjeland (f.eks. USA)?",
+        ],
+        laws: [
+          { label: "GDPR art. 6 og 28", type: "eu" },
+          { label: "GDPR art. 44–49 (tredjeland)", type: "eu" },
+          { label: "Datatilsynets veileder", type: "no" },
+        ],
+      },
+    ],
+  },
+  {
+    section: "Beslutninger og anskaffelse",
+    items: [
+      {
+        title: "Støtter KI-en beslutninger som påvirker personer?",
         badge: "Høy risiko", badgeColor: "rød",
         lead: "Så snart KI brukes til å vurdere, rangere eller filtrere noe som gjelder en person, gjelder skjerpede krav.",
         checks: [
-          "Er dette en beslutning med rettslig eller tilsvarende virkning for en person (vedtak, avslag, rangering i konkurranse)?",
-          "Er det et menneske som tar den endelige beslutningen — eller bare «godkjenner» det KI-en foreslår uten reell kontroll?",
-          "Kan den berørte parten klage, og kan klagebehandler forstå og forklare hvorfor KI-en konkluderte som den gjorde?",
-          "Er systemet klassifisert som høy-risiko KI etter EU AI Act? Rekruttering og offentlig tjenesteyting er det som regel.",
+          "Er dette en beslutning med rettslig eller tilsvarende virkning (vedtak, avslag, rangering i konkurranse)?",
+          "Er det reell menneskelig kontroll — eller bare en «godkjenn»-knapp på det KI-en foreslår?",
+          "Kan en klagebehandler forstå og forklare grunnlaget uten tilgang til KI-verktøyet?",
+          "Kan modellen reprodusere skjevheter — og hvem er ansvarlig hvis den gjør det?",
         ],
         example: "KI som rangerer leverandørtilbud = høy risiko. KI som sammendrar tilbudet for saksbehandler = lavere risiko.",
         laws: [
@@ -1208,99 +1231,17 @@ const CHECKLIST = [
         ],
       },
       {
-        title: "Kan KI-en diskriminere eller forsterke skjevheter?",
+        title: "Utløser innføringen anskaffelsesregler?",
         badge: "Viktig å vurdere", badgeColor: "gul",
-        lead: "KI-modeller lærer av historiske data og kan reprodusere systematiske ulemper for bestemte grupper.",
+        lead: "Systematisk innføring av et KI-verktøy kan være en anskaffelse — selv om plattformen allerede er betalt.",
         checks: [
-          "Vet dere hva modellen er trent på — og om treningsdataen representerer alle berørte grupper likt?",
-          "Kan KI-en vektlegge faktorer som korrelerer med kjønn, alder, etnisitet eller funksjonsnedsettelse?",
-          "Finnes det en plan for å teste og overvåke utfall over tid?",
-          "Hvem er ansvarlig hvis det viser seg at KI-en systematisk behandler en gruppe dårligere?",
-        ],
-        laws: [
-          { label: "EU AI Act art. 9 (risikostyring)", type: "eu" },
-          { label: "Likestillings- og diskrimineringsloven", type: "no" },
-          { label: "ARP-plikten (aktivitetsplikt)", type: "no" },
-        ],
-      },
-    ],
-  },
-  {
-    section: "Pålitelighet og kvalitet",
-    items: [
-      {
-        title: "Kan KI-en produsere feil som ser troverdige ut?",
-        badge: "Viktig å vurdere", badgeColor: "gul",
-        lead: "Språkmodeller kan hallusinere — de finner på lovhenvisninger, tall og saksreferanser som høres riktige ut men ikke er det.",
-        checks: [
-          "Hva er konsekvensen hvis KI-en tar feil i akkurat denne oppgaven?",
-          "Er det rutiner for at et menneske etterprøver fakta, tall og referanser?",
-          "Forstår den som bruker verktøyet hvilke typer feil det er mest sannsynlig å gjøre?",
-          "Er oppgaven av en type der presisjon er kritisk — f.eks. juridiske vurderinger, medisinske opplysninger, økonomi?",
-        ],
-        example: "KI som sorterer mail etter tema — lav konsekvens ved feil. KI som siterer lovtekst i et vedtak — høy konsekvens.",
-        laws: [
-          { label: "Forvaltningsloven § 17 (utredningsplikt)", type: "no" },
-          { label: "EU AI Act art. 13 (transparens)", type: "warn" },
-        ],
-      },
-    ],
-  },
-  {
-    section: "Anskaffelse og leverandør",
-    items: [
-      {
-        title: "Er verktøyet lovlig anskaffet til dette formålet?",
-        badge: "Viktig å vurdere", badgeColor: "gul",
-        lead: "Å ta i bruk et KI-verktøy systematisk kan utløse anskaffelsesregler — selv om dere allerede betaler for plattformen.",
-        checks: [
-          "Er dette et verktøy dere bruker ad hoc privat, eller skal det innføres som en del av en arbeidsprosess?",
-          "Overstiger verdien av systemet terskelverdiene i anskaffelsesregelverket?",
-          "Behandler systemet personopplysninger eller støtter det beslutninger? Hvis ja: krav om DPIA før innføring.",
-          "Er leverandøren CE-merket for høy-risiko KI (kreves for å kjøpe/ta i bruk slike systemer fra 2026)?",
+          "Ad hoc-bruk, eller innføring som del av en arbeidsprosess?",
+          "Overstiger verdien terskelverdiene i anskaffelsesregelverket?",
+          "Krever bruken DPIA før innføring (personopplysninger eller beslutningsstøtte)?",
         ],
         laws: [
           { label: "Anskaffelsesloven og -forskriften", type: "no" },
           { label: "GDPR art. 35 (DPIA)", type: "eu" },
-          { label: "EU AI Act art. 26 og 71", type: "eu" },
-        ],
-      },
-      {
-        title: "Informasjonssikkerhet — hva kan gå ut?",
-        badge: "Viktig å vurdere", badgeColor: "gul",
-        lead: "Sensitiv informasjon som sendes til en sky-tjeneste kan bli lagret, logget, brukt til trening — eller lekke.",
-        checks: [
-          "Hva er sikkerhetsklassifiseringen på materialet som prosesseres — åpent, intern, fortrolig?",
-          "Har leverandøren ISO 27001 eller tilsvarende sertifisering? Er det gjort en sikkerhetsrisikovurdering?",
-          "Kan KI-agenter med tilgang til e-post eller filsystem manipuleres av ondsinnet innhold i dokumentene de leser (prompt injection)?",
-          "Hva skjer med driften hvis leverandøren plutselig endrer vilkår, øker priser eller legger ned?",
-        ],
-        laws: [
-          { label: "NSM grunnprinsipper", type: "no" },
-          { label: "Sikkerhetsloven (ved skjermingsverdig info)", type: "no" },
-          { label: "ISO/IEC 42001 (KI-styring)", type: "warn" },
-        ],
-      },
-    ],
-  },
-  {
-    section: "Transparens og dokumentasjon",
-    items: [
-      {
-        title: "Kan vi dokumentere og forklare det som ble gjort?",
-        badge: "God praksis", badgeColor: "grønn",
-        lead: "Offentlig forvaltning har plikt til etterprøvbarhet. KI-bruk endrer ikke det — det skjerper det.",
-        checks: [
-          "Er det dokumentert at KI ble brukt i saksbehandlingen, og på hvilken måte?",
-          "Kan en klagebehandler forstå grunnlaget for en beslutning uten å ha tilgang til KI-verktøyet?",
-          "Oppfyller arkiveringen kravene i arkivloven — lagres prompter og svar der det er relevant?",
-          "Er det merket i dokumentet/vedtaket at KI er benyttet, der dette er relevant for mottakeren?",
-        ],
-        laws: [
-          { label: "Arkivloven § 6", type: "no" },
-          { label: "Offentleglova", type: "no" },
-          { label: "EU AI Act art. 13 (transparens)", type: "eu" },
-          { label: "Forvaltningsloven § 24", type: "no" },
         ],
       },
     ],
