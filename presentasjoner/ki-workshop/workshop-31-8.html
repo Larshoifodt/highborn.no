@@ -828,7 +828,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(2.5rem, 7vw, 6rem);
+  /* Grunnpaddingen MÅ skalere med scenen, ikke med rem/vw: den gamle
+     clamp(2.5rem, 7vw, 6rem) ble stående på ~96px uansett skjerm, og
+     på en laptop (1366/1536 bred) spiste den 7cqi i stedet for 5 —
+     titlene i flyt sank og bunninnhold røk under kanten. Uttrykket
+     under er nøyaktig scenebredden (min av de to låsene) × 5 % =
+     96px på 1920×1080, altså uendret der alt er verifisert. */
+  padding: calc(min(100vw, 100vh * (var(--scene-format))) * 0.05);
   box-sizing: border-box;
   overflow: hidden;          /* figuren starter utenfor høyre kant */
   text-align: center;
@@ -4662,7 +4668,7 @@ body.deck-mork { background: var(--ink); }
 /* ── Funnene ───────────────────────────────────────────────── */
 .avlast__funn {
   position: absolute;
-  left: 7cqi; top: 30cqi; width: 43cqi;
+  left: 7cqi; top: 29cqi; width: 43cqi;   /* 30 → 29 (2026-09-01): tredje funn-li klippet 7px i bunn */
   margin: 0; padding: 0; list-style: none;
   text-align: left;
 }
