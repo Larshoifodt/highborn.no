@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Vetletun – Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<style>
+  /* Hjemmesiden til «Vetletun – Projects», bygget etter Components → Homepage i designsystemet
+     «Vetletun»: 3D-skissen fyller det meste av skjermen uten ramme og toner ut i siden, over store
+     uskarpe flekker av sky, fjord-tint, timber og sun. Til høyre en frostet liste over seksjonene
+     (Utforsk, Bygg, Papirer), og under modellen en frostet verktøylinje. Ingen harde kanter.
+     PC-format først. Modellen er det ekte husets YTTERSKALL (hus-ytre.js, laget av
+     _scripts/bygg-hjemmeside.mjs): vegger, tak, vinduer og grunnmur — ingen rom eller rør. Den
+     tegnes med WebGL (dybdebuffer); uten WebGL faller siden tilbake på en strektegning.
+     ALL TEKST PÅ SIDEN ER ENGELSK (Lars, 2026-11-24). «Project» i menyen velger prosjekt; Bathrooms
+     bytter lista til høyre til arbeidslista (arbeidsliste.js). Innsiden er hovedappen (vetletun.html) —
+     åpen fra 2026-11-24, Lars gikk vekk fra kodelåsen. */
+  :root{
+    --paper:#fafaf8; --surface-100:#f3f2ee; --surface-200:#e8e6e0; --line:#dcd9d2;
+    --ink:#1c1f1d; --ink-muted:#5c625d; --fjord:#2f5d50; --fjord-tint:#dfe9e4; --on-fjord:#ffffff;
+    --timber:#c8925a; --sky:#b9cfdc; --sun:#e8b04a; --success:#2e7d4f; --warning:#a3620f;
+    --space-1:4px; --space-2:8px; --space-3:16px; --space-4:24px; --space-5:40px; --space-6:64px;
+    --radius-md:8px; --radius-full:999px;
+    --shadow-float:0 8px 24px rgba(28,31,29,0.10);
+    --font-display:Manrope, "Inter", system-ui, sans-serif;
+    --font-sans:Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --side-b:340px; --side-plass:calc(var(--side-b) + var(--space-4) + var(--space-3));   /* lista + luft til høyre og venstre */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-sans)}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--fjord);outline-offset:2px}
+  .app{position:relative;width:100%;height:100dvh;min-height:720px;overflow:hidden;background:var(--paper)}
+
+  /* mykt lys bak alt */
+  .wash{position:absolute;inset:0;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;filter:blur(90px)}
+  .b1{width:50%;height:62%;left:9%;top:7%;background:var(--sky);opacity:.75}
+  .b2{width:41%;height:50%;left:33%;top:45%;background:var(--fjord-tint);opacity:.9}
+  .b3{width:28%;height:36%;left:-5%;top:52%;background:var(--timber);opacity:.22}
+  .b4{width:23%;height:31%;left:50%;top:-10%;background:var(--sun);opacity:.18}
+
+  /* topplinje */
+  .top{position:absolute;left:0;right:0;top:0;height:72px;display:flex;align-items:center;gap:var(--space-5);padding:0 var(--space-5);z-index:3}
+  .brand{font-family:var(--font-display);font-weight:600;font-size:22px;letter-spacing:-0.02em}
+  .brand small{font:600 12px/16px var(--font-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);margin-left:var(--space-2)}
+  .nav{display:flex;align-items:center;gap:var(--space-4);font-size:14px;color:var(--ink-muted)}
+  .nav button{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .nav button:hover{color:var(--ink)}
+  .nav .on{color:var(--ink);font-weight:500}
+  .nav svg{width:12px;height:12px;transition:transform .2s}
+  .nav [aria-expanded="true"] svg{transform:rotate(180deg)}
+  /* rullegardin under «Project» */
+  .menu{position:relative}
+  .drop{position:absolute;left:-14px;top:calc(100% + 14px);min-width:232px;padding:6px;border-radius:16px;display:flex;flex-direction:column;gap:2px;
+    background:rgba(250,250,248,.88);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--shadow-float)}
+  .drop[hidden]{display:none}
+  .nav .drop button{justify-content:space-between;width:100%;padding:8px 12px;border-radius:10px;font:500 14px/20px var(--font-sans);color:var(--ink);text-align:left}
+  .nav .drop button:hover{background:rgba(232,230,224,.6)}
+  .nav .drop button[aria-checked="true"]{background:var(--fjord-tint)}
+  .nav .drop button:disabled{color:var(--ink-muted);opacity:.6;cursor:default;background:none}
+  .drop small{font:500 11px/16px var(--font-sans);color:var(--ink-muted)}
+  .cta{margin-left:auto;background:var(--fjord);color:var(--on-fjord);border-radius:var(--radius-md);padding:10px 18px;font:500 14px/20px var(--font-sans);box-shadow:0 8px 24px rgba(47,93,80,.25)}
+  .cta:hover{background:#274e43}
+
+  /* 3D-skissen: ingen ramme, toner ut i siden */
+  .viewer{position:absolute;left:0;top:0;width:calc(100% - var(--side-plass));height:100%;z-index:1;cursor:grab;touch-action:pan-y;
+    -webkit-mask-image:radial-gradient(ellipse 62% 60% at 50% 54%,#000 55%,transparent 100%);
+            mask-image:radial-gradient(ellipse 62% 60% at 50% 54%,#000 55%,transparent 100%)}
+  .viewer:active{cursor:grabbing}
+  canvas{display:block;width:100%;height:100%}
+  .viewer canvas{position:absolute;left:0;top:0}                    /* WebGL-lerretet underst, 2D-lerretet (sol) over */
+  /* kompasset: svakt, nede til venstre, snur seg med huset */
+  #kompass{position:absolute;left:var(--space-5);bottom:var(--space-4);width:66px;height:52px;z-index:2;pointer-events:none}
+
+  .label{font-size:12px;line-height:16px;font-weight:600;letter-spacing:.06em;color:var(--ink-muted);text-transform:uppercase}
+
+  /* forsøk: bryter mellom skissen og den ekte modellen når man er inne i huset */
+  .stil{position:absolute;left:var(--space-5);top:104px;z-index:2;display:flex;align-items:center;gap:var(--space-1);padding:6px;border-radius:var(--radius-full);
+    background:rgba(250,250,248,.7);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--shadow-float)}
+  .stil[hidden]{display:none}
+  #inne-vegger{top:156px}
+  .stil .label{padding:0 var(--space-2) 0 10px}
+  .stil button{border:0;background:transparent;border-radius:var(--radius-full);padding:8px 14px;font:500 13px/20px var(--font-sans);color:var(--ink);cursor:pointer}
+  .stil button:hover{background:rgba(232,230,224,.6)}
+  .stil button[aria-pressed="true"]{background:var(--fjord-tint)}
+  #modell{position:absolute;left:0;top:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .7s;background:transparent}
+
+  /* flytende verktøylinje */
+  .tools,.hint{position:absolute;left:calc((100% - var(--side-plass)) / 2);transform:translateX(-50%);z-index:2}
+  .tools{bottom:var(--space-5);display:flex;gap:var(--space-1);padding:6px;border-radius:var(--radius-full);
+    background:rgba(250,250,248,.7);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--shadow-float)}
+  .tools a{display:flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-full);padding:8px 14px;font:500 13px/20px var(--font-sans);color:var(--ink)}
+  .tools a:hover{background:rgba(232,230,224,.6)}
+  .tools a.on{background:var(--fjord-tint)}
+  .tools img{width:20px;height:20px}
+  .hint{bottom:104px;font-size:13px;color:var(--ink-muted);white-space:nowrap}
+
+  /* frostet liste til høyre */
+  .side{position:absolute;right:var(--space-4);top:80px;bottom:var(--space-3);width:var(--side-b);z-index:2;border-radius:24px;padding:var(--space-4) var(--space-3);
+    background:rgba(250,250,248,.68);-webkit-backdrop-filter:blur(28px) saturate(1.1);backdrop-filter:blur(28px) saturate(1.1);
+    box-shadow:0 30px 80px rgba(28,31,29,.08),0 2px 10px rgba(28,31,29,.03);overflow-y:auto;scrollbar-width:thin}
+  .side h2{font-family:var(--font-display);font-weight:600;font-size:20px;line-height:26px;letter-spacing:-0.01em;margin:0 var(--space-2) var(--space-1)}
+  .side .sub{font-size:13px;line-height:20px;color:var(--ink-muted);margin:0 var(--space-2) var(--space-3)}
+  .group{padding:0 var(--space-2);margin:12px 0 2px}
+  .fade{height:1px;margin:var(--space-2) var(--space-2) 0;background:linear-gradient(90deg,transparent,var(--line) 20%,var(--line) 80%,transparent)}
+  ul{list-style:none;margin:0;padding:0}
+  li a{display:flex;align-items:center;gap:12px;padding:5px var(--space-2);border-radius:12px;transition:background .2s}
+  li a:hover{background:rgba(232,230,224,.6)}
+  li a.on{background:var(--fjord-tint)}
+  .ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.7);flex:none}
+  a.on .ic{background:rgba(255,255,255,.85)}
+  .ic img{width:20px;height:20px}
+  .t{flex:1;min-width:0}
+  .t b{display:block;font-weight:500;font-size:14px;line-height:20px}
+  .t span{display:block;font-size:12px;line-height:16px;color:var(--ink-muted)}
+  .pill{font-size:11px;line-height:16px;font-weight:600;padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+  .pill.wait{color:var(--warning);background:rgba(163,98,15,.10)}
+  .pill.opt{color:var(--fjord);background:var(--fjord-tint)}
+
+  /* arbeidslista (Project → Bathrooms) */
+  .side [hidden]{display:none}
+  .back{border:0;background:none;padding:0;margin:0 var(--space-2) var(--space-2);font:500 12px/16px var(--font-sans);color:var(--ink-muted);cursor:pointer}
+  .back:hover{color:var(--ink)}
+  .filter{display:flex;flex-wrap:wrap;gap:var(--space-1);margin:0 var(--space-1) var(--space-2)}
+  .filter button{border:0;background:rgba(255,255,255,.6);border-radius:var(--radius-full);padding:5px 11px;font:500 12px/16px var(--font-sans);color:var(--ink);cursor:pointer}
+  .filter button:hover{background:rgba(232,230,224,.8)}
+  .filter button[aria-pressed="true"]{background:var(--fjord-tint)}
+  .job{display:flex;align-items:flex-start;gap:12px;width:100%;border:0;background:none;text-align:left;padding:6px var(--space-2);border-radius:12px;font:inherit;color:inherit;cursor:pointer;transition:background .2s}
+  .job:hover{background:rgba(232,230,224,.6)}
+  .job[aria-expanded="true"]{background:rgba(255,255,255,.55)}
+  .job .ic{font:600 12px/16px var(--font-sans);color:var(--ink-muted)}
+  .job .t b{font-weight:500}
+  .job .pill{margin-top:2px}
+  .note{margin:2px var(--space-2) var(--space-2) 52px;font-size:13px;line-height:20px;color:var(--ink-muted)}
+  .models{margin:0 var(--space-2) var(--space-3) 52px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .models[hidden]{display:none}
+  /* Priser: lista utvides med en kolonne til høyre der den som priser fyller inn (lagres i nettleseren, eksporteres som tekst/CSV) */
+  .side{transition:width .3s ease}
+  .side.bred{width:min(700px,calc(100vw - 2*var(--space-4)))}
+  .pris-linje{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 var(--space-2) var(--space-2)}
+  .pris-linje button{border:1px solid rgba(31,42,39,.18);background:transparent;border-radius:var(--radius-full);padding:6px 12px;font:500 12px/16px var(--font-sans);color:var(--ink);cursor:pointer}
+  .pris-linje button[aria-pressed="true"]{background:var(--fjord);border-color:var(--fjord);color:#fff}
+  .pris-linje .sum{font-size:12px;line-height:16px;color:var(--ink-muted);flex:1 1 180px}
+  .pris{display:none}
+  .side.bred #jobs-list li{display:grid;grid-template-columns:minmax(0,1fr) 270px;column-gap:10px;align-items:start}
+  .side.bred #jobs-list li > *{grid-column:1}
+  .side.bred #jobs-list li > .pris{grid-column:2;grid-row:1;display:flex;gap:6px;padding-top:6px}
+  .pris input{min-width:0;border:1px solid rgba(31,42,39,.2);border-radius:10px;padding:6px 8px;font:400 13px/18px var(--font-sans);color:var(--ink);background:rgba(255,255,255,.7)}
+  .pris input.kr{flex:0 0 96px;text-align:right}
+  .pris input.kom{flex:1 1 auto}
+  .pris .ikke{font-size:12px;line-height:30px;color:var(--ink-muted)}
+  .refs{margin:0 var(--space-2) var(--space-3) 52px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+  .refs[hidden]{display:none}
+  .refs .label{flex:0 0 100%;margin:4px 0 0}
+  .refs a.img{display:block;width:84px}
+  .refs a.img img{display:block;width:84px;height:84px;object-fit:cover;border-radius:var(--radius-md,8px);border:1px solid rgba(31,42,39,.12)}
+  .refs a.img span{display:block;margin-top:3px;font-size:11px;line-height:14px;color:var(--ink-muted)}
+  .refs a.link{flex:0 0 100%;font-size:13px;line-height:20px;color:var(--fjord);text-decoration:underline;word-break:break-word}
+  .models .label{flex:0 0 100%;margin:4px 0 2px}
+  .models button{border:1px solid rgba(31,42,39,.18);background:transparent;border-radius:var(--radius-full);padding:5px 11px;font:500 12px/16px var(--font-sans);color:var(--ink);cursor:pointer}
+  .models button:hover{background:rgba(232,230,224,.6)}
+  .models button[aria-pressed="true"]{background:var(--fjord-tint);border-color:transparent}
+
+  /* smal skjerm: foreløpig bare en ryddig stabel — PC-formatet er det som er tegnet */
+  /* Nettbrett (Paddy): samme oppsett som på PC — lista på siden — med smalere liste og tettere topplinje */
+  @media (min-width:641px) and (max-width:1100px){
+    :root{--side-b:300px}
+    .top{gap:var(--space-4);padding:0 var(--space-4)}
+  }
+  @media (max-width:640px){
+    .app{height:auto;min-height:100dvh;overflow:visible;display:flex;flex-direction:column}
+    .top{position:relative;height:auto;padding:var(--space-3);gap:var(--space-3);flex-wrap:wrap}
+    .nav{order:3;flex:1 0 100%}                          /* menyen (House / Project / Documents) blir stående, på egen linje */
+    .viewer{position:relative;width:100%;height:56dvh}
+    #kompass,.stil{display:none}
+    .tools,.hint{position:relative;left:auto;bottom:auto;transform:none;align-self:center}
+    .hint{order:1;margin-top:calc(-1 * var(--space-4))} .tools{order:2;margin:var(--space-2) 0 var(--space-4)}
+    .side{position:relative;right:auto;top:auto;bottom:auto;width:auto;order:3;margin:0 var(--space-3) var(--space-4)}
+  }
+  @media (prefers-reduced-motion: reduce){ li a,.job,.nav svg{transition:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="wash"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+
+  <header class="top">
+    <div class="brand">Vetletun<small>Projects</small></div>
+    <nav class="nav" aria-label="Main menu">
+      <button type="button" class="on" id="nav-house" aria-current="page">House</button>
+      <div class="menu">
+        <button type="button" id="nav-project" aria-haspopup="true" aria-expanded="false" aria-controls="project-menu">Project
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button>
+        <div class="drop" id="project-menu" role="menu" hidden>
+          <button type="button" role="menuitemradio" aria-checked="false" data-project="bathrooms">Bathrooms</button>
+          <button type="button" role="menuitemradio" aria-checked="false" disabled>Guest room <small>Later</small></button>
+          <button type="button" role="menuitemradio" aria-checked="false" disabled>Carport <small>Later</small></button>
+          <button type="button" role="menuitemradio" aria-checked="false" disabled>Exterior wall panelling <small>Later</small></button>
+          <button type="button" role="menuitemradio" aria-checked="false" disabled>Interior <small>Later</small></button>
+        </div>
+      </div>
+      <span title="Coming later">Documents</span>
+    </nav>
+    <a class="cta" href="vetletun.html">Open the 3D view</a>
+  </header>
+
+  <div class="viewer" id="viewer">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <canvas id="c" role="img" aria-label="3D model of the house seen from outside: two wings with pitched roofs, the terrace, the entrance and the path of the sun. Drag to rotate."></canvas>
+  </div>
+  <canvas id="kompass" role="img" aria-label="Compass showing north relative to the house"></canvas>
+  <div class="stil" id="inne-stil" role="group" aria-label="How the inside is drawn" hidden>
+    <span class="label">Inside</span>
+    <button type="button" data-stil="modell" aria-pressed="true">3D model</button>
+    <button type="button" data-stil="tegning" aria-pressed="false">Drawing</button>
+  </div>
+  <div class="stil" id="inne-vegger" role="group" aria-label="Wall height in the 3D model" hidden>
+    <span class="label">Walls</span>
+    <button type="button" data-vegger="hele" aria-pressed="true">Full height</button>
+    <button type="button" data-vegger="kuttet" aria-pressed="false">Cut</button>
+  </div>
+
+  <div class="hint">Drag to rotate the house</div>
+  <nav class="tools" aria-label="Views">
+    <a class="on" href="vetletun.html"><img src="ikoner/3d.svg" alt="">3D</a>
+    <a href="vetletun.html"><img src="ikoner/plan.svg" alt="">Plan</a>
+    <a href="vetletun.html"><img src="ikoner/walk.svg" alt="">Walk</a>
+    <a href="vetletun.html"><img src="ikoner/sun.svg" alt="">Sun</a>
+  </nav>
+
+  <aside class="side" aria-label="Sections">
+    <div id="panel-explore">
+      <h2>Explore Vetletun</h2>
+      <p class="sub">The house as a model, and the work to be done in it.</p>
+      <div class="fade"></div>
+
+      <div class="group label">Explore</div>
+      <ul>
+        <li><a class="on" href="vetletun.html"><div class="ic"><img src="ikoner/3d.svg" alt=""></div><div class="t"><b>3D model</b><span>Rotate, zoom and look around</span></div></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/plan.svg" alt=""></div><div class="t"><b>Plan</b><span>Main floor and basement</span></div></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/walk.svg" alt=""></div><div class="t"><b>Walk around</b><span>Room by room</span></div></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/sun.svg" alt=""></div><div class="t"><b>Sun</b><span>The light through the day and the year</span></div></a></li>
+      </ul>
+
+      <div class="group label">Build</div>
+      <ul>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/wall.svg" alt=""></div><div class="t"><b>Walls</b><span>What comes down and what goes up</span></div></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/cellar.svg" alt=""></div><div class="t"><b>Basement</b><span>The rooms downstairs</span></div></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/plumbing.svg" alt=""></div><div class="t"><b>Plumbing</b><span>Water and drains, today and planned</span></div></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/electricity.svg" alt=""></div><div class="t"><b>Electricity</b><span>Not added yet</span></div></a></li>
+      </ul>
+
+      <div class="group label">Papers</div>
+      <ul>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/quote.svg" alt=""></div><div class="t"><b>Quote</b><span>Work list with options</span></div><span class="pill wait">Pending</span></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/contract.svg" alt=""></div><div class="t"><b>Contract</b><span>Not made yet</span></div></a></li>
+        <li><a href="vetletun.html"><div class="ic"><img src="ikoner/end-product.svg" alt=""></div><div class="t"><b>Finished house</b><span>How it will be</span></div></a></li>
+      </ul>
+    </div>
+
+    <div id="panel-jobs" hidden>
+      <button type="button" class="back" id="jobs-back">‹ Explore Vetletun</button>
+      <h2 id="jobs-title">Bathrooms</h2>
+      <p class="sub" id="jobs-sub"></p>
+      <div class="filter" id="jobs-filter" role="group" aria-label="Show jobs by who does them"></div>
+      <div class="pris-linje">
+        <button type="button" id="jobs-prices" aria-pressed="false">Fill in prices</button>
+        <span class="sum" id="jobs-sum" hidden></span>
+        <button type="button" id="jobs-copy" hidden>Copy as text</button>
+        <button type="button" id="jobs-csv" hidden>Download CSV</button>
+      </div>
+      <div class="fade"></div>
+      <div id="jobs-list"></div>
+    </div>
+  </aside>
+</div>
+
+<script src="hus-ytre.js"></script>
+<script src="arbeidsliste.js"></script>
+<script>
+/* Tegner husets ytterskall (window.VETLETUN_YTRE).
+   WebGL med dybdebuffer: hver flate tegnes der den faktisk ligger i rommet, så tak, vegger og
+   kantbord kan aldri havne i feil rekkefølge (det gjorde de med 2D-lerret og sortering bakfra).
+   Flatene får husets egne farger med enkel skyggelegging, tynne konturer og lett skravur for
+   bordkledning og tegl; bakken toner ut mot kanten. Konturene ligger 1,2 cm utenfor flaten sin.
+   Flater som vender bort fra kameraet kastes i vertex-shaderen (alle hjørner i en flate deler normal).
+   Velges et prosjekt (VETLETUN_VIS.inn), glir kameraet inn og ned mot rommene jobben gjelder,
+   mens tak og vegger tones bort og 1. etasje vises kuttet i 1,2 m høyde med dagens innredning (D.inne) — steg 1 av animasjonen.
+   Steg 2 (VETLETUN_VIS.jobb): åpnes rivejobben eller en jobb etter den i samme område, løftes det som
+   skal ut (gruppe d) opp og tones bort, og deretter veggen som rives (gruppe e). RIV 0 → 1 styrer begge.
+   Oppå ligger et 2D-lerret med solbanen — retningen er ekte (D.nord), selve buen er pynt — og nede
+   til venstre et lite kompass som snur seg med huset.
+   Uten WebGL: håndtegnet strektegning på 2D-lerretet (tegnStrek). */
+(function(){
+  var D=window.VETLETUN_YTRE, cv=document.getElementById('c'), cvGL=document.getElementById('gl'), box=document.getElementById('viewer'), g=cv.getContext('2d');
+  if(!D||!g) return;
+  var css=getComputedStyle(document.documentElement), tok=function(n,f){return (css.getPropertyValue(n)||f).trim();};
+  var INK=tok('--ink','#1c1f1d'), SUN=tok('--sun','#e8b04a'), FJ=tok('--fjord','#2f5d50'), TIM=tok('--timber','#c8925a');
+  var FARGE={panel:[236,234,228], tegl:[201,164,95], grunnmur:[188,188,183], tak:[66,69,72], bord:[240,239,234], hvit:[240,239,234], karm:[250,250,248], terrasse:[138,106,74], stein:[160,158,151],
+             trapp:[124,126,129], plate:[212,210,204], gulv:[229,227,221], fokus:[170,203,189], snitt:[92,96,94], vindu:[157,180,194], teak:[138,90,54], dor:[214,211,203], port:[226,225,220], gress:[152,172,128], belegg:[186,184,178], glass:[176,198,206]};
+  var W=0,H=0,dpr=Math.max(1,window.devicePixelRatio||1);
+  function size(){var r=box.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;cvGL.width=W*dpr;cvGL.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);}
+  size(); if(window.ResizeObserver) new ResizeObserver(size).observe(box);
+
+  var rolig=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var yaw=2.25,pitch=.44,drag=false,lx=0,vel=rolig?0:.0016,idle=0;
+  var SK=.74/Math.max(D.lengde,10), MIDT=.3, AVST=60, ZOOM=1, TX=0, TZ=0, INNE=0, RIV=0, rivMaal=0;   // TX/TZ: punktet kameraet ser på · INNE: 0 = utenfra, 1 = inne i huset       // skala: huset fyller ca tre firedeler av lerretets korteste side
+
+  var cy=1,sy=0,cp=1,sp=0;
+  function vinkler(){cy=Math.cos(yaw);sy=Math.sin(yaw);cp=Math.cos(pitch);sp=Math.sin(pitch);}
+  function P(p){                                          // → [skjerm-x, skjerm-y, dybde] — samme projeksjon som shaderen
+    var px=p[0]-TX, pz=p[2]-TZ, x=px*cy-pz*sy, z=px*sy+pz*cy, y=p[1]-MIDT;
+    var y2=y*cp+z*sp, z2=-y*sp+z*cp, k=AVST/(AVST+z2), s=Math.min(W,H)*SK*ZOOM;
+    return [W*.52+x*s*k, H*.55-y2*s*k, z2];
+  }
+  var LYS=(function(){var l=[-.45,.8,.4],m=Math.hypot(l[0],l[1],l[2]);return [l[0]/m,l[1]/m,l[2]/m];})();
+  function lysstyrke(n){ return .72+.28*Math.abs(n[0]*LYS[0]+n[1]*LYS[1]+n[2]*LYS[2]); }
+
+  /* ---------- sol og kompass (2D) ---------- */
+  var NORD=D.nord||[0,-1], OST=[NORD[1],-NORD[0]];        // [x, z] i skallets koordinater; øst ligger 90° med klokka fra nord
+  function solbane(al){
+    if(al<.02) return;
+    var R=D.lengde*1.05;
+    function sol(t){ var langs=Math.cos(t)*R, ut=R*.42+Math.sin(t)*R*.3;                 // t: 0 = øst, π/2 = sør, π = vest
+      return [OST[0]*langs-NORD[0]*ut, 1.5+Math.sin(t)*R*.72, OST[1]*langs-NORD[1]*ut]; }
+    g.setLineDash([2,7]); g.globalAlpha=.9*al; g.strokeStyle=SUN; g.lineWidth=2; g.beginPath();
+    for(var i=0;i<=40;i++){var q=P(sol(i/40*Math.PI)); i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);}
+    g.stroke(); g.setLineDash([]);
+    var s=P(sol(1.1)), sg=g.createRadialGradient(s[0],s[1],0,s[0],s[1],38);
+    sg.addColorStop(0,'rgba(232,176,74,.55)'); sg.addColorStop(1,'rgba(232,176,74,0)');
+    g.fillStyle=sg; g.beginPath(); g.arc(s[0],s[1],38,0,7); g.fill();
+    g.fillStyle=SUN; g.beginPath(); g.arc(s[0],s[1],7,0,7); g.fill(); g.globalAlpha=1;
+  }
+  var kv=document.getElementById('kompass'), kg=kv&&kv.getContext('2d'), KW=66, KH=52;
+  if(kg){ kv.width=KW*dpr; kv.height=KH*dpr; kg.setTransform(dpr,0,0,dpr,0,0); }
+  function kompass(){
+    if(!kg) return;
+    var mx=KW/2, my=KH/2+4, r=18;
+    function q(dx,dz,h){ var x=dx*cy-dz*sy, z=dx*sy+dz*cy; return [mx+x*r, my-((h||0)*cp+z*sp)*r]; }   // samme dreining som huset
+    function ret(a,l){ return [(NORD[0]*Math.cos(a)+OST[0]*Math.sin(a))*l, (NORD[1]*Math.cos(a)+OST[1]*Math.sin(a))*l]; }   // a med klokka fra nord
+    function ring(l,h){ kg.beginPath(); for(var i=0;i<=48;i++){ var d=ret(i/48*2*Math.PI,l), p=q(d[0],d[1],h); i?kg.lineTo(p[0],p[1]):kg.moveTo(p[0],p[1]); } }
+    kg.clearRect(0,0,KW,KH); kg.lineCap='round'; kg.lineJoin='round';
+    ring(1,-.1); kg.strokeStyle='rgba(28,31,29,.07)'; kg.lineWidth=1; kg.stroke();                     // skiva har litt tykkelse
+    ring(1,0); kg.fillStyle='rgba(250,250,248,.35)'; kg.fill(); kg.strokeStyle='rgba(28,31,29,.2)'; kg.stroke();
+    for(var i=0;i<8;i++){ var a=ret(i*Math.PI/4,i%2?.9:.82), b=ret(i*Math.PI/4,1), A=q(a[0],a[1]), B=q(b[0],b[1]); kg.beginPath(); kg.moveTo(A[0],A[1]); kg.lineTo(B[0],B[1]); kg.strokeStyle='rgba(28,31,29,.22)'; kg.stroke(); }
+    function nal(a,fyll,kant){ var t=ret(a,.7), v=ret(a+Math.PI/2,.14), T=q(t[0],t[1],.06), V=q(v[0],v[1]), U=q(-v[0],-v[1]);
+      kg.beginPath(); kg.moveTo(T[0],T[1]); kg.lineTo(V[0],V[1]); kg.lineTo(U[0],U[1]); kg.closePath(); if(fyll){kg.fillStyle=fyll;kg.fill();} kg.strokeStyle=kant; kg.stroke(); }
+    nal(Math.PI,null,'rgba(28,31,29,.2)'); nal(0,'rgba(47,93,80,.42)','rgba(47,93,80,.5)');
+    kg.textAlign='center'; kg.textBaseline='middle';
+    var nd=ret(0,1.45), np=q(nd[0],nd[1]);                                                           // bare N — de andre bokstavene blir for små
+    kg.font='600 9px Inter, system-ui, sans-serif'; kg.fillStyle='rgba(47,93,80,.8)'; kg.fillText('N',np[0],np[1]);
+  }
+
+  /* ---------- reserve uten WebGL: strektegning ---------- */
+  var seed=7; function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647-.5;}
+  var J=D.streker.map(function(){return [rnd(),rnd(),rnd(),rnd(),rnd(),rnd()];});
+  function strek(a,b,j,col,alpha,w){
+    var A=P(a),B=P(b);
+    for(var pass=0;pass<2;pass++){
+      var m=pass?1.6:.7;
+      g.globalAlpha=pass?alpha*.4:alpha; g.strokeStyle=col; g.lineWidth=pass?w*.7:w;
+      g.beginPath(); g.moveTo(A[0]+j[0]*m,A[1]+j[1]*m);
+      g.quadraticCurveTo((A[0]+B[0])/2+j[2]*m*2,(A[1]+B[1])/2+j[3]*m*2,B[0]+j[4]*m,B[1]+j[5]*m);
+      g.stroke();
+    }
+  }
+  function tegnStrek(){
+    solbane(1);
+    g.setLineDash([4,6]); D.streker.forEach(function(e,i){ if(e[2]==='kjeller') strek(e[0],e[1],J[i],FJ,.45,1.2); }); g.setLineDash([]);
+    D.streker.forEach(function(e,i){
+      if(e[2]==='vegg') strek(e[0],e[1],J[i],INK,.78,1.35);
+      else if(e[2]==='hull') strek(e[0],e[1],J[i],INK,.6,1);
+      else if(e[2]==='tak') strek(e[0],e[1],J[i],TIM,.95,1.6);
+    });
+  }
+
+  /* ---------- WebGL ---------- */
+  var STEG=10;                                            // tall per hjørne: posisjon 3, farge 4, normal 3
+  function normal(p){                                     // Newells metode — tåler hjørner på linje
+    var n=[0,0,0]; for(var i=0;i<p.length;i++){ var a=p[i], b=p[(i+1)%p.length]; n[0]+=(a[1]-b[1])*(a[2]+b[2]); n[1]+=(a[2]-b[2])*(a[0]+b[0]); n[2]+=(a[0]-b[0])*(a[1]+b[1]); }
+    var l=Math.hypot(n[0],n[1],n[2])||1; return [n[0]/l,n[1]/l,n[2]/l];
+  }
+  function trekanter(p){                                  // øreklipping i flatens eget plan → indekser
+    if(p.length===3) return [0,1,2];
+    if(p.length===4) return [0,1,2,0,2,3];                // firkantene her er alltid konvekse
+    var n=normal(p), ax=Math.abs(n[0]), ay=Math.abs(n[1]), az=Math.abs(n[2]), u=ax>=ay&&ax>=az?1:0, w=az>ay&&az>ax?1:2;
+    if(ay>=ax&&ay>=az){u=0;w=2;}
+    var q=p.map(function(v){return [v[u],v[w]];}), ar=0, V=[], ut=[], vakt=0;
+    for(var i=0;i<q.length;i++){ var a=q[i], b=q[(i+1)%q.length]; ar+=a[0]*b[1]-b[0]*a[1]; V.push(i); }
+    var sg=ar<0?-1:1;
+    function kr(a,b,c){ return ((q[b][0]-q[a][0])*(q[c][1]-q[a][1])-(q[b][1]-q[a][1])*(q[c][0]-q[a][0]))*sg; }
+    while(V.length>3 && vakt++<400){
+      var fant=false;
+      for(i=0;i<V.length;i++){
+        var a=V[(i+V.length-1)%V.length], b=V[i], c=V[(i+1)%V.length], k=kr(a,b,c);
+        if(Math.abs(k)<1e-9){ V.splice(i,1); fant=true; break; }
+        if(k<0) continue;
+        var inne=false;
+        for(var j=0;j<V.length&&!inne;j++){ var v=V[j]; if(v===a||v===b||v===c) continue; if(kr(a,b,v)>=0&&kr(b,c,v)>=0&&kr(c,a,v)>=0) inne=true; }
+        if(inne) continue;
+        ut.push(a,b,c); V.splice(i,1); fant=true; break;
+      }
+      if(!fant) break;
+    }
+    if(V.length===3) ut.push(V[0],V[1],V[2]);
+    return ut;
+  }
+  function lagGL(){
+    var gl=null; try{ gl=cvGL.getContext('webgl',{antialias:true,alpha:true,premultipliedAlpha:true}); }catch(e){}
+    if(!gl) return null;
+    var VS='attribute vec3 p;attribute vec4 c;attribute vec3 n;uniform vec4 rot;uniform vec2 sk;uniform vec3 cam;uniform vec3 mal;uniform float loft;varying vec4 vc;'+
+      'void main(){ if(dot(n,n)>.1&&dot(n,cam-p)<0.){ gl_Position=vec4(2.,2.,2.,1.); vc=vec4(0.); } else {'+
+      ' vec3 q=p-mal; q.y+=loft; float x=q.x*rot.x-q.z*rot.y, z=q.x*rot.y+q.z*rot.x, y=q.y, y2=y*rot.z+z*rot.w, w=60.-y*rot.w+z*rot.z;'+
+      ' gl_Position=vec4(.04*w+sk.x*x, -.1*w+sk.y*y2, 1.5882353*w-64.705882, w); vc=c; } }';   // dybde: nær 25, fjern 110
+    var FS='precision mediump float;varying vec4 vc;uniform vec4 fm;uniform float alfa;'+
+      'void main(){ float a=vc.a*alfa; if(fm.w>.5){ vec2 d=(gl_FragCoord.xy-fm.xy)/fm.z; d.y/=.56; a*=.92*clamp((1.-length(d))/.58,0.,1.); if(a<.004) discard; }'+
+      ' gl_FragColor=vec4(vc.rgb*a,a); }';
+    function sh(t,kode){ var s=gl.createShader(t); gl.shaderSource(s,kode); gl.compileShader(s); if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+    var pr=gl.createProgram();
+    try{ gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS)); gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS)); gl.linkProgram(pr); if(!gl.getProgramParameter(pr,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr)); }
+    catch(e){ if(window.console) console.warn('WebGL:',e); return null; }
+    gl.useProgram(pr);
+    var aP=gl.getAttribLocation(pr,'p'), aC=gl.getAttribLocation(pr,'c'), aN=gl.getAttribLocation(pr,'n');
+    var U={}; ['rot','sk','cam','mal','fm','alfa','loft'].forEach(function(k){ U[k]=gl.getUniformLocation(pr,k); });
+
+    var G={a:{tri:[],lin:[]}, b:{tri:[],lin:[]}, c:{tri:[],lin:[]}, d:{tri:[],lin:[]}, e:{tri:[],lin:[]}}, cur=G.b, gls=[], cgls=[], dgls=[], LA=Math.min(1.7,Math.max(1,dpr*.8)), INKC=[28/255,31/255,29/255];
+    function v(arr,p,c,a,n){ arr.push(p[0],p[1],p[2],c[0],c[1],c[2],a,n[0],n[1],n[2]); }
+    function ut(p,n,d){ return [p[0]+n[0]*d,p[1]+n[1]*d,p[2]+n[2]*d]; }
+    function farge(c,n){ var f=n?lysstyrke(n)/255:1/255; return [c[0]*f,c[1]*f,c[2]*f]; }
+    function linje(a,b,n,c,alfa){ v(cur.lin,ut(a,n,.012),c,Math.min(1,alfa*LA),n); v(cur.lin,ut(b,n,.012),c,Math.min(1,alfa*LA),n); }
+    /* en flate: fyll + kontur. kant = konturens styrke (0 = ingen), flat = uten skyggelegging */
+    function flate(p,c,n,kant,flat){
+      var gn=n||normal(p); if(!n&&gn[1]<0) gn=[-gn[0],-gn[1],-gn[2]];
+      var col=farge(c,flat?null:gn), ix=trekanter(p);
+      for(var i=0;i<ix.length;i++) v(cur.tri,p[ix[i]],col,1,gn);
+      if(kant>0) for(i=0;i<p.length;i++) linje(p[i],p[(i+1)%p.length],gn,INKC,kant);
+    }
+    function mellom(a,b,t){ return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]; }
+    function hull(h,n){
+      if(h.t==='dor'||h.t==='port'){ flate(h.p,FARGE[h.t],n,.45); return; }
+      var teak=h.t==='teak', kc=teak?FARGE.teak:FARGE.karm, a=h.p[0], b=h.p[1], c=h.p[2], d=h.p[3];
+      var br=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]), ho=Math.hypot(d[0]-a[0],d[1]-a[1],d[2]-a[2]), k=Math.min(teak?.07:.05,br*.2,ho*.2), tu=k/br, tw=k/ho;
+      flate(h.p,kc,n,.14,!teak);                                                       // karmen
+      var i0=ut(mellom(mellom(a,b,tu),mellom(d,c,tu),tw),n,.01), i1=ut(mellom(mellom(a,b,1-tu),mellom(d,c,1-tu),tw),n,.01),
+          i2=ut(mellom(mellom(a,b,1-tu),mellom(d,c,1-tu),1-tw),n,.01), i3=ut(mellom(mellom(a,b,tu),mellom(d,c,tu),1-tw),n,.01);
+      flate([i0,i1,i2,i3],FARGE.vindu,n,0);                                            // glasset
+      for(var i=1;i<(h.fag||1);i++){ var t=i/h.fag, e=k*.4/Math.max(.01,br-2*k);       // poster mellom fagene
+        flate([ut(mellom(i0,i1,t-e),n,.01),ut(mellom(i0,i1,t+e),n,.01),ut(mellom(i3,i2,t+e),n,.01),ut(mellom(i3,i2,t-e),n,.01)],kc,n,0,!teak); }
+    }
+    D.vegger.forEach(function(f){
+      flate(f.p,FARGE[f.mat]||FARGE.panel,f.n,.28);
+      var tegl=f.mat==='tegl', sc=tegl?[120/255,88/255,40/255]:INKC, sa=tegl?.2:.065;
+      (f.skr||[]).forEach(function(e){ linje(e[0],e[1],f.n,sc,sa); });
+      f.hull.forEach(function(h){ hull(h,f.n); });
+    });
+    D.tak.forEach(function(f){ flate(f.p,FARGE.tak,null,.55); });
+    D.bord.forEach(function(f){ flate(f.p,FARGE.bord,f.n,.22); });
+    cur=G.a;
+    D.grunnmur.forEach(function(f){ flate(f.p,FARGE.grunnmur,f.n,.28); f.hull.forEach(function(h){ hull(h,f.n); }); });
+    D.ting.forEach(function(f){ flate(f.p,FARGE[f.f]||FARGE.stein,f.n,f.k===0?0:.28); });
+    /* innsiden: gulvplate, romgulv (rommene jobben gjelder i fjord-tone, resten grått) og vegger kuttet i I.h */
+    cur=G.c;
+    var I=D.inne;
+    if(I){
+      var opp=[0,1,0], i3=function(q,h){ return [q[0],h,q[1]]; };
+      flate(I.plate.map(function(q){return i3(q,-.012);}),FARGE.plate,opp,0,true);
+      I.gulv.forEach(function(r){ flate(r.p.map(function(q){return i3(q,.004);}),r.f?FARGE.fokus:FARGE.gulv,opp,r.f?.34:.16,true); });
+      I.vegger.forEach(function(k){
+        cur=k.length>8?G.e:G.c;                                                                  // niende tall = veggen rives
+        var c4=[[k[0],k[1]],[k[2],k[3]],[k[4],k[5]],[k[6],k[7]]], mx=(c4[0][0]+c4[2][0])/2, mz=(c4[0][1]+c4[2][1])/2;
+        flate(c4.map(function(q){return i3(q,I.h);}),FARGE.snitt,opp,0,true);
+        for(var e=0;e<4;e++){ var a=c4[e], b=c4[(e+1)%4], nx=b[1]-a[1], nz=-(b[0]-a[0]), l=Math.hypot(nx,nz); if(l<.001) continue; nx/=l; nz/=l;
+          if(nx*((a[0]+b[0])/2-mx)+nz*((a[1]+b[1])/2-mz)<0){ nx=-nx; nz=-nz; }
+          flate([i3(a,0),i3(b,0),i3(b,I.h),i3(a,I.h)],FARGE.panel,[nx,0,nz],0); }
+      });
+      cur=G.c; (I.ting||[]).forEach(function(f){ flate(f.p,f.c||FARGE.hvit,f.n,f.k===0?0:.3); });         // dagens innredning som blir
+      cur=G.d; (I.bort||[]).forEach(function(f){ flate(f.p,f.c||FARGE.hvit,f.n,f.k===0?0:.3); });         // … og det som tas ut
+      var glassTil=function(liste,arr){ (liste||[]).forEach(function(f){ var ix=trekanter(f.p), c=farge(FARGE.glass,null); for(var i=0;i<ix.length;i++) v(arr,f.p[ix[i]],c,.4,[0,0,0]); }); };
+      glassTil(I.glass,cgls); glassTil(I.bort&&I.glassBort,dgls);
+    }
+    (D.glass||[]).forEach(function(f){ var ix=trekanter(f.p), c=farge(FARGE.glass,null); for(var i=0;i<ix.length;i++) v(gls,f.p[ix[i]],c,.42,[0,0,0]); });
+
+    /* bakken: to trekanter per rute, én farge per rute */
+    var N=D.nett, bk=new Float32Array(0), nb=0;
+    if(N){
+      bk=new Float32Array(N.nx*N.ny*6*STEG);
+      var rx=D.lengde/2+7, rz=D.bredde/2+7, o=0, null3=[0,0,0];
+      var hv=function(i,j){ return [N.x0+i*N.d, N.h[j*(N.nx+1)+i]/100, -(N.y0+j*N.d)]; };
+      for(var j=0;j<N.ny;j++) for(var i=0;i<N.nx;i++){
+        var q=[hv(i,j),hv(i+1,j),hv(i+1,j+1),hv(i,j+1)];
+        if(Math.hypot((q[0][0]+q[2][0])/2/rx,(q[0][2]+q[2][2])/2/rz)>1.35) continue;
+        var c=N.t.charAt(j*N.nx+i)==='1'?FARGE.belegg:FARGE.gress, n=normal(q); if(n[1]<0) n=[-n[0],-n[1],-n[2]];
+        var f=(.86+.14*Math.max(0,n[0]*LYS[0]+n[1]*LYS[1]+n[2]*LYS[2]))/255, ix=[0,1,2,0,2,3];
+        for(var k=0;k<6;k++){ var pp=q[ix[k]]; bk[o++]=pp[0]; bk[o++]=pp[1]; bk[o++]=pp[2]; bk[o++]=c[0]*f; bk[o++]=c[1]*f; bk[o++]=c[2]*f; bk[o++]=1; bk[o++]=0; bk[o++]=0; bk[o++]=0; }
+      }
+      nb=o/STEG; bk=bk.subarray(0,o);
+    }
+    function buffer(data){ var b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b); gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW); return b; }
+    function par(x){ return [buffer(new Float32Array(x)),x.length/STEG]; }
+    var B={bakke:[buffer(bk),nb], gls:par(gls), cgls:par(cgls), dgls:par(dgls)};
+    ['a','b','c','d','e'].forEach(function(k){ B[k]={tri:par(G[k].tri), lin:par(G[k].lin)}; });
+    function tegn(b,modus){
+      if(!b[1]) return;
+      gl.bindBuffer(gl.ARRAY_BUFFER,b[0]);
+      gl.enableVertexAttribArray(aP); gl.vertexAttribPointer(aP,3,gl.FLOAT,false,STEG*4,0);
+      gl.enableVertexAttribArray(aC); gl.vertexAttribPointer(aC,4,gl.FLOAT,false,STEG*4,12);
+      gl.enableVertexAttribArray(aN); gl.vertexAttribPointer(aN,3,gl.FLOAT,false,STEG*4,28);
+      gl.drawArrays(modus,0,b[1]);
+    }
+    return function(){
+      var s=Math.min(W,H)*SK*ZOOM, m=P([0,D.bakke-.6,0]), mw=kanModell&&vilModell, I2=mw?0:INNE, ute=1-INNE*(mw?MOD:1);   /* I2: skissens innside (0 når 3D-modellen brukes) · ute: huset utenfra, blir stående til modellen er inne */
+      var myk=function(x){ x=Math.max(0,Math.min(1,x)); return x*x*(3-2*x); }, p1=myk(RIV/.55), p2=myk((RIV-.45)/.55);      // først tingene, så veggen
+      var bort=function(del,modus){ var a1=I2*(1-p1), a2=I2*(1-p2);
+        if(a1>.004){ gl.uniform1f(U.alfa,a1); gl.uniform1f(U.loft,p1*.7); tegn(B.d[del],modus); }
+        if(a2>.004){ gl.uniform1f(U.alfa,a2); gl.uniform1f(U.loft,p2*.7); tegn(B.e[del],modus); }
+        gl.uniform1f(U.loft,0); };
+      gl.viewport(0,0,cvGL.width,cvGL.height); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+      gl.uniform4f(U.rot,cy,sy,cp,sp); gl.uniform2f(U.sk,2*AVST*s/W,2*AVST*s/H); gl.uniform3f(U.mal,TX,MIDT,TZ); gl.uniform1f(U.alfa,1); gl.uniform1f(U.loft,0);
+      gl.uniform3f(U.cam,TX-AVST*cp*sy,AVST*sp+MIDT,TZ-AVST*cp*cy);
+      gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(true); gl.enable(gl.POLYGON_OFFSET_FILL); gl.polygonOffset(1,1);
+      gl.uniform4f(U.fm,m[0]*dpr,(H-m[1])*dpr,Math.min(W,H)*.66*ZOOM*dpr,1); tegn(B.bakke,gl.TRIANGLES);     // bakken toner ut mot kanten
+      gl.uniform4f(U.fm,0,0,1,0); tegn(B.a.tri,gl.TRIANGLES);
+      /* innsiden tones inn mens tak og vegger tones bort; det som er helt borte tegnes ikke */
+      if(I2>.004){ gl.uniform1f(U.alfa,I2); tegn(B.c.tri,gl.TRIANGLES); bort('tri',gl.TRIANGLES); }
+      if(ute>.004){ gl.uniform1f(U.alfa,ute); tegn(B.b.tri,gl.TRIANGLES); }
+      gl.disable(gl.POLYGON_OFFSET_FILL); gl.depthMask(false);
+      gl.uniform1f(U.alfa,1); tegn(B.a.lin,gl.LINES);
+      if(I2>.004){ gl.uniform1f(U.alfa,I2); tegn(B.c.lin,gl.LINES); bort('lin',gl.LINES); }
+      if(ute>.004){ gl.uniform1f(U.alfa,ute); tegn(B.b.lin,gl.LINES); }
+      gl.uniform1f(U.alfa,1); tegn(B.gls,gl.TRIANGLES);
+      if(I2>.004){ gl.uniform1f(U.alfa,I2); tegn(B.cgls,gl.TRIANGLES);
+        if(I2*(1-p1)>.004){ gl.uniform1f(U.alfa,I2*(1-p1)); gl.uniform1f(U.loft,p1*.7); tegn(B.dgls,gl.TRIANGLES); gl.uniform1f(U.loft,0); } }
+      gl.depthMask(true);
+    };
+  }
+  var tegnGL=null;
+  try{ tegnGL=lagGL(); }catch(e){ if(window.console) console.warn('WebGL:',e); }
+  if(!tegnGL) cvGL.style.display='none';
+  cvGL.addEventListener('webglcontextlost',function(e){ e.preventDefault(); tegnGL=null; });
+  cvGL.addEventListener('webglcontextrestored',function(){ try{ tegnGL=lagGL(); }catch(e){} });
+
+  /* glidning mellom to kamerastillinger (utenfra ↔ inne i huset) */
+  var gli=null, inneValgt=false, MOD=0, modTid=performance.now();   // MOD 0..1: hvor mye av 3D-modellen (rammen) som er tonet inn
+  function modSteg(){
+    var naa=performance.now(), d=(naa-modTid)/700, maal=(ramme&&ramme.klar&&inneValgt&&vilModell)?1:0; modTid=naa;
+    MOD=rolig?maal:(MOD<maal?Math.min(maal,MOD+d):Math.max(maal,MOD-d));
+    if(ramme&&ramme.klar){ var o=maal?'1':'0'; if(ramme.el.style.opacity!==o) ramme.el.style.opacity=o; }
+  }
+  function glid(til,ms){ gli={t0:performance.now(), ms:rolig?1:ms, fra:{yaw:yaw,pitch:pitch,ZOOM:ZOOM,TX:TX,TZ:TZ,INNE:INNE}, til:til}; }
+  function steg(){
+    if(!gli) return;
+    var u=Math.min(1,(performance.now()-gli.t0)/gli.ms), e=u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2, f=gli.fra, t=gli.til, m=function(k){ return f[k]+(t[k]-f[k])*e; };
+    yaw=m('yaw'); pitch=m('pitch'); ZOOM=m('ZOOM'); TX=m('TX'); TZ=m('TZ'); INNE=m('INNE');
+    if(ramme&&ramme.klar){ vinkler(); meld({kamera:kamera()}); }                 // modellen følger innzoomingen
+    if(u>=1){ gli=null; visModell(); }
+  }
+  function inn(paa){
+    var I=D.inne; if(!I||!tegnGL||!!paa===inneValgt) return;
+    inneValgt=!!paa;
+    if(paa){ var y0=3.3; y0+=Math.round((yaw-y0)/(2*Math.PI))*2*Math.PI; glid({yaw:y0,pitch:1.12,ZOOM:2,TX:I.sikt[0],TZ:I.sikt[1],INNE:1},1700); }
+    else { rivMaal=0; glid({yaw:yaw,pitch:.44,ZOOM:1,TX:0,TZ:0,INNE:0},1400); }
+    if(paa) visModell(); else skjulModell();
+  }
+  /* hvilken jobb som er åpen i lista (null = ingen): rivejobben og jobbene etter den viser huset med det gamle ute */
+  function jobb(nr){ aktivJobb=nr; meldJobb(); var r=D.inne&&D.inne.riv; rivMaal=(inneValgt&&r&&nr!=null&&nr>=r.fra&&nr<=r.til)?1:0; }
+  var sistTid=performance.now();
+  function rivSteg(){
+    var naa=performance.now(), d=(naa-sistTid)/2400; sistTid=naa;
+    if(RIV===rivMaal) return;
+    RIV=rolig?rivMaal:(RIV<rivMaal?Math.min(rivMaal,RIV+d):Math.max(rivMaal,RIV-d*1.6));
+  }
+  /* ---------- forsøk: overgang til den ekte modellen ----------
+     Ligger siden på Vetletun-serveren (der hovedappen er), kan innsiden vises med hovedappens egen
+     tegning i stedet for skissen: vieweren legges i en ramme over lerretet (/?innebygd), får samme
+     kamerastilling, og tones inn når innzoomingen er ferdig. Bryteren «Inside» velger mellom de to.
+     Jobben som er åpen i lista sendes til vieweren, som viser huset slik det står etter den (framdrift)
+     og animerer det som forsvinner — samme kode som i arbeidsappen.
+     Andre steder (forhåndsvisningen på claude.ai, highborn) brukes nettutgaven som ligger ved siden av
+     siden (vetletun.html?innebygd). Er den bygget med lås (--laas), viser rammen låsen til koden er skrevet inn.
+     Finnes ingen av dem, brukes skissen. `?modell=<fil>` i adressen tvinger en bestemt fil (utprøving). */
+  var kanModell=false, modellKilde=null, vilModell=true, ramme=null, aktivJobb=null, stilBoks=document.getElementById('inne-stil');
+  function kamera(){
+    var s=Math.min(W,H)*SK*ZOOM, m=D.midt||[0,0];
+    return {pos:[TX-AVST*cp*sy+m[0], AVST*sp+MIDT, m[1]-(TZ-AVST*cp*cy)], mal:[TX+m[0], MIDT, m[1]-TZ], fov:2*Math.atan(H/(2*s*AVST))*180/Math.PI, forskyv:[.02,.05]};
+  }
+  /* Veggene i 3D-modellen: hele (Lars 2026-11-25: «kunne vi forsøkt å ha hele vegger») eller kuttet i 1,2 m som skissen */
+  var vegger='hele', veggBoks=document.getElementById('inne-vegger');
+  function visVegger(){ if(veggBoks) veggBoks.hidden=!(kanModell&&inneValgt&&vilModell); }
+  function meld(o){ if(ramme&&ramme.klar){ o.vetletun=1; ramme.el.contentWindow.postMessage(o,location.origin); } }
+  function meldJobb(){ meld({tilstand:'i_dag', alternativ:'c', jobb:aktivJobb==null?null:aktivJobb}); }      // vieweren viser huset etter den jobben (framdrift)
+  function visModell(){
+    if(stilBoks) stilBoks.hidden=!(kanModell&&inneValgt);
+    visVegger();
+    if(!kanModell||!vilModell||!inneValgt||ramme) return;                       // lastes idet innzoomingen starter, så den er klar når vi er framme
+    var el=document.createElement('iframe'); el.id='modell'; el.title='3D model of the rooms'; el.src=modellKilde;
+    ramme={el:el, klar:false, svart:false}; box.appendChild(el);
+    /* svarer ikke rammen (siden den ligger på slipper den ikke til), går vi tilbake til skissen */
+    var r=ramme; setTimeout(function(){ if(ramme===r&&!r.svart){ vilModell=false; skjulModell(); merkStil(); } },12000);
+  }
+  function merkStil(){ if(stilBoks) Array.prototype.forEach.call(stilBoks.querySelectorAll('button'),function(x){ x.setAttribute('aria-pressed',(x.getAttribute('data-stil')==='modell')===vilModell?'true':'false'); }); }
+  function skjulModell(){
+    if(stilBoks) stilBoks.hidden=!(kanModell&&inneValgt);
+    visVegger();
+    if(!ramme) return;
+    var r=ramme; ramme=null; r.el.style.opacity=0; setTimeout(function(){ if(r.el.parentNode) r.el.parentNode.removeChild(r.el); },700);
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin||!ramme||e.source!==ramme.el.contentWindow||!e.data||e.data.vetletun!==1) return;
+    ramme.svart=true;
+    if(e.data.laas){ ramme.el.style.opacity=1; return; }                       // låst: vis rammen så koden kan skrives inn
+    if(!e.data.klar) return;
+    ramme.klar=true; vinkler(); meld({vegger:vegger}); if(dusjglass) Object.keys(dusjglass).forEach(function(k){ meld({dusjglass:dusjglass[k]}); }); meld({kamera:kamera()}); meldJobb();
+  });                                                                          // synligheten styres av modSteg()
+  if(stilBoks){ var sk=stilBoks.querySelectorAll('button'); Array.prototype.forEach.call(sk,function(b){ b.addEventListener('click',function(){
+    vilModell=b.getAttribute('data-stil')==='modell'; Array.prototype.forEach.call(sk,function(x){ x.setAttribute('aria-pressed',x===b?'true':'false'); });
+    if(vilModell) visModell(); else skjulModell(); visVegger(); }); }); }
+  if(veggBoks){ var vk=veggBoks.querySelectorAll('button'); Array.prototype.forEach.call(vk,function(b){ b.addEventListener('click',function(){
+    vegger=b.getAttribute('data-vegger'); Array.prototype.forEach.call(vk,function(x){ x.setAttribute('aria-pressed',x===b?'true':'false'); });
+    meld({vegger:vegger}); }); }); }
+  function funnet(kilde){ kanModell=true; modellKilde=kilde; visModell(); }
+  if(location.protocol.indexOf('http')===0&&tegnGL&&window.fetch){
+    var tving=null; try{ tving=new URLSearchParams(location.search).get('modell'); }catch(e){}
+    if(tving) funnet(tving+'?innebygd');
+    else fetch('/versjon',{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; })
+      .then(function(j){ if(j&&j.kode) funnet('/?innebygd'); else throw 0; })
+      .catch(function(){ return fetch('vetletun.html').then(function(r){ if(r.ok) funnet('vetletun.html?innebygd'); }); })
+      .catch(function(){});
+  }
+
+  function draw(){
+    steg(); rivSteg(); modSteg(); vinkler(); g.clearRect(0,0,W,H); g.lineCap='round'; g.lineJoin='round';
+    if(tegnGL){ tegnGL(); solbane(1-INNE); } else tegnStrek();
+    kompass(); g.globalAlpha=1;
+  }
+  function loop(){ if(!drag&&!gli&&!inneValgt){ if(idle>0) idle--; else yaw+=vel; } draw(); requestAnimationFrame(loop); }
+  box.addEventListener('pointerdown',function(e){if(gli)return;drag=true;lx=e.clientX;box.setPointerCapture(e.pointerId);});
+  box.addEventListener('pointermove',function(e){if(!drag)return;yaw+=(e.clientX-lx)*.008;lx=e.clientX;});
+  box.addEventListener('pointerup',function(){drag=false;idle=120;});
+  box.addEventListener('pointercancel',function(){drag=false;});
+  var dusjglass=null;
+  window.VETLETUN_VIS={webgl:!!tegnGL, inn:inn, jobb:jobb, modell:function(id,nr){ dusjglass=dusjglass||{}; dusjglass[nr||0]=id; meld({dusjglass:id}); }, settVinkel:function(y,p,z){yaw=y; if(p!=null) pitch=p; if(z) ZOOM=z; idle=1e9;}};   // for feilsøking
+  loop();
+})();
+
+/* ---------- Project-menyen og arbeidslista ----------
+   «Project» åpner en rullegardin. Bare Bathrooms kan velges foreløpig; de andre prosjektene står
+   der som «Later» til Lars fyller dem. Valgt prosjekt bytter lista til høyre fra «Explore
+   Vetletun» til arbeidslista (window.VETLETUN_JOBBER, bygget fra hus.json). «House» bytter tilbake. */
+(function(){
+  var J=window.VETLETUN_JOBBER||{}, NAVN={bathrooms:'Bathrooms'}, HVEM={chris:'Chris', lars:'Lars', elektriker:'Electrician'};
+  var hus=document.getElementById('nav-house'), prosj=document.getElementById('nav-project'), meny=document.getElementById('project-menu');
+  var pe=document.getElementById('panel-explore'), pj=document.getElementById('panel-jobs'), liste=document.getElementById('jobs-list'), filter=document.getElementById('jobs-filter');
+  if(!prosj||!meny||!pj) return;
+  var valgt=null, hvem='alle';
+  /* Priser: { jobb-id: { kr, kom } }, lagret i denne nettleseren. Ingen server — «Copy as text» / «Download CSV» sender dem videre. */
+  var priser={}; try{ priser=JSON.parse(localStorage.getItem('vetletun-priser')||'{}')||{}; }catch(e){ priser={}; }
+  function lagrePriser(){ try{ localStorage.setItem('vetletun-priser',JSON.stringify(priser)); }catch(e){} }
+  function tall(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' '); }
+  function regnSum(){
+    var fast=0, ops=0, n=0, av=0;
+    (J[valgt]||[]).forEach(function(j){ if(j.ansvar!=='chris') return; av++; var p=priser[j.id], kr=p&&parseFloat(p.kr); if(!(kr>=0)) return; n++; if(j.opsjon) ops+=kr; else fast+=kr; });
+    var s=document.getElementById('jobs-sum'); if(s) s.textContent='Fixed '+tall(fast)+' · options '+tall(ops)+' NOK · '+n+' of '+av+' lines priced';
+  }
+  function prisTekst(csv){
+    var linjer=[csv?'No;Area;Job;Option;Price NOK;Comment':'Vetletun – prices'];
+    (J[valgt]||[]).forEach(function(j){ if(j.ansvar!=='chris') return; var p=priser[j.id]||{}, kr=p.kr||'', kom=p.kom||'';
+      linjer.push(csv?[j.nr,j.omrade,j.tittel,j.opsjon?'option':'',kr,kom].map(function(x){ return '"'+String(x).replace(/"/g,'""')+'"'; }).join(';')
+                     :j.nr+'. '+j.tittel+(j.opsjon?' (option)':'')+': '+(kr!==''?tall(parseFloat(kr))+' NOK':'–')+(kom?' — '+kom:'')); });
+    return linjer.join('\n');
+  }
+  (function(){
+    var k=document.getElementById('jobs-prices'), sum=document.getElementById('jobs-sum'), kop=document.getElementById('jobs-copy'), csv=document.getElementById('jobs-csv'); if(!k) return;
+    k.addEventListener('click',function(){ var paa=k.getAttribute('aria-pressed')!=='true'; k.setAttribute('aria-pressed',paa?'true':'false');
+      pj.parentNode.classList.toggle('bred',paa); sum.hidden=kop.hidden=csv.hidden=!paa; regnSum(); });
+    kop.addEventListener('click',function(){ var t=prisTekst(false), ok=function(){ kop.textContent='Copied'; setTimeout(function(){ kop.textContent='Copy as text'; },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,function(){ window.prompt('Copy the prices:',t); }); else window.prompt('Copy the prices:',t); });
+    csv.addEventListener('click',function(){ try{ var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+prisTekst(true)],{type:'text/csv;charset=utf-8'})); a.download='vetletun-prices.csv'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){ window.prompt('Copy the CSV:',prisTekst(true)); } });
+  })();
+  function el(t,kl,tekst){ var e=document.createElement(t); if(kl) e.className=kl; if(tekst!=null) e.textContent=tekst; return e; }
+  function aapne(paa){ meny.hidden=!paa; prosj.setAttribute('aria-expanded',paa?'true':'false'); }
+  function vis(nr){ if(window.VETLETUN_VIS&&window.VETLETUN_VIS.jobb) window.VETLETUN_VIS.jobb(nr); }
+  function tegnListe(){
+    vis(null);
+    var jobber=J[valgt]||[], n={alle:jobber.length};
+    jobber.forEach(function(j){ n[j.ansvar]=(n[j.ansvar]||0)+1; });
+    document.getElementById('jobs-title').textContent=NAVN[valgt]||valgt;
+    document.getElementById('jobs-sub').textContent='Work list · '+jobber.length+' jobs. Select a job to read the note and see it in the house.';
+    filter.textContent='';
+    [['alle','All']].concat(Object.keys(HVEM).map(function(k){return [k,HVEM[k]];})).forEach(function(f){
+      if(!n[f[0]]) return;
+      var b=el('button',null,f[1]+' '+n[f[0]]); b.type='button'; b.setAttribute('aria-pressed',hvem===f[0]?'true':'false');
+      b.addEventListener('click',function(){ hvem=f[0]; tegnListe(); }); filter.appendChild(b);
+    });
+    liste.textContent='';
+    var omr=null, ul=null;
+    jobber.forEach(function(j){
+      if(hvem!=='alle'&&j.ansvar!==hvem) return;
+      if(j.omrade!==omr){ omr=j.omrade; liste.appendChild(el('div','group label',omr)); ul=el('ul'); liste.appendChild(ul); }
+      var li=el('li'), b=el('button','job'), t=el('div','t');
+      b.type='button'; b.setAttribute('aria-expanded','false');
+      b.appendChild(el('div','ic',String(j.nr)));
+      t.appendChild(el('b',null,j.tittel));
+      t.appendChild(el('span',null,(HVEM[j.ansvar]||j.ansvar)+(j.utforer?' · '+j.utforer.charAt(0).toUpperCase()+j.utforer.slice(1):'')));
+      b.appendChild(t);
+      if(j.opsjon) b.appendChild(el('span','pill opt','Option'));
+      li.appendChild(b);
+      var p=null; if(j.merknad){ p=el('p','note',j.merknad); p.hidden=true; li.appendChild(p); }
+      var mod=null;
+      var grupper=j.grupper||(j.modeller?[{tekst:j.modellTekst,modeller:j.modeller}]:null);
+      if(grupper){                                           // modeller å velge mellom (glass, sluk, kar, toalett): vises i 3D-modellen
+        mod=el('div','models'); mod.hidden=true;
+        grupper.forEach(function(g,gi){
+          mod.appendChild(el('span','label',g.tekst||'Pick a model'));
+          var knapper=[];
+          g.modeller.forEach(function(m,i){
+            var k=el('button',null,m.navn+(m.forst?' · closest to the brief':'')); k.type='button'; k.setAttribute('aria-pressed',i===0?'true':'false'); knapper.push(k);
+            k.addEventListener('click',function(){ knapper.forEach(function(x){ x.setAttribute('aria-pressed',x===k?'true':'false'); });
+              if(window.VETLETUN_VIS&&window.VETLETUN_VIS.modell) window.VETLETUN_VIS.modell(m.id,j.nr+'-'+gi); });
+            mod.appendChild(k);
+          });
+        });
+        li.appendChild(mod);
+      }
+      b.addEventListener('click',function(){
+        var var_aapen=b.getAttribute('aria-expanded')==='true';
+        Array.prototype.forEach.call(liste.querySelectorAll('.job[aria-expanded="true"]'),function(x){ x.setAttribute('aria-expanded','false'); var m=x.parentNode.querySelector('.note'); if(m) m.hidden=true; var mm=x.parentNode.querySelector('.models'); if(mm) mm.hidden=true; var rr=x.parentNode.querySelector('.refs'); if(rr) rr.hidden=true; });
+        if(!var_aapen){ b.setAttribute('aria-expanded','true'); if(p) p.hidden=false; if(mod) mod.hidden=false; }
+        vis(var_aapen?null:j.nr);
+      });
+      var pr=el('div','pris');                               // priskolonnen (synlig når «Fill in prices» er på)
+      if(j.ansvar==='chris'){
+        var kr=document.createElement('input'), kom=document.createElement('input'), lagret=priser[j.id]||{};
+        kr.className='kr'; kr.type='number'; kr.min='0'; kr.step='100'; kr.placeholder='NOK'; kr.setAttribute('aria-label','Price in NOK for job '+j.nr); kr.value=lagret.kr||'';
+        kom.className='kom'; kom.type='text'; kom.placeholder=j.opsjon?'Comment (option)':'Comment'; kom.setAttribute('aria-label','Comment for job '+j.nr); kom.value=lagret.kom||'';
+        var skriv=function(){ if(kr.value===''&&kom.value==='') delete priser[j.id]; else priser[j.id]={kr:kr.value,kom:kom.value}; lagrePriser(); regnSum(); };
+        kr.addEventListener('input',skriv); kom.addEventListener('input',skriv); pr.appendChild(kr); pr.appendChild(kom);
+      } else pr.appendChild(el('span','ikke',(HVEM[j.ansvar]||j.ansvar)+' — not priced here'));
+      li.appendChild(pr);
+      if(j.ref){                                             // Lars sine bilder og lenker: vises som de er, til den som skal prise
+        var rf=el('div','refs'); rf.hidden=true; rf.appendChild(el('span','label','References'));
+        j.ref.forEach(function(r){
+          var a=el('a',r.bilde?'img':'link'); a.target='_blank'; a.rel='noopener noreferrer'; a.href=r.bilde||r.lenke;
+          if(r.bilde){ var im=document.createElement('img'); im.src=r.bilde; im.alt=r.tekst||''; im.loading='lazy'; a.appendChild(im); if(r.tekst) a.appendChild(el('span',null,r.tekst)); }
+          else a.textContent=r.tekst||r.lenke;
+          rf.appendChild(a);
+        });
+        li.appendChild(rf);
+        b.addEventListener('click',function(){ rf.hidden=b.getAttribute('aria-expanded')!=='true'; });
+      }
+      ul.appendChild(li);
+    });
+  }
+  function velg(p){
+    valgt=p&&J[p]?p:null;
+    pe.hidden=!!valgt; pj.hidden=!valgt;
+    hus.classList.toggle('on',!valgt); prosj.classList.toggle('on',!!valgt);
+    if(valgt) hus.removeAttribute('aria-current'); else hus.setAttribute('aria-current','page');
+    Array.prototype.forEach.call(meny.querySelectorAll('button'),function(b){ b.setAttribute('aria-checked',b.getAttribute('data-project')===valgt&&valgt?'true':'false'); });
+    if(valgt){ hvem='alle'; tegnListe(); pj.parentNode.scrollTop=0; }
+    if(window.VETLETUN_VIS&&window.VETLETUN_VIS.inn) window.VETLETUN_VIS.inn(!!valgt);        // steg 1: kameraet glir inn i huset
+    try{ localStorage.setItem('vetletun-project',valgt||''); }catch(e){}
+  }
+  prosj.addEventListener('click',function(e){ e.stopPropagation(); aapne(meny.hidden); });
+  meny.addEventListener('click',function(e){ var b=e.target.closest('button[data-project]'); e.stopPropagation(); if(!b||b.disabled) return; velg(b.getAttribute('data-project')); aapne(false); });
+  hus.addEventListener('click',function(){ velg(null); aapne(false); });
+  document.getElementById('jobs-back').addEventListener('click',function(){ velg(null); });
+  document.addEventListener('click',function(){ aapne(false); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!meny.hidden){ aapne(false); prosj.focus(); } });
+  var husket=null; try{ husket=localStorage.getItem('vetletun-project'); }catch(e){}
+  if(husket&&J[husket]) velg(husket);
+})();
+</script>
+</body>
+</html>
